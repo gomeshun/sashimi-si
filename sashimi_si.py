@@ -989,12 +989,15 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
                                           +(VmaxSIDM_acc[iz]<0.)+(rmaxSIDM_acc[iz]<0.)\
                                           +(rcSIDM_z0[iz]<0.)+(rcSIDM_acc[iz]<0.))==1,False,True)
 
-
-        Na           = self.Na_calc(ma_matrix,zdist,M0,z0=0.,N_herm=N_hermNa,Nrand=1000,
+        # NOTE: 
+        # ma_matrix.shape = (len(zdist),N_ma)
+        # accretion.shape = (len(zdist),N_ma)
+        Na           = self.Na_calc(ma_matrix[accretion.any(axis=1)],zdist_accreted,M0,z0=0.,N_herm=N_hermNa,Nrand=1000,
                                     Na_model=Na_model)
-        Na_total     = integrate.simps(integrate.simps(Na,x=np.log(ma_matrix)),x=np.log(1+zdist))
-        weightCDM    = Na/(1.+zdist.reshape(-1,1))
-        weightCDM    = weightCDM/np.sum(weightCDM)*Na_total
+        # NOTE: Na.shape = (len(zdist),N_ma)
+        Na_total     = integrate.simps(integrate.simps(Na,x=np.log(ma_matrix[accretion.any(axis=1)])),x=np.log(1+zdist_accreted))
+        weightCDM    = Na/(1.+zdist_accreted.reshape(-1,1))
+        weightCDM    = accretion*weightCDM/np.sum(weightCDM)*Na_total
         weightCDM    = np.expand_dims(weightCDM,axis=1)*(w1.reshape(-1,1))/np.sqrt(np.pi)
         weightCDM    = weightCDM[accretion.any(axis=1)]*surviveCDM*np.expand_dims(accretion[accretion.any(axis=1)],axis=1)  # consider only the redshifts where at least one subhalo accretes
         weightSIDM   = weightCDM*surviveSIDM
