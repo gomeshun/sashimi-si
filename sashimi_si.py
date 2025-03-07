@@ -737,7 +737,7 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
         xxi,wwi = hermgauss(N_herm)
         xxi = xxi.reshape(-1,1,1)
         wwi = wwi.reshape(-1,1,1)
-        # sampler = scipy.stats.qmc.MultivariateNormalQMC(mean=np.zeros(N_herm), cov=np.eye(N_herm))
+        # sampler = scipy.stats.qmc.MultivariateNormalQMC(mean=[0,], cov=[1,])
         # xxi = sampler.random(N_herm).reshape(-1, 1, 1)
         # wwi = np.ones_like(xxi) / N_herm
         # Eq. (21) in Yang et al. (2011) 
@@ -967,7 +967,7 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
             return t_c
 
         # For the concentration parameter
-        sampler = scipy.stats.qmc.MultivariateNormalQMC(mean=np.zeros(N_herm), cov=np.eye(N_herm))
+        sampler = scipy.stats.qmc.MultivariateNormalQMC(mean=[0,])
         x1 = sampler.random(N_herm).reshape(-1, 1, 1)
         w1 = np.ones_like(x1) / N_herm
         for iz, za in tqdm.tqdm(enumerate(zdist_accreted),total=len(zdist_accreted),desc='Calculating subhalo properties'):
