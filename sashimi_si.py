@@ -9,6 +9,7 @@ from numpy.polynomial.hermite import hermgauss
 import numexpr as ne
 import warnings
 import tqdm
+import scipy.stats.qmc
 warnings.filterwarnings("ignore", category=RuntimeWarning, append=1)
 
 
@@ -736,6 +737,9 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
         xxi,wwi = hermgauss(N_herm)
         xxi = xxi.reshape(-1,1,1)
         wwi = wwi.reshape(-1,1,1)
+        # sampler = scipy.stats.qmc.MultivariateNormalQMC(mean=np.zeros(N_herm), cov=np.eye(N_herm))
+        # xxi = sampler.random(N_herm).reshape(-1, 1, 1)
+        # wwi = np.ones_like(xxi) / N_herm
         # Eq. (21) in Yang et al. (2011) 
         sigmalogM200 = 0.12-0.15*np.log10(M200_0/Mhost)
         logM200 = np.sqrt(2.)*sigmalogM200*xxi+logM200_0
@@ -963,9 +967,9 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
             return t_c
 
         # For the concentration parameter
-        x1,w1        = hermgauss(N_herm)
-        x1           = x1.reshape(-1,1,1)
-        w1           = w1.reshape(-1,1,1)
+        sampler = scipy.stats.qmc.MultivariateNormalQMC(mean=np.zeros(N_herm), cov=np.eye(N_herm))
+        x1 = sampler.random(N_herm).reshape(-1, 1, 1)
+        w1 = np.ones_like(x1) / N_herm
         for iz, za in tqdm.tqdm(enumerate(zdist_accreted),total=len(zdist_accreted),desc='Calculating subhalo properties'):
             # Before accretion (ba) onto the host
             z_ba    = np.linspace(z_f,za,100)
