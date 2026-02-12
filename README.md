@@ -95,8 +95,8 @@ result_soft = sh.subhalo_properties_calc(M0, truncation_mode='soft')
 ```
 
 The choice of truncation mode affects how the tidal truncation radius is interpreted:
-- **Hard mode**: ctCDM_z0 represents r<sub>t</sub>/r<sub>s</sub>, typically ranging from ~1 to ~50
-- **Soft mode**: ctCDM_z0 represents τ/r<sub>s</sub>, typically ranging from ~0 to ~1
+- **Hard mode**: ctCDM_z0 represents r<sub>t</sub>/r<sub>s</sub>, typically ranging from ~1 to ~100
+- **Soft mode**: ctCDM_z0 represents τ/r<sub>s</sub>, typically ranging from ~0.01 to ~100 (though most physical values are in the range 0.1-10)
 
 Both modes produce consistent subhalo catalogs with the same inner structure parameters (r<sub>s</sub>, ρ<sub>s</sub>) and total masses.
 

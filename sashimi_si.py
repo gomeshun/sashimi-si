@@ -207,8 +207,8 @@ class halo_model(cosmology):
         
         for i in range(len(result)):
             tau_val = float(tau.flat[i])
-            # Integrate to a large upper limit (effectively infinity)
-            result.flat[i] = integrate.quad(integrand, 0, 100*tau_val, args=(tau_val,))[0]
+            # Integrate to infinity - quad will handle this adaptively
+            result.flat[i] = integrate.quad(integrand, 0, np.inf, args=(tau_val,))[0]
         
         if scalar_input:
             return result.item()
@@ -1220,6 +1220,14 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
 
         ctemp              = np.linspace(0,100,1000)
         self.ct_func       = interp1d(self.fc(ctemp),ctemp,fill_value='extrapolate')
+        
+        # Pre-compute soft truncation interpolation table
+        # This is done once to avoid redundant calculations
+        tau_temp = np.linspace(0.01, 100, 1000)
+        fc_soft_vals = np.array([self.fc_soft_total(tau) for tau in tau_temp])
+        self.ct_func_soft = interp1d(fc_soft_vals, tau_temp, 
+                                     fill_value='extrapolate', 
+                                     bounds_error=False)
     
     
     def compute_ct_from_mass(self, m, rhos, rs, truncation_mode='hard'):
@@ -1257,14 +1265,7 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
             # Use the existing ct_func which is based on fc
             ct = self.ct_func(m_norm)
         elif truncation_mode == 'soft':
-            # For soft truncation, we need to invert fc_soft_total
-            # Create an interpolation function if not already created
-            if not hasattr(self, 'ct_func_soft'):
-                tau_temp = np.linspace(0.1, 100, 1000)
-                fc_soft_vals = np.array([self.fc_soft_total(tau) for tau in tau_temp])
-                self.ct_func_soft = interp1d(fc_soft_vals, tau_temp, 
-                                            fill_value='extrapolate', 
-                                            bounds_error=False)
+            # Use the pre-computed soft truncation interpolation table
             ct = self.ct_func_soft(m_norm)
         else:
             raise ValueError(f"Invalid truncation_mode: {truncation_mode}. Must be 'hard' or 'soft'.")
