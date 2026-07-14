@@ -15,7 +15,7 @@ import numpy as np
 from itamae.cosmology import NativeFlatLCDM
 from itamae.evolution import shanks_transform
 from itamae.halo import invert_nfw_mass_function
-from itamae.types import WeightedSubhaloCatalog
+from itamae.types import CATALOG_SCHEMA_VERSION, WeightedSubhaloCatalog
 import sashimi_si as _legacy
 from sashimi_si import TidalStrippingSolver, halo_model, subhalo_properties
 
@@ -124,7 +124,11 @@ class ItamaeMigrationMixin:
                 self.ct_func = old_ct_func
 
     @staticmethod
-    def catalogs_from_legacy(result) -> Mapping[str, WeightedSubhaloCatalog]:
+    def catalogs_from_legacy(
+        result,
+        *,
+        backend_identifier: str = "sashimi-si:legacy-backend:v1",
+    ) -> Mapping[str, WeightedSubhaloCatalog]:
         """Convert the 27-element legacy result into named CDM and SIDM catalogs.
 
         Parameters
@@ -181,26 +185,42 @@ class ItamaeMigrationMixin:
         weight_sidm = np.asarray(result[24], dtype=float)
 
         common_metadata = {
-            "model": "SASHIMI-SI",
+            "schema_version": CATALOG_SCHEMA_VERSION,
+            "backend_identifier": backend_identifier,
+            "source_identifier": "sashimi-si:itamae-migration",
             "legacy_survival_folded": True,
-            "catalog_schema": "itamae-migration-v1",
         }
         return {
             "cdm": WeightedSubhaloCatalog(
                 columns=columns,
-                weights={"legacy_cdm": weight_cdm},
-                metadata={**common_metadata, "state": "cdm"},
+                weights={"weight_base": weight_cdm},
+                metadata={
+                    **common_metadata,
+                    "model_identifier": "sashimi-si:cdm-reference:itamae-migration:v1",
+                    "state": "cdm",
+                },
             ),
             "sidm": WeightedSubhaloCatalog(
                 columns=columns,
-                weights={"legacy_sidm": weight_sidm},
-                metadata={**common_metadata, "state": "sidm"},
+                weights={"weight_base": weight_sidm},
+                metadata={
+                    **common_metadata,
+                    "model_identifier": "sashimi-si:sidm:itamae-migration:v1",
+                    "state": "sidm",
+                },
             ),
         }
 
     def subhalo_catalogs_calc(self, *args: Any, **kwargs: Any):
         """Calculate and return both CDM-reference and SIDM catalog views."""
-        return self.catalogs_from_legacy(self.subhalo_properties_calc(*args, **kwargs))
+        backend_identifier = (
+            "array=numpy;cosmology="
+            f"{self.itamae_cosmology.identifier};units=legacy-sashimi-si"
+        )
+        return self.catalogs_from_legacy(
+            self.subhalo_properties_calc(*args, **kwargs),
+            backend_identifier=backend_identifier,
+        )
 
     def subhalo_catalog_calc(self, *args: Any, state: str = "sidm", **kwargs: Any):
         """Calculate one named state view as a weighted ITAMAE catalog."""

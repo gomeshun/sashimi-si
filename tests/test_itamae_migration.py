@@ -112,6 +112,12 @@ def test_sidm_tuple_is_converted_to_named_state_catalogs() -> None:
     np.testing.assert_array_equal(catalogs["sidm"].weight_final, values[24])
     np.testing.assert_array_equal(catalogs["cdm"].columns["m200_acc"], values[0])
     np.testing.assert_array_equal(catalogs["sidm"].columns["r_c_sidm"], values[18])
+    assert set(catalogs["cdm"].weights) == {"weight_base"}
+    assert set(catalogs["sidm"].weights) == {"weight_base"}
+    assert catalogs["cdm"].metadata["schema_version"] == "1.0"
+    assert catalogs["sidm"].metadata["model_identifier"] == (
+        "sashimi-si:sidm:itamae-migration:v1"
+    )
     assert catalogs["cdm"].metadata["state"] == "cdm"
     assert catalogs["sidm"].metadata["state"] == "sidm"
     assert catalogs["sidm"].metadata["legacy_survival_folded"] is True
