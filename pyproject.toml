@@ -18,7 +18,7 @@ authors = [
   {name = "Hai-Bo Yu"},
 ]
 dependencies = [
-  "itamae>=0.1.0a3",
+  "itamae>=0.1.0a4",
   "numexpr>=2.8",
   "numpy>=1.26",
   "scipy>=1.11",
@@ -34,10 +34,10 @@ test = ["pytest>=8"]
 
 [tool.setuptools]
 py-modules = [
-  "itamae_migration",
-  "itamae_variance",
   "sashimi_si",
   "sashimi_si_itamae",
+  "sashimi_si_itamae_migration",
+  "sashimi_si_itamae_variance",
 ]
 
 [tool.pytest.ini_options]
@@ -52,4 +52,4 @@ select = ["E", "F"]
 ignore = ["E501"]
 
 [tool.uv.sources]
-itamae = {git = "https://github.com/gomeshun/itamae.git", rev = "d5237e74f24e98dcf2453e67862e75f3ae42e83d"}
+itamae = {git = "https://github.com/gomeshun/itamae.git", rev = "476b2025913bc38c3d3e25a23424e7e2274873a8"}

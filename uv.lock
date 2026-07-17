@@ -26,8 +26,8 @@ wheels = [
 
 [[package]]
 name = "itamae"
-version = "0.1.0a3"
-source = { git = "https://github.com/gomeshun/itamae.git?rev=d5237e74f24e98dcf2453e67862e75f3ae42e83d#d5237e74f24e98dcf2453e67862e75f3ae42e83d" }
+version = "0.1.0a4"
+source = { git = "https://github.com/gomeshun/itamae.git?rev=476b2025913bc38c3d3e25a23424e7e2274873a8#476b2025913bc38c3d3e25a23424e7e2274873a8" }
 dependencies = [
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "numpy", version = "2.5.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
@@ -295,7 +295,7 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "itamae", git = "https://github.com/gomeshun/itamae.git?rev=d5237e74f24e98dcf2453e67862e75f3ae42e83d" },
+    { name = "itamae", git = "https://github.com/gomeshun/itamae.git?rev=476b2025913bc38c3d3e25a23424e7e2274873a8" },
     { name = "numexpr", specifier = ">=2.8" },
     { name = "numpy", specifier = ">=1.26" },
     { name = "pytest", marker = "extra == 'test'", specifier = ">=8" },

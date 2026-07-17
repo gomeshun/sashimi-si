@@ -7,7 +7,7 @@ import sashimi_si
 import sashimi_si_itamae
 from itamae.cosmology import NativeFlatLCDM
 from itamae.halo import invert_nfw_mass_function
-from itamae_migration import (
+from sashimi_si_itamae_migration import (
     ItamaeHaloModel,
     ItamaeSubhaloProperties,
     ItamaeTidalStrippingSolver,

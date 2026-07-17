@@ -7,7 +7,7 @@ and disruption prescription while using ITAMAE shared mechanisms and catalog
 types.
 """
 
-from itamae_migration import (
+from sashimi_si_itamae_migration import (
     ItamaeHaloModel,
     ItamaeSubhaloProperties,
     ItamaeTidalStrippingSolver,

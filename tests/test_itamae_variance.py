@@ -2,8 +2,8 @@
 
 import numpy as np
 
-from itamae_variance import make_variance_model
 from sashimi_si import halo_model
+from sashimi_si_itamae_variance import make_variance_model
 
 
 def test_si_variance_adapter_matches_legacy_model() -> None:
