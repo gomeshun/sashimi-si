@@ -36,6 +36,74 @@ When you use the outcome of this package for your scientific output, please cite
 
 Note this is one of the variants of SASHIMI, which is based on its original version for CDM [https://github.com/shinichiroando/sashimi-c]
 
+## Opt-in ITAMAE migration
+
+The established `sashimi_si` import path and its 27-array return contract remain
+the legacy public API. The migration is exposed through a separate module, so
+using ITAMAE is an explicit import-time choice:
+
+```python
+from sashimi_si_itamae import subhalo_properties
+
+model = subhalo_properties(physics_mode="consistent")
+
+# Historical 27-array contract, calculated with migrated shared mechanisms.
+legacy_tuple = model.subhalo_properties_calc(
+    M0=1.0e10 * model.Msun,
+    dz=0.5,
+    zmax=1.0,
+    N_ma=4,
+    N_herm=2,
+    N_hermNa=2,
+)
+
+# Named CDM-reference and SIDM views with ITAMAE catalog semantics.
+catalogs = model.subhalo_catalogs_calc(
+    M0=1.0e10 * model.Msun,
+    dz=0.5,
+    zmax=1.0,
+    N_ma=4,
+    N_herm=2,
+    N_hermNa=2,
+)
+sidm_catalog = catalogs["sidm"]
+```
+
+The catalog keeps `weight_base`, `weight_concentration`, and
+`weight_survival` as independent factors. Its columns use ITAMAE canonical
+units (`Msun`, `Mpc`, `km/s`, and `Msun/Mpc^3`), and its metadata records the
+catalog schema, model, backend, state, and migration provenance.
+
+`physics_mode="consistent"` is the opt-in default. The common migration façade
+also accepts `physics_mode="legacy"`. SASHIMI-SI has no known mode-dependent
+physical correction: both labels intentionally retain the same SIDM cross
+sections, gravothermal/profile evolution, formation-time choice, disruption
+prescription, parameters, and golden result. The mode label is recorded in
+metadata for cross-variant workflow consistency.
+
+Both labels use the corrected upstream physics merged in commit `e17d366`:
+the growth-factor derivative has no spurious factor of `h^-2`, the
+gravothermal derivative uses the published `tau^7` coefficient, Eq. (3.3) is
+normalized by the running CDM history, and the diagnostic and evolution paths
+share one analytic effective cross section. `physics_mode="legacy"` means the
+current corrected `sashimi_si` public model; it does not restore the known-bad
+pre-2026-07-14 equations, and no pre-fix golden is distributed.
+
+The shared mechanisms supplied by ITAMAE are the flat-LCDM background, Shanks
+sequence acceleration, NFW mass inversion, variance protocol, backend
+identifier, and weighted-catalog schema. SIDM physics remains in
+`sashimi_si.py`.
+
+For a development installation on Python 3.11 or newer:
+
+```bash
+uv sync --extra test
+uv run python -m pytest test_sashimi.py tests
+```
+
+Until ITAMAE is released on PyPI, the committed `uv` source pins the tested
+ITAMAE revision from its public GitHub repository.
+
 
 ## Examples
 

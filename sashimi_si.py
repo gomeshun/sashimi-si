@@ -225,7 +225,7 @@ class SIDM_cross_section(units_and_constants):
 
 
     def dsigmadcostheta(self, sigma0_m, w, v, costheta):
-        """ Returns Eq. (1.2) of Yang et al. (2023) divided by m.
+        r""" Returns Eq. (1.2) of Yang et al. (2023) divided by m.
         Eq. (1.2) is given by
 
         $$
@@ -294,7 +294,7 @@ class SIDM_cross_section(units_and_constants):
 
     
     def sigma_eff_m_interpolate(self, sigma0_m, w):
-        """ Returns the interpolation function of the effective cross section of SIDM divided by m.
+        r""" Returns the interpolation function of the effective cross section of SIDM divided by m.
         The effective cross section is defined by Eq. (1.1) of Yang et al. (2023) [arXiv:2305.16176]:
 
         $$
@@ -1091,7 +1091,16 @@ class TidalStrippingSolver(halo_model):
 class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
     
 
-    def __init__(self, sigma0_m=147.1, w=24.33, beta=4, tt_th=1.1):
+    def __init__(
+        self,
+        sigma0_m=147.1,
+        w=24.33,
+        beta=4,
+        tt_th=1.1,
+        *,
+        tidal_solver_factory=None,
+        nfw_inverse=None,
+    ):
         """ Initialize the subhalo_properties class.
         Default values of sigma0_m and w are taken from Yang et al. (2023) [arXiv:2305.16176]:
 
@@ -1122,8 +1131,12 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
 
         self.beta          = beta
 
-        ctemp              = np.linspace(0,100,1000)
-        self.ct_func       = interp1d(self.fc(ctemp),ctemp,fill_value='extrapolate')
+        self.tidal_solver_factory = tidal_solver_factory or TidalStrippingSolver
+        if nfw_inverse is None:
+            ctemp          = np.linspace(0,100,1000)
+            self.ct_func   = interp1d(self.fc(ctemp),ctemp,fill_value='extrapolate')
+        else:
+            self.ct_func   = nfw_inverse
 
 
 
@@ -1251,7 +1264,7 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
     def subhalo_properties_calc(self, M0, redshift=0.0, dz=0.01, zmax=5.0, N_ma=500, sigmalogc=0.128,
                                 N_herm=20, logmamin=6, logmamax=None, N_hermNa=200, Na_model=3, 
                                 ct_th=0., M0_at_redshift=False,
-                                method="pert2_shanks", **kwargs):
+                                method="pert2_shanks", return_weight_factors=False, **kwargs):
         """
         This is the main function of SASHIMI-C, which makes a semi-analytical subhalo catalog.
         
@@ -1283,6 +1296,11 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
                                    be completely desrupted. Suggested values: 0.77 or 0 (no desruption; default).
         (Optional) M0_at_redshift: If True, M0 is regarded as the mass at a given redshift, instead of z=0.
         (Optional) method:         Method to calculate the subhalo mass stripping. (default: "pert2_shanks")
+        (Optional) return_weight_factors:
+                                   If True, also return the independent base,
+                                   concentration, and survival weight factors
+                                   used to assemble the CDM-reference and SIDM
+                                   catalog weights. (default: False)
         (Optional) kwargs:         Additional arguments for the odeint function.
         
         ------
@@ -1418,7 +1436,7 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
 
         # def msolve(m, z):
         #     return AMz(z)*(m/tdynz(z))*(m/Mzvir(z))**zetaMz(z)/(self.Hubble(z)*(1+z))
-        solver = TidalStrippingSolver(
+        solver = self.tidal_solver_factory(
             M0=M0,
             z_min=redshift,
             z_max=zmax,
@@ -1513,11 +1531,23 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
         Na           = self.Na_calc(ma_matrix,zdist,M0,z0=0.,N_herm=N_hermNa,Nrand=1000,
                                     Na_model=Na_model)
         Na_total     = integrate.simpson(integrate.simpson(Na,x=np.log(ma_matrix)),x=np.log(1+zdist))
-        weightCDM    = Na/(1.+zdist.reshape(-1,1))
-        weightCDM    = weightCDM/np.sum(weightCDM)*Na_total
-        weightCDM    = np.expand_dims(weightCDM,axis=1)*(w1.reshape(-1,1))/np.sqrt(np.pi)
-        weightCDM    = weightCDM[accretion.any(axis=1)]*surviveCDM*np.expand_dims(accretion[accretion.any(axis=1)],axis=1)  # consider only the redshifts where at least one subhalo accretes
-        weightSIDM   = weightCDM*surviveSIDM
+        weight_base  = Na/(1.+zdist.reshape(-1,1))
+        weight_base  = weight_base/np.sum(weight_base)*Na_total
+        weight_base  = np.broadcast_to(
+            np.expand_dims(weight_base[accretion.any(axis=1)], axis=1),
+            surviveCDM.shape,
+        )
+        weight_concentration = np.broadcast_to(
+            w1.reshape(1, N_herm, 1)/np.sqrt(np.pi),
+            surviveCDM.shape,
+        )
+        weight_survival_cdm = (
+            surviveCDM
+            * np.expand_dims(accretion[accretion.any(axis=1)], axis=1)
+        )
+        weight_survival_sidm = weight_survival_cdm*surviveSIDM
+        weightCDM    = weight_base*weight_concentration*weight_survival_cdm
+        weightSIDM   = weight_base*weight_concentration*weight_survival_sidm
         z_acc        = (zdist_accreted.reshape(-1,1,1))*np.ones((1,N_herm,N_ma))
         z_acc        = z_acc.reshape(-1)
 
@@ -1550,4 +1580,25 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
         surviveCDM    = surviveCDM.reshape(-1)
         surviveSIDM   = surviveSIDM.reshape(-1)
 
-        return ma200, z_acc, rsCDM_acc, rhosCDM_acc, rmaxCDM_acc, VmaxCDM_acc, rsSIDM_acc, rhosSIDM_acc, rcSIDM_acc, rmaxSIDM_acc, VmaxSIDM_acc, m_z0, rsCDM_z0, rhosCDM_z0, rmaxCDM_z0, VmaxCDM_z0, rsSIDM_z0, rhosSIDM_z0, rcSIDM_z0, rmaxSIDM_z0, VmaxSIDM_z0, ctCDM_z0, tt_ratio, weightCDM, weightSIDM, surviveCDM, surviveSIDM, 
+        result = (
+            ma200, z_acc, rsCDM_acc, rhosCDM_acc, rmaxCDM_acc, VmaxCDM_acc,
+            rsSIDM_acc, rhosSIDM_acc, rcSIDM_acc, rmaxSIDM_acc, VmaxSIDM_acc,
+            m_z0, rsCDM_z0, rhosCDM_z0, rmaxCDM_z0, VmaxCDM_z0, rsSIDM_z0,
+            rhosSIDM_z0, rcSIDM_z0, rmaxSIDM_z0, VmaxSIDM_z0, ctCDM_z0,
+            tt_ratio, weightCDM, weightSIDM, surviveCDM, surviveSIDM,
+        )
+        if not return_weight_factors:
+            return result
+        factors = {
+            "cdm_reference": {
+                "weight_base": weight_base.reshape(-1),
+                "weight_concentration": weight_concentration.reshape(-1),
+                "weight_survival": weight_survival_cdm.reshape(-1),
+            },
+            "sidm": {
+                "weight_base": weight_base.reshape(-1),
+                "weight_concentration": weight_concentration.reshape(-1),
+                "weight_survival": weight_survival_sidm.reshape(-1),
+            },
+        }
+        return result, factors

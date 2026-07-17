@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sashimi-si"
+version = "0.1.0a1"
+description = "Semi-Analytical SubHalo Inference ModelIng for Self-Interacting Dark Matter"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+  {name = "Shin'ichiro Ando"},
+  {name = "Shunichi Horigome"},
+  {name = "Ethan Nadler"},
+  {name = "Daneng Yang"},
+  {name = "Hai-Bo Yu"},
+]
+dependencies = [
+  "itamae>=0.1.0a3",
+  "numexpr>=2.8",
+  "numpy>=1.26",
+  "scipy>=1.11",
+  "tqdm>=4.66",
+]
+
+[project.urls]
+Repository = "https://github.com/gomeshun/sashimi-si"
+Issues = "https://github.com/gomeshun/sashimi-si/issues"
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[tool.setuptools]
+py-modules = [
+  "itamae_migration",
+  "itamae_variance",
+  "sashimi_si",
+  "sashimi_si_itamae",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F"]
+ignore = ["E501"]
+
+[tool.uv.sources]
+itamae = {git = "https://github.com/gomeshun/itamae.git", rev = "d5237e74f24e98dcf2453e67862e75f3ae42e83d"}

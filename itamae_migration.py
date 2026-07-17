@@ -12,11 +12,12 @@ from typing import Any, Mapping, TypeVar
 
 import numpy as np
 
+from itamae.backends import BackendConfig
 from itamae.cosmology import NativeFlatLCDM
 from itamae.evolution import shanks_transform
 from itamae.halo import invert_nfw_mass_function
-from itamae.types import CATALOG_SCHEMA_VERSION, WeightedSubhaloCatalog
-import sashimi_si as _legacy
+from itamae.types import CatalogMetadata, WeightedSubhaloCatalog
+from itamae.units import NativeUnits
 from sashimi_si import TidalStrippingSolver, halo_model, subhalo_properties
 
 _Base = TypeVar("_Base", bound=type)
@@ -29,9 +30,16 @@ class ItamaeMigrationMixin:
     ----------
     *args
         Positional arguments forwarded to the legacy class.
+    backend_config : itamae.backends.BackendConfig, optional
+        Immutable ITAMAE backend selection. The native NumPy, unit, and
+        flat-LCDM backends are used by default.
+    physics_mode : {"consistent", "legacy"}, optional
+        Compatibility label shared by SASHIMI migration façades. SASHIMI-SI
+        has no known mode-dependent physical correction, so both values select
+        the same canonical SIDM equations and defaults.
     cosmology_backend : object, optional
-        ITAMAE-compatible cosmology backend. The native flat-LCDM backend is
-        used by default.
+        Deprecated convenience route for selecting only an ITAMAE-compatible
+        cosmology backend. It cannot be combined with ``backend_config``.
     **kwargs
         Keyword arguments forwarded to the legacy class.
 
@@ -43,15 +51,57 @@ class ItamaeMigrationMixin:
     finalized after the base class has initialized its unit constants.
     """
 
-    def __init__(self, *args: Any, cosmology_backend: Any | None = None, **kwargs: Any) -> None:
-        backend = cosmology_backend or NativeFlatLCDM()
+    def __init__(
+        self,
+        *args: Any,
+        backend_config: BackendConfig | None = None,
+        cosmology_backend: Any | None = None,
+        physics_mode: str = "consistent",
+        **kwargs: Any,
+    ) -> None:
+        if physics_mode not in {"consistent", "legacy"}:
+            raise ValueError("physics_mode must be 'consistent' or 'legacy'.")
+        if backend_config is not None and cosmology_backend is not None:
+            raise ValueError(
+                "Pass either backend_config or cosmology_backend, not both."
+            )
+        using_default_backend = backend_config is None and cosmology_backend is None
+        if backend_config is None:
+            backend = cosmology_backend or NativeFlatLCDM()
+            backend_config = BackendConfig(cosmology=backend, units=NativeUnits())
+        else:
+            backend = backend_config.cosmology
+        if not isinstance(backend_config.units, NativeUnits):
+            raise ValueError(
+                "The SASHIMI-SI migration currently emits canonical floating "
+                "catalog arrays and therefore requires itamae.units.NativeUnits."
+            )
+        omega_m0 = float(np.asarray(backend.omega_m(0.0)))
+        h = float(np.asarray(backend.H(0.0))) / 100.0
+        if not np.isclose(omega_m0, 0.315, rtol=0.0, atol=1.0e-12):
+            raise ValueError(
+                "The result-preserving SASHIMI-SI migration requires "
+                f"OmegaM=0.315; received {omega_m0}."
+            )
+        if not np.isclose(h, 0.674, rtol=0.0, atol=1.0e-12):
+            raise ValueError(
+                "The result-preserving SASHIMI-SI migration requires "
+                f"h=0.674; received {h}."
+            )
         self.itamae_cosmology = backend
+        self.itamae_backend = backend_config
+        self.physics_mode = physics_mode
         self._rho_crit_scale = 1.0
         super().__init__(*args, **kwargs)
 
-        if cosmology_backend is None:
+        if using_default_backend:
             backend = NativeFlatLCDM(omega_m0=self.OmegaM, h=self.h)
             self.itamae_cosmology = backend
+            self.itamae_backend = BackendConfig(
+                cosmology=backend,
+                units=backend_config.units,
+                array=backend_config.array,
+            )
         if hasattr(backend, "omega_m0"):
             self.OmegaM = float(backend.omega_m0)
             self.OmegaL = 1.0 - self.OmegaM
@@ -65,6 +115,15 @@ class ItamaeMigrationMixin:
         legacy_rho0 = 3.0 * self.H0**2 / (8.0 * np.pi * self.G)
         self._rho_crit_scale = legacy_rho0 / backend_rho0
         self.rhocrit0 = legacy_rho0
+        if isinstance(self, TidalStrippingSolver):
+            self.reset_interpolation(
+                z_max=self.z_max,
+                z_min=self.z_min,
+                n_z=self.n_z_interp,
+            )
+        if isinstance(self, subhalo_properties):
+            self.tidal_solver_factory = ItamaeTidalStrippingSolver
+            self.ct_func = invert_nfw_mass_function
 
     def Hubble(self, z: Any) -> np.ndarray:
         """Return the Hubble rate in the legacy inverse-second unit."""
@@ -106,48 +165,36 @@ class ItamaeMigrationMixin:
     def subhalo_properties_calc(self, *args: Any, **kwargs: Any):
         """Run the legacy SIDM equations with migrated numerical components.
 
-        The method temporarily injects the ITAMAE-backed tidal solver into the
-        legacy module and replaces the interpolated NFW inverse with ITAMAE's
-        root solve. Both changes are restored in ``finally`` blocks so importing
-        this adapter does not alter other legacy instances.
+        Solver and NFW-inversion dependencies are attached to this instance,
+        leaving the legacy module and other model instances unchanged.
         """
+        return super().subhalo_properties_calc(*args, **kwargs)
 
-        old_solver = _legacy.TidalStrippingSolver
-        old_ct_func = getattr(self, "ct_func", None)
-        _legacy.TidalStrippingSolver = ItamaeTidalStrippingSolver
-        self.ct_func = invert_nfw_mass_function
-        try:
-            return super().subhalo_properties_calc(*args, **kwargs)
-        finally:
-            _legacy.TidalStrippingSolver = old_solver
-            if old_ct_func is not None:
-                self.ct_func = old_ct_func
-
-    @staticmethod
     def catalogs_from_legacy(
+        self,
         result,
         *,
-        backend_identifier: str = "sashimi-si:legacy-backend:v1",
+        weight_factors: Mapping[str, Mapping[str, Any]],
     ) -> Mapping[str, WeightedSubhaloCatalog]:
-        """Convert the 27-element legacy result into named CDM and SIDM catalogs.
+        """Convert legacy arrays and generation-stage factors into catalogs.
 
         Parameters
         ----------
         result : tuple
             Exact tuple returned by ``sashimi_si.subhalo_properties_calc``.
+        weight_factors : mapping
+            Independent base, concentration, and survival factors captured
+            before multiplication in the legacy calculation.
 
         Returns
         -------
         mapping
-            Mapping with ``"cdm"`` and ``"sidm"`` weighted catalogs. The arrays
-            are shared between the two views where possible.
+            Mapping with ``"cdm_reference"`` and ``"sidm"`` weighted catalogs.
 
         Notes
         -----
-        Legacy ``weightCDM`` already contains the CDM survival and accretion
-        masks; ``weightSIDM`` additionally contains the SIDM validity mask.
-        These factors cannot be disentangled after tuple construction, so each
-        catalog records ``legacy_survival_folded=True`` in its metadata.
+        The legacy tuple retains velocities in Mpc/s. Catalog velocities are
+        converted to ITAMAE's canonical km/s unit.
         """
 
         if len(result) != 27:
@@ -178,57 +225,86 @@ class ItamaeMigrationMixin:
             "c_t_cdm",
             "collapse_time_ratio",
         )
-        columns = {name: np.asarray(result[index]) for index, name in enumerate(names)}
+        velocity_names = {
+            "v_max_cdm_acc",
+            "v_max_sidm_acc",
+            "v_max_cdm",
+            "v_max_sidm",
+        }
+        columns = {}
+        for index, name in enumerate(names):
+            values = np.asarray(result[index])
+            if name in velocity_names:
+                values = values / (self.km / self.s)
+            columns[name] = values
         columns["survive_cdm"] = np.asarray(result[25], dtype=bool)
         columns["survive_sidm"] = np.asarray(result[26], dtype=bool)
-        weight_cdm = np.asarray(result[23], dtype=float)
-        weight_sidm = np.asarray(result[24], dtype=float)
+        expected_states = {"cdm_reference", "sidm"}
+        if set(weight_factors) != expected_states:
+            raise ValueError(
+                f"weight_factors must contain {sorted(expected_states)}."
+            )
 
-        common_metadata = {
-            "schema_version": CATALOG_SCHEMA_VERSION,
-            "backend_identifier": backend_identifier,
-            "source_identifier": "sashimi-si:itamae-migration",
-            "legacy_survival_folded": True,
+        common_extra = {
+            "column_units": {
+                "mass": "Msun",
+                "length": "Mpc",
+                "velocity": "km / s",
+                "density": "Msun / Mpc3",
+            },
+            "weight_factorization": "generation-stage",
+            "physics_mode": self.physics_mode,
+            "physics_mode_equivalence": "legacy=consistent",
         }
         return {
-            "cdm": WeightedSubhaloCatalog(
+            "cdm_reference": WeightedSubhaloCatalog(
                 columns=columns,
-                weights={"weight_base": weight_cdm},
-                metadata={
-                    **common_metadata,
-                    "model_identifier": "sashimi-si:cdm-reference:itamae-migration:v1",
-                    "state": "cdm",
-                },
+                weights=weight_factors["cdm_reference"],
+                metadata=CatalogMetadata(
+                    model_identifier="sashimi-si:cdm-reference:v1",
+                    backend_identifier=self.itamae_backend.identifier,
+                    source_identifier="sashimi-si:upstream-physics:e17d366",
+                    extra={**common_extra, "state": "cdm_reference"},
+                ),
             ),
             "sidm": WeightedSubhaloCatalog(
                 columns=columns,
-                weights={"weight_base": weight_sidm},
-                metadata={
-                    **common_metadata,
-                    "model_identifier": "sashimi-si:sidm:itamae-migration:v1",
-                    "state": "sidm",
-                },
+                weights=weight_factors["sidm"],
+                metadata=CatalogMetadata(
+                    model_identifier="sashimi-si:sidm-parametric:v1",
+                    backend_identifier=self.itamae_backend.identifier,
+                    source_identifier="sashimi-si:upstream-physics:e17d366",
+                    extra={**common_extra, "state": "sidm"},
+                ),
             ),
         }
 
     def subhalo_catalogs_calc(self, *args: Any, **kwargs: Any):
         """Calculate and return both CDM-reference and SIDM catalog views."""
-        backend_identifier = (
-            "array=numpy;cosmology="
-            f"{self.itamae_cosmology.identifier};units=legacy-sashimi-si"
+        if "return_weight_factors" in kwargs:
+            raise ValueError(
+                "subhalo_catalogs_calc manages return_weight_factors internally."
+            )
+        result, weight_factors = super().subhalo_properties_calc(
+            *args,
+            return_weight_factors=True,
+            **kwargs,
         )
         return self.catalogs_from_legacy(
-            self.subhalo_properties_calc(*args, **kwargs),
-            backend_identifier=backend_identifier,
+            result,
+            weight_factors=weight_factors,
         )
 
     def subhalo_catalog_calc(self, *args: Any, state: str = "sidm", **kwargs: Any):
         """Calculate one named state view as a weighted ITAMAE catalog."""
+        if state == "cdm":
+            state = "cdm_reference"
+        if state not in {"cdm_reference", "sidm"}:
+            raise ValueError(
+                "state must be 'cdm_reference' (or alias 'cdm') or 'sidm'."
+            )
         catalogs = self.subhalo_catalogs_calc(*args, **kwargs)
-        try:
-            return catalogs[state]
-        except KeyError as error:
-            raise ValueError("state must be either 'cdm' or 'sidm'.") from error
+        return catalogs[state]
 
 
 def migrate_class(base_class: _Base) -> _Base:
@@ -244,7 +320,40 @@ ItamaeHaloModel = migrate_class(halo_model)
 ItamaeTidalStrippingSolver = migrate_class(TidalStrippingSolver)
 ItamaeSubhaloProperties = migrate_class(subhalo_properties)
 
+
+def create_itamae_model(
+    *,
+    backend_config: BackendConfig | None = None,
+    physics_mode: str = "consistent",
+    **model_parameters: Any,
+) -> ItamaeSubhaloProperties:
+    """Construct the explicit opt-in ITAMAE-backed SASHIMI-SI model.
+
+    Parameters
+    ----------
+    backend_config
+        Immutable ITAMAE backend configuration.
+    physics_mode
+        ``"consistent"`` by default. ``"legacy"`` is accepted for a common
+        migration façade; both modes intentionally use the same SASHIMI-SI
+        physical prescription.
+    **model_parameters
+        SASHIMI-SI physical parameters such as ``sigma0_m``, ``w``, ``beta``,
+        and ``tt_th``.
+
+    Returns
+    -------
+    ItamaeSubhaloProperties
+        Model preserving SASHIMI-SI physics with shared ITAMAE mechanisms.
+    """
+    return ItamaeSubhaloProperties(
+        backend_config=backend_config,
+        physics_mode=physics_mode,
+        **model_parameters,
+    )
+
 __all__ = [
+    "create_itamae_model",
     "ItamaeHaloModel",
     "ItamaeMigrationMixin",
     "ItamaeSubhaloProperties",
