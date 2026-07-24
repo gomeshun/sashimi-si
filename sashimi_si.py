@@ -109,6 +109,112 @@ class halo_model(cosmology):
         return np.log(1+x)-x*pow(1+x,-1)
 
     
+    def fc_soft(self, x, tau):
+        """
+        Mass integral for softly truncated NFW profile.
+        
+        The soft truncation factor is tau^2/(r^2 + tau^2), where tau is the 
+        truncation scale (typically the tidal radius rt).
+        
+        For NFW density rho(r) = rho_s / [(r/rs)(1 + r/rs)^2], the mass integral
+        with soft truncation becomes:
+            M(<x) = 4*pi*rho_s*rs^3 * integral from 0 to x of 
+                    [y / (y+1)^2] * [tau^2 / (y^2 + tau^2)] dy
+        
+        where y = r/rs, x = r/rs, and tau is in units of rs.
+        
+        Parameters
+        ----------
+        x : array_like
+            Radius in units of scale radius rs
+        tau : array_like
+            Truncation scale in units of rs (tau = rt/rs)
+            
+        Returns
+        -------
+        array_like
+            Dimensionless mass integral
+        """
+        # Use numerical integration for the soft truncation case
+        # The integrand is: y / [(y+1)^2 * (y^2 + tau^2)]
+        
+        # For efficient computation, we'll use a semi-analytical approach
+        # Breaking down the integral using partial fractions where possible
+        
+        # For large x and finite tau, the integral converges to a finite value
+        # We compute this numerically
+        
+        def integrand(y, tau_val):
+            return y / ((y + 1)**2 * (y**2 + tau_val**2))
+        
+        # Handle scalar and array inputs
+        x = np.asarray(x)
+        tau = np.asarray(tau)
+        scalar_input = x.ndim == 0 and tau.ndim == 0
+        
+        if scalar_input:
+            x = x.reshape(1)
+            tau = tau.reshape(1)
+        
+        # Broadcast x and tau to compatible shapes
+        x = np.atleast_1d(x)
+        tau = np.atleast_1d(tau)
+        
+        # Compute the integral for each combination
+        result = np.zeros_like(x, dtype=float)
+        
+        for i in range(len(result)):
+            x_val = float(x.flat[i])
+            tau_val = float(tau.flat[i]) if tau.size > 1 else float(tau.flat[0])
+            
+            if x_val > 0:
+                result.flat[i] = integrate.quad(integrand, 0, x_val, args=(tau_val,))[0]
+            else:
+                result.flat[i] = 0.0
+        
+        if scalar_input:
+            return result.item()
+        return result
+
+    
+    def fc_soft_total(self, tau):
+        """
+        Total mass integral for softly truncated NFW profile (integrated to infinity).
+        
+        This gives the total mass of a softly truncated NFW halo.
+        
+        Parameters
+        ----------
+        tau : array_like
+            Truncation scale in units of rs (tau = rt/rs)
+            
+        Returns
+        -------
+        array_like
+            Dimensionless total mass integral
+        """
+        def integrand(y, tau_val):
+            return y / ((y + 1)**2 * (y**2 + tau_val**2))
+        
+        tau = np.asarray(tau)
+        scalar_input = tau.ndim == 0
+        
+        if scalar_input:
+            tau = tau.reshape(1)
+        
+        tau = np.atleast_1d(tau)
+        result = np.zeros_like(tau, dtype=float)
+        
+        for i in range(len(result)):
+            tau_val = float(tau.flat[i])
+            # Integrate to infinity - quad will handle this adaptively
+            result.flat[i] = integrate.quad(integrand, 0, np.inf, args=(tau_val,))[0]
+        
+        if scalar_input:
+            return result.item()
+        return result
+    
+    
     def Delc(self, x):
         return 18.*np.pi**2+82.*x-39.*x**2
 
@@ -1124,6 +1230,57 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
 
         ctemp              = np.linspace(0,100,1000)
         self.ct_func       = interp1d(self.fc(ctemp),ctemp,fill_value='extrapolate')
+        
+        # Pre-compute soft truncation interpolation table
+        # This is done once to avoid redundant calculations
+        tau_temp = np.linspace(0.01, 100, 1000)
+        fc_soft_vals = np.array([self.fc_soft_total(tau) for tau in tau_temp])
+        self.ct_func_soft = interp1d(fc_soft_vals, tau_temp, 
+                                     fill_value='extrapolate', 
+                                     bounds_error=False)
+    
+    
+    def compute_ct_from_mass(self, m, rhos, rs, truncation_mode='hard'):
+        """
+        Compute the truncation parameter ct = rt/rs from mass.
+        
+        For hard truncation:
+            m = 4*pi*rhos*rs^3 * fc(ct)
+            ct = fc^{-1}(m / (4*pi*rhos*rs^3))
+        
+        For soft truncation:
+            m = 4*pi*rhos*rs^3 * fc_soft_total(ct)
+            ct = fc_soft_total^{-1}(m / (4*pi*rhos*rs^3))
+        
+        Parameters
+        ----------
+        m : array_like
+            Mass of the subhalo
+        rhos : array_like
+            Characteristic density
+        rs : array_like
+            Scale radius
+        truncation_mode : str, optional
+            'hard' or 'soft', default is 'hard'
+            
+        Returns
+        -------
+        array_like
+            Truncation parameter ct = rt/rs
+        """
+        # Dimensionless mass
+        m_norm = m / (4. * np.pi * rhos * rs**3)
+        
+        if truncation_mode == 'hard':
+            # Use the existing ct_func which is based on fc
+            ct = self.ct_func(m_norm)
+        elif truncation_mode == 'soft':
+            # Use the pre-computed soft truncation interpolation table
+            ct = self.ct_func_soft(m_norm)
+        else:
+            raise ValueError(f"Invalid truncation_mode: {truncation_mode}. Must be 'hard' or 'soft'.")
+        
+        return ct
 
 
 
@@ -1251,7 +1408,7 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
     def subhalo_properties_calc(self, M0, redshift=0.0, dz=0.01, zmax=5.0, N_ma=500, sigmalogc=0.128,
                                 N_herm=20, logmamin=6, logmamax=None, N_hermNa=200, Na_model=3, 
                                 ct_th=0., M0_at_redshift=False,
-                                method="pert2_shanks", **kwargs):
+                                method="pert2_shanks", truncation_mode='hard', **kwargs):
         """
         This is the main function of SASHIMI-C, which makes a semi-analytical subhalo catalog.
         
@@ -1283,6 +1440,10 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
                                    be completely desrupted. Suggested values: 0.77 or 0 (no desruption; default).
         (Optional) M0_at_redshift: If True, M0 is regarded as the mass at a given redshift, instead of z=0.
         (Optional) method:         Method to calculate the subhalo mass stripping. (default: "pert2_shanks")
+        (Optional) truncation_mode: Truncation method for density profiles: 'hard' or 'soft'. (default: 'hard')
+                                   'hard': Sharp cutoff at tidal radius rt. Mass is defined as enclosed mass up to rt.
+                                   'soft': Smooth truncation using factor tau^2/(r^2 + tau^2). Mass is total integrated mass.
+                                   Subhalos are identified by the same r_s (or r_c for SIDM) in both cases.
         (Optional) kwargs:         Additional arguments for the odeint function.
         
         ------
@@ -1482,7 +1643,9 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
             rsCDM_z0[iz]   = rmax_aa[:,-1]/2.1626
             rhosCDM_z0[iz] = (4.625/(4.*np.pi*self.G))*(Vmax_aa[:,-1]/rsCDM_z0[iz])**2
 
-            ctCDM_z0[iz]     = self.ct_func(m_aa[-1]/(4.*np.pi*rhosCDM_z0[iz]*rsCDM_z0[iz]**3))
+            ctCDM_z0[iz]     = self.compute_ct_from_mass(
+                m_aa[-1], rhosCDM_z0[iz], rsCDM_z0[iz], truncation_mode=truncation_mode
+            )
             surviveCDM[iz]   = np.where(ctCDM_z0[iz]>ct_th,1,0)
             m0CDM_matrix[iz] = m_aa[-1]*np.ones((N_herm,1))
 
