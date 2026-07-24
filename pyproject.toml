@@ -30,6 +30,11 @@ Repository = "https://github.com/gomeshun/sashimi-si"
 Issues = "https://github.com/gomeshun/sashimi-si/issues"
 
 [project.optional-dependencies]
+demo = [
+  "ipykernel>=6",
+  "matplotlib>=3.8",
+  "nbconvert>=7",
+]
 test = ["pytest>=8"]
 
 [tool.setuptools]
@@ -39,6 +44,9 @@ py-modules = [
   "sashimi_si_itamae_migration",
   "sashimi_si_itamae_variance",
 ]
+
+[tool.setuptools.data-files]
+"share/sashimi-si" = ["itamae_migration_demo.ipynb"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

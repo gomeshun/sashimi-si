@@ -104,6 +104,38 @@ uv run python -m pytest test_sashimi.py tests
 Until ITAMAE is released on PyPI, the committed `uv` source pins the tested
 ITAMAE revision from its public GitHub repository.
 
+### Migration demonstration and known warnings
+
+[`itamae_migration_demo.ipynb`](itamae_migration_demo.ipynb) is a lightweight,
+executable comparison of the public legacy tuple, the migrated legacy option,
+and the migrated consistent option. It checks the 27-array contract and shows
+the SIDM subhalo mass function and accumulated satellite number as both a
+figure and a numerical table. The legacy and consistent migration curves
+intentionally overlap because both select the corrected upstream physics.
+
+Re-execute the committed demonstration from a source checkout with:
+
+```bash
+uv run --extra demo jupyter nbconvert \
+  --to notebook --execute --inplace itamae_migration_demo.ipynb
+```
+
+The source distribution includes the notebook at its repository-relative path.
+The wheel installs it as
+`share/sashimi-si/itamae_migration_demo.ipynb` below the installation prefix.
+
+The demonstration captures two known classes of `RuntimeWarning`. The
+effective-cross-section interpolation evaluates its direct expression before
+selecting the stable large-`a` asymptotic branch, and the true legacy Shanks
+solver evaluates zero-denominator intermediate expressions before applying its
+fallback. These warnings concern discarded intermediate arithmetic; validated
+catalog arrays and weights remain finite. They are not a physics difference
+between migration modes. Larger validation grids can additionally warn while
+evaluating a square root for an invalid trial SIDM profile or an EPS
+normalization outside its active accretion mask. Those nodes are subsequently
+masked or rejected; the regression suite requires the surviving catalog to be
+finite and physical.
+
 
 ## Examples
 

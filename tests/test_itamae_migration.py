@@ -69,6 +69,38 @@ SMALL_CATALOG_GOLDEN_SUMS = np.array(
 )
 
 
+def _mass_function(mass, weight, bin_edges):
+    """Return dN/dln(m) on fixed physical-mass bins."""
+
+    log_edges = np.log(np.asarray(bin_edges, dtype=float))
+    counts, _ = np.histogram(
+        np.log(np.asarray(mass, dtype=float)),
+        bins=log_edges,
+        weights=np.asarray(weight, dtype=float),
+    )
+    return counts / np.diff(log_edges)
+
+
+def _accumulated_satellite_number(mass, weight, thresholds):
+    """Return the expected number of subhaloes above each mass threshold."""
+
+    mass = np.asarray(mass, dtype=float)
+    weight = np.asarray(weight, dtype=float)
+    thresholds = np.asarray(thresholds, dtype=float)
+    return np.asarray([np.sum(weight[mass >= threshold]) for threshold in thresholds])
+
+
+@pytest.fixture(scope="module")
+def legacy_mode_observable_products():
+    """Evaluate true legacy and migrated-legacy products on one small grid."""
+
+    legacy = subhalo_properties().subhalo_properties_calc(**SMALL_CATALOG_PARAMETERS)
+    migrated_model = create_itamae_model(physics_mode="legacy")
+    migrated = migrated_model.subhalo_properties_calc(**SMALL_CATALOG_PARAMETERS)
+    catalogs = migrated_model.subhalo_catalogs_calc(**SMALL_CATALOG_PARAMETERS)
+    return legacy, migrated, catalogs
+
+
 def test_itamae_cosmology_matches_legacy_background() -> None:
     """The adapted background should reproduce the legacy implementation."""
     legacy = halo_model()
@@ -175,6 +207,80 @@ def test_small_full_catalog_golden_and_legacy_agreement(physics_mode: str) -> No
                 rtol=3.0e-5 if index == 21 else 5.0e-12,
                 atol=2.0e-4 if index == 21 else 1.0e-300,
             )
+
+
+@pytest.mark.parametrize(
+    ("state", "weight_index"),
+    [("cdm_reference", 23), ("sidm", 24)],
+)
+def test_legacy_mode_mass_function_and_accumulated_satellite_number_match(
+    state: str,
+    weight_index: int,
+    legacy_mode_observable_products,
+) -> None:
+    """High-level population observables must match the true public legacy model."""
+
+    legacy, migrated, catalogs = legacy_mode_observable_products
+    catalog = catalogs[state]
+    bin_edges = np.geomspace(1.0e4, 1.0e7, 10)
+    thresholds = np.asarray([1.0e4, 1.0e5, 1.0e6, 1.0e7])
+
+    legacy_mass = legacy[11]
+    legacy_weight = legacy[weight_index]
+    migrated_mass = migrated[11]
+    migrated_weight = migrated[weight_index]
+
+    np.testing.assert_allclose(
+        migrated_mass,
+        legacy_mass,
+        rtol=5.0e-12,
+        atol=1.0e-300,
+    )
+    np.testing.assert_allclose(
+        migrated_weight,
+        legacy_weight,
+        rtol=5.0e-12,
+        atol=1.0e-300,
+    )
+    np.testing.assert_allclose(
+        catalog.columns["m_bound"],
+        legacy_mass,
+        rtol=5.0e-12,
+        atol=1.0e-300,
+    )
+    np.testing.assert_allclose(
+        catalog.weight_final,
+        legacy_weight,
+        rtol=5.0e-12,
+        atol=1.0e-300,
+    )
+
+    legacy_mass_function = _mass_function(
+        legacy_mass,
+        legacy_weight,
+        bin_edges,
+    )
+    legacy_accumulated = _accumulated_satellite_number(
+        legacy_mass,
+        legacy_weight,
+        thresholds,
+    )
+    for mass, weight in (
+        (migrated_mass, migrated_weight),
+        (catalog.columns["m_bound"], catalog.weight_final),
+    ):
+        np.testing.assert_allclose(
+            _mass_function(mass, weight, bin_edges),
+            legacy_mass_function,
+            rtol=5.0e-12,
+            atol=1.0e-300,
+        )
+        np.testing.assert_allclose(
+            _accumulated_satellite_number(mass, weight, thresholds),
+            legacy_accumulated,
+            rtol=5.0e-12,
+            atol=1.0e-300,
+        )
 
 
 @pytest.mark.parametrize("physics_mode", ["consistent", "legacy"])
