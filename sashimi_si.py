@@ -1,6 +1,5 @@
 import numpy as np
 from scipy import integrate
-from scipy import interpolate
 from scipy import optimize
 from scipy import special
 from scipy.integrate import odeint, cumulative_trapezoid
@@ -187,7 +186,6 @@ class halo_model(cosmology):
     
     def dsdm(self,M,z):  
         """ Ludlow et al. (2016) """
-        s         = self.sigmaMz(M,z)**2
         dsdsigma  = 2.*self.sigmaMz(M,z)
         dxidm     = -1.e10*self.Msun/self.h/M**2
         dsigmadxi = self.sigmaMz(M,z)*(0.292/self.xi(M)-(0.275*1.53*self.xi(M)**-0.725+0.198*3.36* \
@@ -371,17 +369,17 @@ class SIDM_cross_section(units_and_constants):
         # Compute the effective velocity dispersion
         nu_eff = 0.64 * Vmax
         a = w**2 / (4 * nu_eff**2)
-        # Compute the expression based on the analytic result:
-        # sigma_eff = -sigma0_m * a^2 * [ exp(a)*(1+a)*Ei(-a) + 1 ]
-        # special.expi(-a) returns Ei(-a)
-        expr = - sigma0_m * a**2 * ( np.exp(a) * (1 + a) * special.expi(-a) + 1 )
         # For a > a_threshold, return sigma0_m (i.e., effective cross section converges to sigma0_m)
         # sigma_eff_asymp = sigma0_m * (1 - 4/a + 18/a**2 - 96/a**3 + 600/a**4 - 4320/a**5)  # + (-1)^k(k+1)!(k+1)/a^k + ...
         # sigma_eff_asymp = sigma0_m  # Asymptotic behavior for large a
         # NOTE: instead, we use Polynomial expansion for large a
         coeff = [(-1)**k * special.factorial(k+1)*(k + 1) for k in range(degree + 1)]
         sigma_eff_asymp = sigma0_m * np.polynomial.Polynomial(coeff)(1/a)  # Evaluate the polynomial at 1/a
-        sigma_eff = np.where(a > a_threshold, sigma_eff_asymp, expr)
+        sigma_eff = np.array(sigma_eff_asymp, copy=True)
+        analytic = a <= a_threshold
+        sigma_eff[analytic] = -sigma0_m * a[analytic]**2 * (
+            np.exp(a[analytic]) * (1 + a[analytic]) * special.expi(-a[analytic]) + 1
+        )
         # Interpolate the result to create a function that can be evaluated at any Vmax
         f_int = interp1d(Vmax, sigma_eff)
         return f_int
@@ -482,11 +480,11 @@ class SIDM_parametric_model(SIDM_cross_section):
         out : np.ndarray
             The differential of Vmax.
         """
-        tt_th = self.tt_th
         out = ne.evaluate(
             "where(tt <= tt_th, (0.1777 - 13.197*tt*tt + 66.64*tt*tt*tt"
             " - 94.35*tt*tt*tt*tt + 63.539*tt*tt*tt*tt*tt*tt"
-            " - 21.924*tt*tt*tt*tt*tt*tt*tt*tt) * Vmax_CDM, 0)"
+            " - 21.924*tt*tt*tt*tt*tt*tt*tt*tt) * Vmax_CDM, 0)",
+            local_dict={"tt": tt, "tt_th": self.tt_th, "Vmax_CDM": Vmax_CDM},
         )
         return out
 
@@ -537,9 +535,9 @@ class SIDM_parametric_model(SIDM_cross_section):
         out : np.ndarray
             The differential of rmax.
         """
-        tt_th = self.tt_th
         out = ne.evaluate(
-            "where(tt <= tt_th, (0.007623 - 1.44*tt + 1.0128*tt*tt - 0.55*tt*tt*tt) * rmax_CDM, 0)"
+            "where(tt <= tt_th, (0.007623 - 1.44*tt + 1.0128*tt*tt - 0.55*tt*tt*tt) * rmax_CDM, 0)",
+            local_dict={"tt": tt, "tt_th": self.tt_th, "rmax_CDM": rmax_CDM},
         )
         return out
 
@@ -992,10 +990,17 @@ class TidalStrippingSolver(halo_model):
         eps_1 = eps_10 + ln_ma * eps_11
         eps_2 = eps_20 + ln_ma * eps_21 + ln_ma**2 * eps_22
         eps_2m1 = (eps_20 - eps_10) + ln_ma * (eps_21 - eps_11) + ln_ma**2 * eps_22
-        eps_shanks = - eps_2**2 / eps_2m1
-        eps_shanks = np.where(np.isnan(eps_shanks), 0, eps_shanks)
+        eps_shanks = np.zeros_like(eps_2, dtype=float)
+        np.divide(-eps_2**2, eps_2m1, out=eps_shanks, where=eps_2m1 != 0)
         # When the correction is too small, the Shanks transformation may not be stable.
-        eps_shanks = np.where(np.abs((eps_1+eps_2)/eps_0) < 0.02, 0, eps_shanks)
+        relative_correction = np.full_like(eps_1 + eps_2, np.inf, dtype=float)
+        np.divide(
+            eps_1 + eps_2,
+            eps_0,
+            out=relative_correction,
+            where=eps_0 != 0,
+        )
+        eps_shanks = np.where(np.abs(relative_correction) < 0.02, 0, eps_shanks)
         eps = eps_0 + eps_1 + eps_2 + eps_shanks
         # import pandas as pd
         # df = pd.DataFrame({'z': _z, 'eps_0': eps_0, 'eps_1': eps_1, 'eps_2': eps_2, 'eps_shanks': eps_shanks, 'eps': eps})
@@ -1354,7 +1359,7 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
         del z_dummy, _zmax, t_L
 
         zdist         = np.arange(redshift+dz,zmax+dz,dz)  # zdist.shape = (n_z,)
-        if logmamax==None:
+        if logmamax is None:
             logmamax  = np.log10(0.1*M0/self.Msun)
         ma200_z0      = np.logspace(logmamin,logmamax,N_ma)*self.Msun  # ma200_z0.shape = (N_ma,)
         ma_z0         = self.Mvir_from_M200_fit(ma200_z0,redshift)  # ma_z0.shape = (N_ma,)
