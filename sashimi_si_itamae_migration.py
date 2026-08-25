@@ -634,7 +634,9 @@ class ItamaeMigrationMixin:
                     module_file=__file__,
                     model_identifier="sashimi-si:cdm-reference:v1",
                     backend_identifier=self.itamae_backend.identifier,
-                    source_identifier="sashimi-si:upstream-physics:e17d366",
+                    source_identifier=(
+                        "sashimi-si:upstream-physics:e17d3664dac677b604fd4ff02fb2af105a6937fa"
+                    ),
                     physics_mode=self.physics_mode,
                     variance_identifier="sashimi-si:analytic-cdm-fit:v1",
                     power_identifier="sashimi-si:cdm-linear-power:v1",
@@ -651,7 +653,9 @@ class ItamaeMigrationMixin:
                     module_file=__file__,
                     model_identifier="sashimi-si:sidm-parametric:v1",
                     backend_identifier=self.itamae_backend.identifier,
-                    source_identifier="sashimi-si:upstream-physics:e17d366",
+                    source_identifier=(
+                        "sashimi-si:upstream-physics:e17d3664dac677b604fd4ff02fb2af105a6937fa"
+                    ),
                     physics_mode=self.physics_mode,
                     variance_identifier="sashimi-si:analytic-cdm-fit:v1",
                     power_identifier="sashimi-si:cdm-linear-power:v1",

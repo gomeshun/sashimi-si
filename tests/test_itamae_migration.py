@@ -315,7 +315,7 @@ def test_generated_catalogs_factor_weights_and_metadata(
         assert catalog.metadata["physics_mode_equivalence"] == "legacy=consistent"
         assert catalog.metadata["weight_factorization"] == "generation-stage"
         assert catalog.metadata["source_identifier"] == (
-            "sashimi-si:upstream-physics:e17d366"
+            "sashimi-si:upstream-physics:e17d3664dac677b604fd4ff02fb2af105a6937fa"
         )
         np.testing.assert_allclose(
             catalog.weight_final,
