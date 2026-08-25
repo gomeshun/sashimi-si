@@ -21,7 +21,8 @@ from itamae.execution import PopulationPipeline
 from itamae.halo import invert_nfw_mass_function
 from itamae.measure import build_accretion_batch
 from itamae.numerics import gauss_hermite_lognormal
-from itamae.types import CatalogMetadata, WeightedSubhaloCatalog
+from itamae.provenance import build_migration_metadata
+from itamae.types import WeightedSubhaloCatalog
 from itamae.units import NativeUnits
 from sashimi_si import TidalStrippingSolver, halo_model, subhalo_properties
 
@@ -617,27 +618,44 @@ class ItamaeMigrationMixin:
                 "density": "Msun / Mpc3",
             },
             "weight_factorization": "generation-stage",
-            "physics_mode": self.physics_mode,
             "physics_mode_equivalence": "legacy=consistent",
+            "cosmology_parameters": {
+                "omega_m0": float(self.OmegaM),
+                "h": float(self.h),
+            },
         }
         return {
             "cdm_reference": WeightedSubhaloCatalog(
                 columns=columns,
                 weights=weight_factors["cdm_reference"],
-                metadata=CatalogMetadata(
+                metadata=build_migration_metadata(
+                    variant="sashimi-si",
+                    distribution_name="sashimi-si",
+                    module_file=__file__,
                     model_identifier="sashimi-si:cdm-reference:v1",
                     backend_identifier=self.itamae_backend.identifier,
                     source_identifier="sashimi-si:upstream-physics:e17d366",
+                    physics_mode=self.physics_mode,
+                    variance_identifier="sashimi-si:analytic-cdm-fit:v1",
+                    power_identifier="sashimi-si:cdm-linear-power:v1",
+                    solver_identifier="sashimi-si:gravothermal-tidal-stripping:v1",
                     extra={**common_extra, "state": "cdm_reference"},
                 ),
             ),
             "sidm": WeightedSubhaloCatalog(
                 columns=columns,
                 weights=weight_factors["sidm"],
-                metadata=CatalogMetadata(
+                metadata=build_migration_metadata(
+                    variant="sashimi-si",
+                    distribution_name="sashimi-si",
+                    module_file=__file__,
                     model_identifier="sashimi-si:sidm-parametric:v1",
                     backend_identifier=self.itamae_backend.identifier,
                     source_identifier="sashimi-si:upstream-physics:e17d366",
+                    physics_mode=self.physics_mode,
+                    variance_identifier="sashimi-si:analytic-cdm-fit:v1",
+                    power_identifier="sashimi-si:cdm-linear-power:v1",
+                    solver_identifier="sashimi-si:gravothermal-tidal-stripping:v1",
                     extra={**common_extra, "state": "sidm"},
                 ),
             ),

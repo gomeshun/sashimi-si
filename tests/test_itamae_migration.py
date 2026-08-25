@@ -1,5 +1,8 @@
 """Regression tests for the SASHIMI-SI ITAMAE migration boundary."""
 
+import json
+from pathlib import Path
+
 import numpy as np
 import pytest
 
@@ -7,6 +10,7 @@ import sashimi_si
 import sashimi_si_itamae
 from itamae.cosmology import NativeFlatLCDM
 from itamae.halo import invert_nfw_mass_function
+from itamae.provenance import MIGRATION_METADATA_KEYS
 from sashimi_si_itamae_migration import (
     ItamaeHaloModel,
     ItamaeSubhaloProperties,
@@ -16,57 +20,25 @@ from sashimi_si_itamae_migration import (
 from sashimi_si import TidalStrippingSolver, halo_model, subhalo_properties
 
 
-SMALL_CATALOG_PARAMETERS = {
-    "M0": 1.0e10,
-    "redshift": 0.0,
-    "dz": 0.5,
-    "zmax": 1.0,
-    "N_ma": 4,
-    "sigmalogc": 0.128,
-    "N_herm": 2,
-    "logmamin": 5.0,
-    "logmamax": 7.0,
-    "N_hermNa": 2,
-    "Na_model": 3,
-    "ct_th": 0.0,
-    "method": "pert2_shanks",
-}
+_GOLDEN_PROVENANCE = Path(__file__).parent / "golden" / "sidm_small_catalog_provenance.json"
+with _GOLDEN_PROVENANCE.open(encoding="utf-8") as input_file:
+    _GOLDEN = json.load(input_file)
 
-# Frozen sums for all 27 arrays returned by the reduced, full catalog
-# calculation above. Both SI physics-mode labels intentionally share this
-# golden because there is no known SI-specific physical correction between
-# them.
-SMALL_CATALOG_GOLDEN_SUMS = np.array(
-    [
-        4.0649575730516836e7,
-        1.2e1,
-        2.108927609907079e-3,
-        6.697411930147994e17,
-        4.560766849185049e-3,
-        1.2150085855607123e-18,
-        1.7334409013415137e-3,
-        1.2080086585330422e18,
-        8.402593998967302e-4,
-        4.511023230841443e-3,
-        1.2323740742189587e-18,
-        1.1523467608557079e7,
-        1.0621956283726915e-3,
-        1.7168240770127242e18,
-        2.297104265918782e-3,
-        9.602949288122435e-19,
-        7.154873599267463e-4,
-        8.557771877413161e18,
-        3.784206525067025e-4,
-        1.8857344992248613e-3,
-        1.0555009737428389e-18,
-        1.7140338095626925e2,
-        9.678584903377276,
-        2.897645066121662e2,
-        2.897645066121662e2,
-        1.6e1,
-        1.6e1,
-    ]
-)
+SMALL_CATALOG_PARAMETERS = dict(_GOLDEN["parameters"])
+SMALL_CATALOG_GOLDEN_SUMS = np.asarray(_GOLDEN["golden_sums"], dtype=float)
+
+
+def test_golden_sidecar_provenance_is_complete() -> None:
+    """The SI sidecar documents the inline full-catalog regression."""
+    assert _GOLDEN["fixture_schema"] == "sashimi-family:golden-provenance:v1"
+    assert _GOLDEN["fixture_category"] == "full_small_catalog_golden"
+    assert _GOLDEN["fixture_format"] == "sidecar-for-inline-regression"
+    assert _GOLDEN["variant"] == "sashimi-si"
+    assert len(_GOLDEN["generated_repository_revision"]) == 40
+    assert len(_GOLDEN["itamae_source_revision"]) == 40
+    assert set(_GOLDEN["physics_modes"]) == {"legacy", "consistent"}
+    assert len(_GOLDEN["golden_sums"]) == 27
+    assert _GOLDEN["parameters"] == SMALL_CATALOG_PARAMETERS
 
 
 def _mass_function(mass, weight, bin_edges):
@@ -191,8 +163,8 @@ def test_small_full_catalog_golden_and_legacy_agreement(physics_mode: str) -> No
     np.testing.assert_allclose(
         sums,
         SMALL_CATALOG_GOLDEN_SUMS,
-        rtol=5.0e-11,
-        atol=1.0e-300,
+        rtol=_GOLDEN["comparison"]["sum_rtol"],
+        atol=_GOLDEN["comparison"]["default_atol"],
     )
 
     for index, (actual, reference) in enumerate(
@@ -204,8 +176,16 @@ def test_small_full_catalog_golden_and_legacy_agreement(physics_mode: str) -> No
             np.testing.assert_allclose(
                 actual,
                 reference,
-                rtol=3.0e-5 if index == 21 else 5.0e-12,
-                atol=2.0e-4 if index == 21 else 1.0e-300,
+                rtol=(
+                    _GOLDEN["comparison"]["array_index_21_rtol"]
+                    if index == 21
+                    else _GOLDEN["comparison"]["default_rtol"]
+                ),
+                atol=(
+                    _GOLDEN["comparison"]["array_index_21_atol"]
+                    if index == 21
+                    else _GOLDEN["comparison"]["default_atol"]
+                ),
             )
 
 
@@ -284,7 +264,9 @@ def test_legacy_mode_mass_function_and_accumulated_satellite_number_match(
 
 
 @pytest.mark.parametrize("physics_mode", ["consistent", "legacy"])
-def test_generated_catalogs_factor_weights_and_metadata(physics_mode: str) -> None:
+def test_generated_catalogs_factor_weights_and_metadata(
+    physics_mode: str, tmp_path: Path
+) -> None:
     """Catalog views should retain independent generation-stage factors."""
     model = create_itamae_model(physics_mode=physics_mode)
     legacy_result, factors = model.subhalo_properties_calc(
@@ -311,6 +293,22 @@ def test_generated_catalogs_factor_weights_and_metadata(physics_mode: str) -> No
             atol=0.0,
         )
         assert catalog.metadata["schema_version"] == "1.0"
+        assert set(MIGRATION_METADATA_KEYS) <= set(catalog.metadata)
+        assert catalog.metadata["sashimi_variant"] == "sashimi-si"
+        assert len(catalog.metadata["itamae_source_revision"]) == 40
+        assert len(catalog.metadata["sashimi_source_revision"]) == 40
+        assert catalog.metadata["sashimi_version"] == "0.1.0a1"
+        assert catalog.metadata["catalog_schema_version"] == "1.0"
+        assert catalog.metadata["canonical_unit_schema"] == "1.0"
+        assert catalog.metadata["variance_identifier"] == "sashimi-si:analytic-cdm-fit:v1"
+        assert catalog.metadata["power_identifier"] == "sashimi-si:cdm-linear-power:v1"
+        assert catalog.metadata["solver_identifier"] == (
+            "sashimi-si:gravothermal-tidal-stripping:v1"
+        )
+        assert catalog.metadata["cosmology_parameters"] == {
+            "omega_m0": 0.315,
+            "h": 0.674,
+        }
         assert catalog.metadata["backend_identifier"] == model.itamae_backend.identifier
         assert catalog.metadata["state"] == state
         assert catalog.metadata["physics_mode"] == physics_mode
@@ -319,6 +317,21 @@ def test_generated_catalogs_factor_weights_and_metadata(physics_mode: str) -> No
         assert catalog.metadata["source_identifier"] == (
             "sashimi-si:upstream-physics:e17d366"
         )
+        np.testing.assert_allclose(
+            catalog.weight_final,
+            catalog.weights["weight_base"]
+            * catalog.weights["weight_concentration"]
+            * catalog.weights["weight_survival"],
+            rtol=0.0,
+            atol=0.0,
+        )
+        assert all(np.all(value >= 0.0) for value in catalog.weights.values())
+        archive = tmp_path / f"{state}.npz"
+        catalog.to_npz(archive)
+        restored = type(catalog).from_npz(archive)
+        for name in catalog.columns:
+            np.testing.assert_array_equal(restored.columns[name], catalog.columns[name])
+        assert dict(restored.metadata) == dict(catalog.metadata)
 
     np.testing.assert_allclose(
         catalogs["cdm_reference"].columns["v_max_cdm_acc"],
