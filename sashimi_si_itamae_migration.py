@@ -622,6 +622,7 @@ class ItamaeMigrationMixin:
             "cosmology_parameters": {
                 "omega_m0": float(self.OmegaM),
                 "h": float(self.h),
+                "omega_lambda0": float(self.OmegaL),
             },
         }
         return {

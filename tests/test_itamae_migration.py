@@ -8,9 +8,11 @@ import pytest
 
 import sashimi_si
 import sashimi_si_itamae
+from itamae.backends import BackendConfig
 from itamae.cosmology import NativeFlatLCDM
 from itamae.halo import invert_nfw_mass_function
 from itamae.provenance import MIGRATION_METADATA_KEYS
+from itamae.units import NativeUnits
 from sashimi_si_itamae_migration import (
     ItamaeHaloModel,
     ItamaeSubhaloProperties,
@@ -39,6 +41,34 @@ def test_golden_sidecar_provenance_is_complete() -> None:
     assert set(_GOLDEN["physics_modes"]) == {"legacy", "consistent"}
     assert len(_GOLDEN["golden_sums"]) == 27
     assert _GOLDEN["parameters"] == SMALL_CATALOG_PARAMETERS
+    assert _GOLDEN["constructor_parameters"]["physics_mode"] == [
+        "consistent",
+        "legacy",
+    ]
+    assert _GOLDEN["cosmology"]["backend_identifier"].startswith(
+        "array=numpy;cosmology=native-flatlcdm:"
+    )
+    assert _GOLDEN["constructor_parameters"]["backend_config"]["cosmology_backend"][
+        "parameters"
+    ] == _GOLDEN["cosmology"]["parameters"]
+    cosmology_parameters = _GOLDEN["cosmology"]["parameters"]
+    backend = BackendConfig(
+        cosmology=NativeFlatLCDM(
+            omega_m0=cosmology_parameters["omega_m0"],
+            h=cosmology_parameters["h"],
+        ),
+        units=NativeUnits(),
+        array=_GOLDEN["constructor_parameters"]["backend_config"]["array"],
+    )
+    for physics_mode in _GOLDEN["constructor_parameters"]["physics_mode"]:
+        model = create_itamae_model(
+            backend_config=backend,
+            physics_mode=physics_mode,
+        )
+        assert model.physics_mode == physics_mode
+        assert model.itamae_backend.identifier == _GOLDEN["cosmology"][
+            "backend_identifier"
+        ]
 
 
 def _mass_function(mass, weight, bin_edges):
@@ -300,6 +330,12 @@ def test_generated_catalogs_factor_weights_and_metadata(
         assert catalog.metadata["sashimi_version"] == "0.1.0a1"
         assert catalog.metadata["catalog_schema_version"] == "1.0"
         assert catalog.metadata["canonical_unit_schema"] == "1.0"
+        assert catalog.metadata["backend_identifier"] == _GOLDEN["cosmology"][
+            "backend_identifier"
+        ]
+        assert catalog.metadata["cosmology_parameters"] == _GOLDEN["cosmology"][
+            "parameters"
+        ]
         assert catalog.metadata["variance_identifier"] == "sashimi-si:analytic-cdm-fit:v1"
         assert catalog.metadata["power_identifier"] == "sashimi-si:cdm-linear-power:v1"
         assert catalog.metadata["solver_identifier"] == (
@@ -308,6 +344,7 @@ def test_generated_catalogs_factor_weights_and_metadata(
         assert catalog.metadata["cosmology_parameters"] == {
             "omega_m0": 0.315,
             "h": 0.674,
+            "omega_lambda0": 0.685,
         }
         assert catalog.metadata["backend_identifier"] == model.itamae_backend.identifier
         assert catalog.metadata["state"] == state

@@ -11,6 +11,29 @@
     "legacy": "strict legacy tuple reproduction",
     "consistent": "reviewed equivalent SI equations; no SI-specific correction"
   },
+  "constructor_parameters": {
+    "physics_mode": ["consistent", "legacy"],
+    "backend_config": {
+      "cosmology_backend": {
+        "identifier": "native-flatlcdm:Om=0.315:h=0.674",
+        "parameters": {
+          "omega_m0": 0.315,
+          "h": 0.674,
+          "omega_lambda0": 0.685
+        }
+      },
+      "units": "native-units:1.0",
+      "array": "numpy"
+    }
+  },
+  "cosmology": {
+    "backend_identifier": "array=numpy;cosmology=native-flatlcdm:Om=0.315:h=0.674;units=native-units:1.0",
+    "parameters": {
+      "omega_m0": 0.315,
+      "h": 0.674,
+      "omega_lambda0": 0.685
+    }
+  },
   "parameters": {
     "M0": 10000000000.0,
     "redshift": 0.0,
