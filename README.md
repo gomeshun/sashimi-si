@@ -1,4 +1,8 @@
 <p align="center">
+
+## Hands-on usage walkthrough
+
+Start with [the executable usage walkthrough](notebooks/usage_walkthrough.ipynb): interaction parameters, matched CDM/SIDM catalogues, structure plots, export and checks. The **Usage walkthrough** CI executes every cell and uploads the result. This mandatory migration deliverable is tracked in [sashimi-family #28](https://github.com/gomeshun/sashimi-family/issues/28).
   <img src="assets/logo.svg" alt="SASHIMI-SIDM logo" width="440">
 </p>
 
