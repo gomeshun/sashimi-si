@@ -1,10 +1,10 @@
 <p align="center">
+  <img src="assets/logo.svg" alt="SASHIMI-SIDM logo" width="440">
+</p>
 
 ## Hands-on usage walkthrough
 
 Start with [the executable usage walkthrough](notebooks/usage_walkthrough.ipynb): interaction parameters, matched CDM/SIDM catalogues, structure plots, export and checks. The **Usage walkthrough** CI executes every cell and uploads the result. This mandatory migration deliverable is tracked in [sashimi-family #28](https://github.com/gomeshun/sashimi-family/issues/28).
-  <img src="assets/logo.svg" alt="SASHIMI-SIDM logo" width="440">
-</p>
 
 # Semi-Analytical SubHalo Inference ModelIng for Self-Interacting Dark Matter (SASHIMI-SIDM)
 [![arXiv](https://img.shields.io/badge/arXiv-2403.16633%20-green.svg)](https://arxiv.org/abs/2403.16633)
