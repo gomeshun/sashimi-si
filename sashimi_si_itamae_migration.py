@@ -298,9 +298,10 @@ class ItamaeMigrationMixin:
                 weight_base_active[index],
                 concentration_weights_ba[:, -1, :],
                 mvir_acc=ma,
-                metadata={"redshift_index": index},
+                metadata={"model": "sashimi-si", "physics_mode": self.physics_mode},
             )
             context = {
+                "redshift_index": index,
                 "ma": ma,
                 "za": za,
                 "z_ba": z_ba,
