@@ -422,9 +422,6 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
             name.replace("rmax_", "r_max_"): np.asarray(value)
             for name, value in execution.columns.items()
         }
-        for name in tuple(columns):
-            if name.startswith("v_max_"):
-                columns[name] = columns[name] / (self.km / self.s)
         return {
             state: WeightedSubhaloCatalog(
                 columns=columns,
@@ -457,6 +454,7 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
                         "weight_factorization": "generation-stage",
                         "validity_policy": "formed-before-accretion; shared-CDM-truncation; SIDM-profile",
                         "uncomputed_sidm_value": "zero where valid_accretion is false",
+                        "stage_unit_contract": "Msun-Mpc-km/s:v1",
                         "column_units": {
                             "mass": "Msun",
                             "length": "Mpc",
