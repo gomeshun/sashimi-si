@@ -43,6 +43,7 @@ jobs:
           uv run --no-sync ruff check
           sashimi_si_itamae.py
           sashimi_si_itamae_migration.py
+          sashimi_si_itamae_components.py
           sashimi_si_itamae_variance.py
           tests
       - name: Build distribution artifacts
