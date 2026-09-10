@@ -17,14 +17,20 @@ from scipy.interpolate import interp1d
 from itamae.backends import BackendConfig
 from itamae.cosmology import NativeFlatLCDM
 from itamae.evolution import shanks_transform
-from itamae.execution import PopulationPipeline
+from itamae.execution import PopulationComponents
 from itamae.halo import invert_nfw_mass_function
-from itamae.measure import build_accretion_batch
-from itamae.numerics import gauss_hermite_lognormal
 from itamae.provenance import build_migration_metadata
 from itamae.types import WeightedSubhaloCatalog
 from itamae.units import NativeUnits
 from sashimi_si import TidalStrippingSolver, halo_model, subhalo_properties
+
+from sashimi_si_itamae_components import (
+    SIDMAccretionSlices,
+    SIDMInitialStructure,
+    SIDMProfileEvolution,
+    SIDMSurvival,
+    SIDMCatalogColumns,
+)
 
 _Base = TypeVar("_Base", bound=type)
 
@@ -68,9 +74,7 @@ class ItamaeMigrationMixin:
         if physics_mode not in {"consistent", "legacy"}:
             raise ValueError("physics_mode must be 'consistent' or 'legacy'.")
         if backend_config is not None and cosmology_backend is not None:
-            raise ValueError(
-                "Pass either backend_config or cosmology_backend, not both."
-            )
+            raise ValueError("Pass either backend_config or cosmology_backend, not both.")
         using_default_backend = backend_config is None and cosmology_backend is None
         if backend_config is None:
             backend = cosmology_backend or NativeFlatLCDM()
@@ -91,8 +95,7 @@ class ItamaeMigrationMixin:
             )
         if not np.isclose(h, 0.674, rtol=0.0, atol=1.0e-12):
             raise ValueError(
-                "The result-preserving SASHIMI-SI migration requires "
-                f"h=0.674; received {h}."
+                f"The result-preserving SASHIMI-SI migration requires h=0.674; received {h}."
             )
         self.itamae_cosmology = backend
         self.itamae_backend = backend_config
@@ -115,9 +118,7 @@ class ItamaeMigrationMixin:
             self.h = float(backend.h)
 
         self.H0 = float(np.asarray(backend.H(0.0))) * self.km / self.s / self.Mpc
-        backend_rho0 = (
-            float(np.asarray(backend.rho_crit(0.0))) * self.Msun / self.Mpc**3
-        )
+        backend_rho0 = float(np.asarray(backend.rho_crit(0.0))) * self.Msun / self.Mpc**3
         legacy_rho0 = 3.0 * self.H0**2 / (8.0 * np.pi * self.G)
         self._rho_crit_scale = legacy_rho0 / backend_rho0
         self.rhocrit0 = legacy_rho0
@@ -154,11 +155,7 @@ class ItamaeMigrationMixin:
         eps_0 = self.eps_0(za, z)
         ln_ma = np.log(ma)
         eps_1 = self.eps_10(za, z) + ln_ma * self.eps_11(za, z)
-        eps_2 = (
-            self.eps_20(za, z)
-            + ln_ma * self.eps_21(za, z)
-            + ln_ma**2 * self.eps_22(za, z)
-        )
+        eps_2 = self.eps_20(za, z) + ln_ma * self.eps_21(za, z) + ln_ma**2 * self.eps_22(za, z)
         partial_0 = eps_0
         partial_1 = eps_0 + eps_1
         partial_2 = partial_1 + eps_2
@@ -225,9 +222,7 @@ class ItamaeMigrationMixin:
             ma200_0_list = np.logspace(0.0, 2.0, 200) * ma200_z0.reshape(-1, 1)
             ma_0_list = np.logspace(0.0, 2.0, 200) * ma_z0.reshape(-1, 1)
             for index in np.arange(len(ma200_z0)):
-                fint_ma200 = interp1d(
-                    self.Mzi(ma200_0_list[index], redshift), ma200_0_list[index]
-                )
+                fint_ma200 = interp1d(self.Mzi(ma200_0_list[index], redshift), ma200_0_list[index])
                 fint_ma = interp1d(self.Mzi(ma_0_list[index], redshift), ma_0_list[index])
                 ma200_0[index] = fint_ma200(ma200_z0[index])
                 ma_0[index] = fint_ma(ma_z0[index])
@@ -271,223 +266,36 @@ class ItamaeMigrationMixin:
         weight_base = weight_base / np.sum(weight_base) * Na_total
         weight_base_active = weight_base[active]
 
-        def make_slice(index: int):
-            za = zdist_accreted[index]
-            ma = ma_matrix_accreted[index]
-            z_ba = np.linspace(z_f, za, 100)
-            m200_ba = self.Mzi(ma200_0, z_ba)
-            c200_med_ba = self.conc200(m200_ba, z_ba)
-            r200_ba = (
-                3.0
-                * m200_ba
-                / (4.0 * np.pi * self.rhocrit0 * self.g(z_ba) * 200.0)
-            ) ** (1.0 / 3.0)
-            c200_ba, concentration_weights_ba = gauss_hermite_lognormal(
-                c200_med_ba,
-                sigmalogc,
-                order=N_herm,
-            )
-            rs_ba = r200_ba / c200_ba
-            rhos_ba = m200_ba / (4.0 * np.pi * rs_ba**3 * self.fc(c200_ba))
-            rmax_ba = 2.1626 * rs_ba
-            Vmax_ba = np.sqrt(rhos_ba * 4.0 * np.pi * self.G / 4.625) * rs_ba
-            batch = build_accretion_batch(
-                ma200_matrix_accreted[index],
-                za,
-                c200_ba[:, -1, :],
-                weight_base_active[index],
-                concentration_weights_ba[:, -1, :],
-                mvir_acc=ma,
-                metadata={"model": "sashimi-si", "physics_mode": self.physics_mode},
-            )
-            context = {
-                "redshift_index": index,
-                "ma": ma,
-                "za": za,
-                "z_ba": z_ba,
-                "rmax_ba": rmax_ba,
-                "Vmax_ba": Vmax_ba,
-                "t_f": t_f,
-            }
-            return batch, context
-
-        slices = [make_slice(index) for index in range(len(zdist_accreted))]
-        batches = [item[0] for item in slices]
-        contexts = [item[1] for item in slices]
-
-        def initialize(batch, context):
-            return {
-                "r_s_cdm_acc": (
-                    context["rmax_ba"][:, -1, :] / 2.1626
-                ).reshape(-1),
-                "rho_s_cdm_acc": (
-                    4.625
-                    / (4.0 * np.pi * self.G)
-                    * (
-                        context["Vmax_ba"][:, -1, :]
-                        / (context["rmax_ba"][:, -1, :] / 2.1626)
-                    )
-                    ** 2
-                ).reshape(-1),
-                "rmax_cdm_acc": context["rmax_ba"][:, -1, :].reshape(-1),
-                "v_max_cdm_acc": context["Vmax_ba"][:, -1, :].reshape(-1),
-            }
-
-        def evolve(batch, initial, context):
-            n_mass = context["ma"].size
-            ma = context["ma"]
-            za = context["za"]
-            zcalc = np.linspace(za, redshift, 100)
-            m_aa = solver.subhalo_mass_stripped(
-                ma,
-                za,
-                zcalc,
+        slice_builder = SIDMAccretionSlices(
+            model=self,
+            zdist_accreted=zdist_accreted,
+            ma_matrix_accreted=ma_matrix_accreted,
+            z_f=z_f,
+            ma200_0=ma200_0,
+            sigmalogc=sigmalogc,
+            N_herm=N_herm,
+            ma200_matrix_accreted=ma200_matrix_accreted,
+            weight_base_active=weight_base_active,
+            t_f=t_f,
+        )
+        slices = [slice_builder.build(index) for index in range(len(zdist_accreted))]
+        execution = PopulationComponents(
+            initializer=SIDMInitialStructure(model=self),
+            evolver=SIDMProfileEvolution(
+                model=self,
+                solver=solver,
+                redshift=redshift,
                 method=method,
-                **kwargs,
-            )
-            rmax_acc = np.expand_dims(
-                initial["rmax_cdm_acc"].reshape(N_herm, n_mass),
-                axis=1,
-            )
-            Vmax_acc = np.expand_dims(
-                initial["v_max_cdm_acc"].reshape(N_herm, n_mass),
-                axis=1,
-            )
-            Vmax_aa = Vmax_acc * (
-                2.0**0.4 * (m_aa / ma) ** 0.3 * (1.0 + m_aa / ma) ** -0.4
-            )
-            rmax_aa = rmax_acc * (
-                2.0**-0.3 * (m_aa / ma) ** 0.4 * (1.0 + m_aa / ma) ** 0.3
-            )
-            rmax_cdm = rmax_aa[:, -1, :]
-            v_max_cdm = Vmax_aa[:, -1, :]
-            r_s_cdm = rmax_cdm / 2.1626
-            rho_s_cdm = (4.625 / (4.0 * np.pi * self.G)) * (
-                v_max_cdm / r_s_cdm
-            ) ** 2
-            c_t_cdm = self.ct_func(
-                m_aa[-1]
-                / (4.0 * np.pi * rho_s_cdm * r_s_cdm**3)
-            )
-
-            z = np.concatenate(
-                (
-                    context["z_ba"],
-                    zcalc[1:].reshape(-1, 1) * np.ones_like(ma200_z0),
-                ),
-                axis=0,
-            )
-            t = self.t_U - self.lookback_time(z)
-            Vmax_CDM = np.concatenate(
-                (context["Vmax_ba"], Vmax_aa[:, 1:]),
-                axis=1,
-            )
-            rmax_CDM = np.concatenate(
-                (context["rmax_ba"], rmax_aa[:, 1:]),
-                axis=1,
-            )
-            t_c = self.t_collapse(
-                self.sigma_eff_m(Vmax_CDM),
-                rmax_CDM,
-                Vmax_CDM,
-            )
-            tt_ratio = ((self.t_U - context["t_f"]) / t_c)[:, -1, :]
-            Vmax_sidm, rmax_sidm, rho_s_sidm, r_s_sidm, r_c_sidm = (
-                self.param_model.master_function(
-                    Vmax_CDM,
-                    rmax_CDM,
-                    t,
-                    context["t_f"],
-                )
-            )
-            t2 = self.t_U - self.lookback_time(context["z_ba"])
-            (
-                v_max_sidm_acc,
-                rmax_sidm_acc,
-                rho_s_sidm_acc,
-                r_s_sidm_acc,
-                r_c_sidm_acc,
-            ) = self.param_model.master_function(
-                context["Vmax_ba"],
-                context["rmax_ba"],
-                t2,
-                context["t_f"],
-            )
-            survive_cdm = c_t_cdm > ct_th
-            survive_sidm = (
-                (
-                    (Vmax_sidm < 0.0)
-                    + (rmax_sidm < 0.0)
-                    + (v_max_sidm_acc < 0.0)
-                    + (rmax_sidm_acc < 0.0)
-                    + (r_c_sidm < 0.0)
-                    + (r_c_sidm_acc < 0.0)
-                )
-                == 1
-            ) == 0
-            return {
-                "r_s_sidm_acc": r_s_sidm_acc.reshape(-1),
-                "rho_s_sidm_acc": rho_s_sidm_acc.reshape(-1),
-                "r_c_sidm_acc": r_c_sidm_acc.reshape(-1),
-                "rmax_sidm_acc": rmax_sidm_acc.reshape(-1),
-                "v_max_sidm_acc": v_max_sidm_acc.reshape(-1),
-                "m_bound": np.broadcast_to(m_aa[-1], (N_herm, n_mass)).reshape(-1),
-                "r_s_cdm": r_s_cdm.reshape(-1),
-                "rho_s_cdm": rho_s_cdm.reshape(-1),
-                "rmax_cdm": rmax_cdm.reshape(-1),
-                "v_max_cdm": v_max_cdm.reshape(-1),
-                "r_s_sidm": r_s_sidm.reshape(-1),
-                "rho_s_sidm": rho_s_sidm.reshape(-1),
-                "r_c_sidm": r_c_sidm.reshape(-1),
-                "rmax_sidm": rmax_sidm.reshape(-1),
-                "v_max_sidm": Vmax_sidm.reshape(-1),
-                "c_t_cdm": c_t_cdm.reshape(-1),
-                "collapse_time_ratio": tt_ratio.reshape(-1),
-                "survive_cdm": survive_cdm.reshape(-1),
-                "survive_sidm": survive_sidm.reshape(-1),
-            }
-
-        def survival(batch, initial, evolved, context):
-            return {
-                "cdm_reference": evolved["survive_cdm"],
-                "sidm": evolved["survive_sidm"],
-            }
-
-        def columns(batch, initial, evolved, survival_masks, context):
-            return {
-                "m200_acc": batch.m200_acc,
-                "z_acc": batch.z_acc,
-                "r_s_cdm_acc": initial["r_s_cdm_acc"],
-                "rho_s_cdm_acc": initial["rho_s_cdm_acc"],
-                "rmax_cdm_acc": initial["rmax_cdm_acc"],
-                "v_max_cdm_acc": initial["v_max_cdm_acc"],
-                "r_s_sidm_acc": evolved["r_s_sidm_acc"],
-                "rho_s_sidm_acc": evolved["rho_s_sidm_acc"],
-                "r_c_sidm_acc": evolved["r_c_sidm_acc"],
-                "rmax_sidm_acc": evolved["rmax_sidm_acc"],
-                "v_max_sidm_acc": evolved["v_max_sidm_acc"],
-                "m_bound": evolved["m_bound"],
-                "r_s_cdm": evolved["r_s_cdm"],
-                "rho_s_cdm": evolved["rho_s_cdm"],
-                "rmax_cdm": evolved["rmax_cdm"],
-                "v_max_cdm": evolved["v_max_cdm"],
-                "r_s_sidm": evolved["r_s_sidm"],
-                "rho_s_sidm": evolved["rho_s_sidm"],
-                "r_c_sidm": evolved["r_c_sidm"],
-                "rmax_sidm": evolved["rmax_sidm"],
-                "v_max_sidm": evolved["v_max_sidm"],
-                "c_t_cdm": evolved["c_t_cdm"],
-                "collapse_time_ratio": evolved["collapse_time_ratio"],
-                "survive_cdm": survival_masks["cdm_reference"],
-                "survive_sidm": survival_masks["sidm"],
-            }
-
-        execution = PopulationPipeline(
-            initialize=initialize,
-            evolve=evolve,
-            survival=survival,
-            columns=columns,
-        ).execute(batches, contexts=contexts)
+                kwargs=kwargs,
+                N_herm=N_herm,
+                ma200_z0=ma200_z0,
+            ),
+            survival=SIDMSurvival(ct_threshold=ct_th),
+            columns=SIDMCatalogColumns(),
+        ).execute(
+            [batch for batch, _ in slices],
+            contexts=[context for _, context in slices],
+        )
         columns = execution.columns
         result = (
             columns["m200_acc"],
@@ -607,9 +415,7 @@ class ItamaeMigrationMixin:
         columns["survive_sidm"] = np.asarray(result[26], dtype=bool)
         expected_states = {"cdm_reference", "sidm"}
         if set(weight_factors) != expected_states:
-            raise ValueError(
-                f"weight_factors must contain {sorted(expected_states)}."
-            )
+            raise ValueError(f"weight_factors must contain {sorted(expected_states)}.")
 
         common_extra = {
             "column_units": {
@@ -670,9 +476,7 @@ class ItamaeMigrationMixin:
     def subhalo_catalogs_calc(self, *args: Any, **kwargs: Any):
         """Calculate and return both CDM-reference and SIDM catalog views."""
         if "return_weight_factors" in kwargs:
-            raise ValueError(
-                "subhalo_catalogs_calc manages return_weight_factors internally."
-            )
+            raise ValueError("subhalo_catalogs_calc manages return_weight_factors internally.")
         result, weight_factors = self.subhalo_properties_calc(
             *args,
             return_weight_factors=True,
@@ -688,9 +492,7 @@ class ItamaeMigrationMixin:
         if state == "cdm":
             state = "cdm_reference"
         if state not in {"cdm_reference", "sidm"}:
-            raise ValueError(
-                "state must be 'cdm_reference' (or alias 'cdm') or 'sidm'."
-            )
+            raise ValueError("state must be 'cdm_reference' (or alias 'cdm') or 'sidm'.")
         catalogs = self.subhalo_catalogs_calc(*args, **kwargs)
         return catalogs[state]
 
@@ -739,6 +541,7 @@ def create_itamae_model(
         physics_mode=physics_mode,
         **model_parameters,
     )
+
 
 __all__ = [
     "create_itamae_model",
