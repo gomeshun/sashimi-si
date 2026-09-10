@@ -246,15 +246,23 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
             sM = self.s_func(M200)
             sa = self.s_func(ma)
             xmin = self.s_func(mmax) - self.s_func(M200)
-            normB = (
+            d_norm, s_norm, x_norm = np.broadcast_arrays(delca, sM, xmin)
+            if np.any(x_norm < 0):
+                raise ValueError("EPS normalization requires a nonnegative variance support gap.")
+            positive = x_norm > 0
+            normB = np.full(x_norm.shape, np.inf)
+            d_pos, s_pos, x_pos = d_norm[positive], s_norm[positive], x_norm[positive]
+            normB[positive] = (
                 1.0
                 / np.sqrt(2 * np.pi)
-                * delca
+                * d_pos
                 * 2.0
-                / xmin**0.5
-                * special.hyp2f1(0.5, 0.0, 1.5, -sM / xmin)
+                / x_pos**0.5
+                * special.hyp2f1(0.5, 0.0, 1.5, -s_pos / x_pos)
             )
             d, s1, s2, norm, allowed = np.broadcast_arrays(delca, sM, sa, normB, mmax > ma)
+            if np.any((s2 - s1)[allowed] <= 0):
+                raise ValueError("EPS accretion requires positive variance gaps in its active mass domain.")
             Phi = np.zeros(s2.shape)
             Phi[allowed] = self.Ffunc(d[allowed], s1[allowed], s2[allowed]) / norm[allowed]
         elif Na_model == 2:
@@ -262,18 +270,26 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
             sM = self.s_func(M200)
             sa = self.s_func(ma)
             xmin = self.s_func(mmax) - self.s_func(M200)
-            normB = (
+            d_norm, s_norm, x_norm = np.broadcast_arrays(delca, sM, xmin)
+            if np.any(x_norm < 0):
+                raise ValueError("EPS normalization requires a nonnegative variance support gap.")
+            positive = x_norm > 0
+            normB = np.full(x_norm.shape, np.inf)
+            d_pos, s_pos, x_pos = d_norm[positive], s_norm[positive], x_norm[positive]
+            normB[positive] = (
                 1.0
                 / np.sqrt(2.0 * np.pi)
-                * delca
+                * d_pos
                 * 0.57
-                * (delca / np.sqrt(sM)) ** -0.01
+                * (d_pos / np.sqrt(s_pos)) ** -0.01
                 * (2.0 / (1.0 - 0.38))
-                * sM ** (-0.38 / 2.0)
-                * xmin ** (0.5 * (0.38 - 1.0))
-                * special.hyp2f1(0.5 * (1 - 0.38), -0.38 / 2.0, 0.5 * (3.0 - 0.38), -sM / xmin)
+                * s_pos ** (-0.38 / 2.0)
+                * x_pos ** (0.5 * (0.38 - 1.0))
+                * special.hyp2f1(0.5 * (1 - 0.38), -0.38 / 2.0, 0.5 * (3.0 - 0.38), -s_pos / x_pos)
             )
             d, s1, s2, norm, allowed = np.broadcast_arrays(delca, sM, sa, normB, mmax > ma)
+            if np.any((s2 - s1)[allowed] <= 0):
+                raise ValueError("EPS accretion requires positive variance gaps in its active mass domain.")
             Phi = np.zeros(s2.shape)
             Phi[allowed] = (
                 self.Ffunc(d[allowed], s1[allowed], s2[allowed])

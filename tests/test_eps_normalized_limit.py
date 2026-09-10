@@ -18,7 +18,7 @@ def test_normalized_yang_kernel_against_independent_definite_integral(gap):
     np.testing.assert_allclose(actual, expected, rtol=1e-14, atol=0.)
 
 
-def test_si_host_quadrature_refinement_includes_finite_zero_gap_nodes():
+def test_host_quadrature_refinement_includes_finite_zero_gap_nodes():
     model = SubhaloProperties()
     redshift = np.arange(.25, 3.25, .25)
     m200 = model.Mzi(np.geomspace(1e6, 1e10, 16), redshift[:, None])
@@ -26,5 +26,18 @@ def test_si_host_quadrature_refinement_includes_finite_zero_gap_nodes():
     with np.errstate(all="raise"):
         accretion = model.Na_calc(mass, redshift, 1e12, N_herm=64)
     assert accretion.shape == mass.shape
+    assert np.all(np.isfinite(accretion))
+    assert np.all(accretion >= 0)
+
+
+@pytest.mark.parametrize("prescription", [1, 2])
+@pytest.mark.parametrize("order", [1, 4])
+def test_zero_width_normalization_support_has_no_runtime_warning(prescription, order):
+    model = SubhaloProperties()
+    redshift = np.arange(.25, 3.25, .25)
+    mass = np.geomspace(1e6, 1e10, 16)
+    with np.errstate(all="raise"):
+        accretion = model.Na_calc(mass, redshift, 1e12, N_herm=order, Na_model=prescription)
+    assert accretion.shape == (redshift.size, mass.size)
     assert np.all(np.isfinite(accretion))
     assert np.all(accretion >= 0)

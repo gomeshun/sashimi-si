@@ -25,3 +25,15 @@ Six comparisons to independent definite integrals and the actual failed
 tests pass, including the unchanged independent full-catalog tolerance.
 This extends stable evaluation to a removable singularity, not a new EPS
 prescription. The broader grid/solver convergence results are recorded separately.
+
+
+## Lower support boundary for prescriptions 1 and 2
+
+The normalization integral diverges when its lower variance gap is zero.
+The reciprocal normalization is assigned zero before evaluating any division.
+Positive gaps keep the existing hypergeometric formula; negative support gaps
+or nonpositive active variance gaps raise errors. Four new tests failed before
+this change with floating-point warnings (both prescriptions, host orders 1/4).
+All 49 migration tests now pass. No calibration, weight clipping or new physical
+prescription is introduced. The frozen-method audit preserves the previous
+warnings and compares complete accretion arrays through host order 200.
