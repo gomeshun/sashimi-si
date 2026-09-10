@@ -78,7 +78,7 @@ jobs:
       - name: Stage tests outside the source checkout
         run: |
           mkdir -p "${RUNNER_TEMP}/sashimi-si-tests"
-          cp test_sashimi.py "${RUNNER_TEMP}/sashimi-si-tests/"
+          cp test_sashimi.py setup.py "${RUNNER_TEMP}/sashimi-si-tests/"
           cp -R tests "${RUNNER_TEMP}/sashimi-si-tests/"
       - name: Run installed-package physics and migration regressions
         run: |
