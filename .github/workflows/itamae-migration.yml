@@ -37,7 +37,7 @@ jobs:
       - name: Create test environment
         run: uv venv --python "${{ matrix.python-version }}"
       - name: Install pinned ITAMAE and test tools
-        run: uv pip install ./.itamae pytest numexpr tqdm ruff
+        run: uv pip install ./.itamae pytest numexpr tqdm ruff setuptools
       - name: Lint migration code
         run: >-
           uv run --no-sync ruff check
@@ -78,7 +78,7 @@ jobs:
       - name: Stage tests outside the source checkout
         run: |
           mkdir -p "${RUNNER_TEMP}/sashimi-si-tests"
-          cp test_sashimi.py "${RUNNER_TEMP}/sashimi-si-tests/"
+          cp test_sashimi.py setup.py "${RUNNER_TEMP}/sashimi-si-tests/"
           cp -R tests "${RUNNER_TEMP}/sashimi-si-tests/"
       - name: Run installed-package physics and migration regressions
         run: |
