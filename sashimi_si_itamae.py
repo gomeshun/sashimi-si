@@ -1,26 +1,23 @@
-"""Public opt-in façade for the ITAMAE-backed SASHIMI-SI implementation.
+"""Compatibility import aliases for the standard SIDM API."""
 
-Importing this module does not replace or mutate the established
-``sashimi_si`` classes. The aliases below expose parallel classes that retain
-the SASHIMI-SI cross sections, gravothermal evolution, formation-time choice,
-and disruption prescription while using ITAMAE shared mechanisms and catalog
-types.
-"""
-
-from sashimi_si_itamae_migration import (
-    ItamaeHaloModel,
-    ItamaeSubhaloProperties,
-    ItamaeTidalStrippingSolver,
+from sashimi_si import (
+    HaloModel,
+    SubhaloProperties,
+    TidalStrippingSolver,
+    halo_model,
+    subhalo_properties,
     create_itamae_model,
+    SIDM_cross_section,
+    SIDM_parametric_model,
 )
 
-halo_model = ItamaeHaloModel
-TidalStrippingSolver = ItamaeTidalStrippingSolver
-subhalo_properties = ItamaeSubhaloProperties
-
 __all__ = [
+    "HaloModel",
+    "SubhaloProperties",
     "TidalStrippingSolver",
-    "create_itamae_model",
     "halo_model",
     "subhalo_properties",
+    "create_itamae_model",
+    "SIDM_cross_section",
+    "SIDM_parametric_model",
 ]

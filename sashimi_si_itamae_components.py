@@ -55,7 +55,10 @@ class SIDMAccretionSlices:
             self.weight_base_active[index],
             concentration_weights_ba[:, -1, :],
             mvir_acc=ma,
-            metadata={"model": "sashimi-si", "physics_mode": self.model.physics_mode},
+            metadata={
+                "model": "sashimi-si",
+                "calculation_specification": self.model.calculation_specification,
+            },
         )
         context = {
             "redshift_index": index,
