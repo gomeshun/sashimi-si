@@ -1517,8 +1517,8 @@ wheels = [
 
 [[package]]
 name = "sashimi-itamae"
-version = "0.1.0a4"
-source = { git = "https://github.com/gomeshun/itamae.git?rev=e5c77cdf2832104752d641dd553902fc507885ba#e5c77cdf2832104752d641dd553902fc507885ba" }
+version = "0.2.0rc1"
+source = { git = "https://github.com/gomeshun/itamae.git?rev=dfa083d0d46181c376947ac7b2da829facaf2e8b#dfa083d0d46181c376947ac7b2da829facaf2e8b" }
 dependencies = [
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "numpy", version = "2.5.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
@@ -1528,7 +1528,7 @@ dependencies = [
 
 [[package]]
 name = "sashimi-si"
-version = "0.1.0a1"
+version = "0.2.0rc1"
 source = { editable = "." }
 dependencies = [
     { name = "numexpr" },
@@ -1548,6 +1548,7 @@ demo = [
 ]
 test = [
     { name = "pytest" },
+    { name = "setuptools" },
 ]
 
 [package.metadata]
@@ -1558,8 +1559,9 @@ requires-dist = [
     { name = "numexpr", specifier = ">=2.8" },
     { name = "numpy", specifier = ">=1.26" },
     { name = "pytest", marker = "extra == 'test'", specifier = ">=8" },
-    { name = "sashimi-itamae", git = "https://github.com/gomeshun/itamae.git?rev=e5c77cdf2832104752d641dd553902fc507885ba" },
+    { name = "sashimi-itamae", git = "https://github.com/gomeshun/itamae.git?rev=dfa083d0d46181c376947ac7b2da829facaf2e8b" },
     { name = "scipy", specifier = ">=1.11" },
+    { name = "setuptools", marker = "extra == 'test'", specifier = ">=77" },
     { name = "tqdm", specifier = ">=4.66" },
 ]
 provides-extras = ["demo", "test"]
@@ -1690,6 +1692,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/f7/86/5185061a1fcc41d18c5dc2463969b3a3964b31d9ac67b2fb05d4c7ff7670/scipy-1.18.0-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:9aac6192fac56bf2ca534389d24623f07b39ff83317d58287285e7fbd622ff76", size = 37472480, upload-time = "2026-06-19T15:01:35.136Z" },
     { url = "https://files.pythonhosted.org/packages/31/8e/f04c68e39919a010d34f2ee1367fd705b0a25a02f609d755f0bfbc0a15fc/scipy-1.18.0-cp314-cp314t-win_amd64.whl", hash = "sha256:e40baea28ae7f5475c779741e2d90b1247c78531207b49c7030e698ff81cee3f", size = 37365390, upload-time = "2026-06-19T15:01:38.091Z" },
     { url = "https://files.pythonhosted.org/packages/d5/19/969dc072906c84dd0a3b05dcf57ea750936087d7873549e408b35cfc3f97/scipy-1.18.0-cp314-cp314t-win_arm64.whl", hash = "sha256:368e0a705903c466aa5f08eefb39e6b1b6b2d659e7352a31fd9e2438365be0f8", size = 25279661, upload-time = "2026-06-19T15:01:40.817Z" },
+]
+
+[[package]]
+name = "setuptools"
+version = "84.0.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/6d/44/f5da03a8ef95d369145c5bb53050e7877c9f3d312e128605fd9504829143/setuptools-84.0.0.tar.gz", hash = "sha256:f4695c21257f0d9b537ec2692c941d02ee143b7cc1276941349a546573b2ef73", size = 1168449, upload-time = "2026-08-08T18:27:58.365Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/95/9c/c510029fc6ef33a6275cd2c5d3cecd6613dfd6aa401d57c54f1c18852ccf/setuptools-84.0.0-py3-none-any.whl", hash = "sha256:51a52592b3b99e102b609654876bd65f19f999935166d1352678931132b0c670", size = 818216, upload-time = "2026-08-08T18:27:56.719Z" },
 ]
 
 [[package]]

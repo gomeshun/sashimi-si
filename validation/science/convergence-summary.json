@@ -1,0 +1,1044 @@
+{
+  "variant": "sashimi-si",
+  "script_sha256": "412d44ef82e2b11cf2c4c842c55d7a1923ab4e9e500d3f5bb3a9551ce212f6e0",
+  "sources": [
+    {
+      "path": "validation/science/sashimi-si/convergence-b983435/report.json",
+      "sha256": "37e79779536125a4bb89fb032bd58da5139a6a05020aec4974fe284e3829ac6a",
+      "source_revisions": {
+        "sashimi-si": "b9834354d565046a782d84285476f0f60c4248f8",
+        "itamae": "c2d7b9afb9773bc8cb5b2ee142d70d95cc3afe3b"
+      },
+      "dependencies": {
+        "numpy": "2.4.6",
+        "scipy": "1.17.1",
+        "sashimi-itamae": "0.1.0a4"
+      },
+      "failure": {
+        "case": "N_hermNa-64",
+        "exception": "ValueError: Non-finite EPS accretion kernel inside its active mass domain.",
+        "continuation": "../convergence-fine-a233326/report.json",
+        "detail": "sashimi-si/validation/eps-zero-gap/failure.json"
+      }
+    },
+    {
+      "path": "validation/science/sashimi-si/convergence-fine-a233326/report.json",
+      "sha256": "4244c96a78e80cd0a844d953e76ff5b70e6aa8b34b219658c09fef31d7e95dd5",
+      "source_revisions": {
+        "sashimi-si": "a233326f9be6c6436e368272adc42e56546ae571",
+        "itamae": "c2d7b9afb9773bc8cb5b2ee142d70d95cc3afe3b"
+      },
+      "dependencies": {
+        "numpy": "2.4.6",
+        "scipy": "1.17.1",
+        "sashimi-itamae": "0.1.0a4"
+      },
+      "failure": null
+    },
+    {
+      "path": "validation/science/sashimi-si/eps-catalog-31cfcad/report.json",
+      "sha256": "7fc460d557fa115db3aca615b9b35fedd9e4b23128382bdccc39ea5ab13b1a1f",
+      "source_revisions": {
+        "sashimi-si": "31cfcadf7ed275967679b460d1a7fe5c7643d6dc",
+        "itamae": "dfa083d0d46181c376947ac7b2da829facaf2e8b"
+      },
+      "dependencies": {
+        "numpy": "2.4.6",
+        "scipy": "1.17.1",
+        "sashimi-itamae": "0.2.0rc1"
+      },
+      "failure": null
+    }
+  ],
+  "interpretation": "One-variable finite-grid comparisons at fixed reduced settings; no extrapolation or default recalibration. Fitted accretion virial-mass bound, finite arrays, nonnegative weights and all displayed metrics checked for every saved catalog.",
+  "rows": {
+    "baseline": {
+      "label": "baseline",
+      "parameters": {
+        "M0": 1000000000000.0,
+        "redshift": 0.0,
+        "dz": 0.25,
+        "zmax": 3.0,
+        "N_ma": 16,
+        "logmamin": 6.0,
+        "logmamax": 10.0,
+        "N_herm": 3,
+        "N_hermNa": 8,
+        "ct_th": 0.77,
+        "method": "pert2_shanks"
+      },
+      "seconds": 1.6305926570203155,
+      "warnings": [],
+      "states": {
+        "cdm_reference": {
+          "metrics": {
+            "count": 8408.309364872981,
+            "bound_mass_fraction": 0.025040721512215453,
+            "count_above_1e7": 216.7190750643572,
+            "mean_vmax_km_s": 2.1335263954629946
+          },
+          "nodes": 336,
+          "file": "baseline-cdm_reference.npz",
+          "sha256": "7f0debacda2edbc86be1775961004799ec47763a5b1eb154ebb6949af8445e72"
+        },
+        "sidm": {
+          "metrics": {
+            "count": 8408.309364872981,
+            "bound_mass_fraction": 0.025040721512215453,
+            "count_above_1e7": 216.7190750643572,
+            "mean_vmax_km_s": 2.3236682249012897
+          },
+          "nodes": 336,
+          "file": "baseline-sidm.npz",
+          "sha256": "be13c99675f07e20abd5f88e9e7a343fd25395c70cbb07f85f2c5774736d58c2"
+        }
+      },
+      "source_report": "validation/science/sashimi-si/eps-catalog-31cfcad/report.json"
+    },
+    "N_ma-32": {
+      "label": "N_ma-32",
+      "parameters": {
+        "M0": 1000000000000.0,
+        "redshift": 0.0,
+        "dz": 0.25,
+        "zmax": 3.0,
+        "N_ma": 32,
+        "logmamin": 6.0,
+        "logmamax": 10.0,
+        "N_herm": 3,
+        "N_hermNa": 8,
+        "ct_th": 0.77,
+        "method": "pert2_shanks"
+      },
+      "seconds": 1.035541457007639,
+      "warnings": [],
+      "states": {
+        "cdm_reference": {
+          "metrics": {
+            "count": 8385.786185140074,
+            "bound_mass_fraction": 0.02718486085578355,
+            "count_above_1e7": 241.70041855005618,
+            "mean_vmax_km_s": 2.2311590715565304
+          },
+          "nodes": 672,
+          "file": "N_ma-32-cdm_reference.npz",
+          "sha256": "a561365ec1dde6b7317f79a735d157ab46d1ab7ff35929cec0091095f63d5ac6"
+        },
+        "sidm": {
+          "metrics": {
+            "count": 8385.786185140074,
+            "bound_mass_fraction": 0.02718486085578355,
+            "count_above_1e7": 241.70041855005618,
+            "mean_vmax_km_s": 2.4330296642169635
+          },
+          "nodes": 672,
+          "file": "N_ma-32-sidm.npz",
+          "sha256": "9dd528fd6bc608bd8441e9de284925604e88831b9e5ea5c5adf84b5a71c73a4a"
+        }
+      },
+      "source_report": "validation/science/sashimi-si/convergence-b983435/report.json"
+    },
+    "N_ma-64": {
+      "label": "N_ma-64",
+      "parameters": {
+        "M0": 1000000000000.0,
+        "redshift": 0.0,
+        "dz": 0.25,
+        "zmax": 3.0,
+        "N_ma": 64,
+        "logmamin": 6.0,
+        "logmamax": 10.0,
+        "N_herm": 3,
+        "N_hermNa": 8,
+        "ct_th": 0.77,
+        "method": "pert2_shanks"
+      },
+      "seconds": 5.813313582912087,
+      "warnings": [],
+      "states": {
+        "cdm_reference": {
+          "metrics": {
+            "count": 8376.073609189578,
+            "bound_mass_fraction": 0.02832492364395492,
+            "count_above_1e7": 257.3436183742302,
+            "mean_vmax_km_s": 2.282136010689531
+          },
+          "nodes": 1344,
+          "file": "N_ma-64-cdm_reference.npz",
+          "sha256": "7f7c6cb1df7e3fa037835f546d17c603b67652b01bb440869c872b90950a6b38"
+        },
+        "sidm": {
+          "metrics": {
+            "count": 8376.073609189578,
+            "bound_mass_fraction": 0.02832492364395492,
+            "count_above_1e7": 257.3436183742302,
+            "mean_vmax_km_s": 2.490387749237944
+          },
+          "nodes": 1344,
+          "file": "N_ma-64-sidm.npz",
+          "sha256": "f2f164a3c225258b088bc7b374968db8ef255f7852927005760343c2e01127e9"
+        }
+      },
+      "source_report": "validation/science/sashimi-si/convergence-b983435/report.json"
+    },
+    "N_ma-128": {
+      "label": "N_ma-128",
+      "parameters": {
+        "M0": 1000000000000.0,
+        "redshift": 0.0,
+        "dz": 0.25,
+        "zmax": 3.0,
+        "N_ma": 128,
+        "logmamin": 6.0,
+        "logmamax": 10.0,
+        "N_herm": 3,
+        "N_hermNa": 8,
+        "ct_th": 0.77,
+        "method": "pert2_shanks"
+      },
+      "seconds": 1.764478677068837,
+      "warnings": [],
+      "states": {
+        "cdm_reference": {
+          "metrics": {
+            "count": 8371.304055844474,
+            "bound_mass_fraction": 0.028911047231670126,
+            "count_above_1e7": 272.1514384863043,
+            "mean_vmax_km_s": 2.308137134833512
+          },
+          "nodes": 2688,
+          "file": "N_ma-128-cdm_reference.npz",
+          "sha256": "16601257d1d72ef6709ece70309e4fc77847f2589072a821a53a79d11d917f7f"
+        },
+        "sidm": {
+          "metrics": {
+            "count": 8371.304055844474,
+            "bound_mass_fraction": 0.028911047231670126,
+            "count_above_1e7": 272.1514384863043,
+            "mean_vmax_km_s": 2.519475798535437
+          },
+          "nodes": 2688,
+          "file": "N_ma-128-sidm.npz",
+          "sha256": "7c1a7a54020a81b4bb2e65feaf11aa1d31ad1e072a7ed0a6722d39d10bbffdbe"
+        }
+      },
+      "source_report": "validation/science/sashimi-si/convergence-b983435/report.json"
+    },
+    "dz-0.125": {
+      "label": "dz-0.125",
+      "parameters": {
+        "M0": 1000000000000.0,
+        "redshift": 0.0,
+        "dz": 0.125,
+        "zmax": 3.0,
+        "N_ma": 16,
+        "logmamin": 6.0,
+        "logmamax": 10.0,
+        "N_herm": 3,
+        "N_hermNa": 8,
+        "ct_th": 0.77,
+        "method": "pert2_shanks"
+      },
+      "seconds": 1.382517975056544,
+      "warnings": [],
+      "states": {
+        "cdm_reference": {
+          "metrics": {
+            "count": 8896.429992616188,
+            "bound_mass_fraction": 0.030682022552799938,
+            "count_above_1e7": 236.30730207528904,
+            "mean_vmax_km_s": 2.1896392656839616
+          },
+          "nodes": 672,
+          "file": "dz-0.125-cdm_reference.npz",
+          "sha256": "59cf26f308baa7dd9172a20235aa80a5742378240d2f2765ad800099131e8053"
+        },
+        "sidm": {
+          "metrics": {
+            "count": 8896.429992616188,
+            "bound_mass_fraction": 0.030682022552799938,
+            "count_above_1e7": 236.30730207528904,
+            "mean_vmax_km_s": 2.382545599584962
+          },
+          "nodes": 672,
+          "file": "dz-0.125-sidm.npz",
+          "sha256": "29dea1b0effcaf14773bc59a7611904b7d0d71f8beb658b47f2716c1b6c5c302"
+        }
+      },
+      "source_report": "validation/science/sashimi-si/convergence-b983435/report.json"
+    },
+    "dz-0.0625": {
+      "label": "dz-0.0625",
+      "parameters": {
+        "M0": 1000000000000.0,
+        "redshift": 0.0,
+        "dz": 0.0625,
+        "zmax": 3.0,
+        "N_ma": 16,
+        "logmamin": 6.0,
+        "logmamax": 10.0,
+        "N_herm": 3,
+        "N_hermNa": 8,
+        "ct_th": 0.77,
+        "method": "pert2_shanks"
+      },
+      "seconds": 4.21528850402683,
+      "warnings": [],
+      "states": {
+        "cdm_reference": {
+          "metrics": {
+            "count": 9136.69338059167,
+            "bound_mass_fraction": 0.033864373702284296,
+            "count_above_1e7": 275.93616481163446,
+            "mean_vmax_km_s": 2.2162013282871573
+          },
+          "nodes": 1344,
+          "file": "dz-0.0625-cdm_reference.npz",
+          "sha256": "a640805f87e179409f48de67f854fc8cb00921c5b51f8e7f60f94b354819496b"
+        },
+        "sidm": {
+          "metrics": {
+            "count": 9136.69338059167,
+            "bound_mass_fraction": 0.033864373702284296,
+            "count_above_1e7": 275.93616481163446,
+            "mean_vmax_km_s": 2.4096827901952045
+          },
+          "nodes": 1344,
+          "file": "dz-0.0625-sidm.npz",
+          "sha256": "ef4b3964850b5e1c49855ab4c5ef4797aaced6202f6b781c365fe0d9600f508b"
+        }
+      },
+      "source_report": "validation/science/sashimi-si/convergence-b983435/report.json"
+    },
+    "dz-0.03125": {
+      "label": "dz-0.03125",
+      "parameters": {
+        "M0": 1000000000000.0,
+        "redshift": 0.0,
+        "dz": 0.03125,
+        "zmax": 3.0,
+        "N_ma": 16,
+        "logmamin": 6.0,
+        "logmamax": 10.0,
+        "N_herm": 3,
+        "N_hermNa": 8,
+        "ct_th": 0.77,
+        "method": "pert2_shanks"
+      },
+      "seconds": 5.143715977901593,
+      "warnings": [],
+      "states": {
+        "cdm_reference": {
+          "metrics": {
+            "count": 9316.152701173309,
+            "bound_mass_fraction": 0.0355509349110325,
+            "count_above_1e7": 297.267031423768,
+            "mean_vmax_km_s": 2.221176234774082
+          },
+          "nodes": 2736,
+          "file": "dz-0.03125-cdm_reference.npz",
+          "sha256": "f958794e10f52db9b4078463ef908ac246b315cd36e523655fa95d4fa860c624"
+        },
+        "sidm": {
+          "metrics": {
+            "count": 9316.152701173309,
+            "bound_mass_fraction": 0.0355509349110325,
+            "count_above_1e7": 297.267031423768,
+            "mean_vmax_km_s": 2.4142375189614103
+          },
+          "nodes": 2736,
+          "file": "dz-0.03125-sidm.npz",
+          "sha256": "147bc939ed1332ea68360554cc862e70fd99ca9630d171f42f92434bdf3ec267"
+        }
+      },
+      "source_report": "validation/science/sashimi-si/convergence-b983435/report.json"
+    },
+    "N_herm-5": {
+      "label": "N_herm-5",
+      "parameters": {
+        "M0": 1000000000000.0,
+        "redshift": 0.0,
+        "dz": 0.25,
+        "zmax": 3.0,
+        "N_ma": 16,
+        "logmamin": 6.0,
+        "logmamax": 10.0,
+        "N_herm": 5,
+        "N_hermNa": 8,
+        "ct_th": 0.77,
+        "method": "pert2_shanks"
+      },
+      "seconds": 0.5938748569460586,
+      "warnings": [],
+      "states": {
+        "cdm_reference": {
+          "metrics": {
+            "count": 8408.309364872981,
+            "bound_mass_fraction": 0.02504072151221545,
+            "count_above_1e7": 216.71907506435716,
+            "mean_vmax_km_s": 2.1335264877262645
+          },
+          "nodes": 560,
+          "file": "N_herm-5-cdm_reference.npz",
+          "sha256": "5ffe771997657467bf13461a5ebf90c6dc988981cdac73e0f7641793b56e0eda"
+        },
+        "sidm": {
+          "metrics": {
+            "count": 8358.127133635808,
+            "bound_mass_fraction": 0.02498912488346354,
+            "count_above_1e7": 215.96878439478007,
+            "mean_vmax_km_s": 2.332637671497416
+          },
+          "nodes": 560,
+          "file": "N_herm-5-sidm.npz",
+          "sha256": "82ba301edadf22a6a7d3bca37fda80f4a9ea7e04c54ef8b12094a84d083e8f78"
+        }
+      },
+      "source_report": "validation/science/sashimi-si/convergence-b983435/report.json"
+    },
+    "N_herm-7": {
+      "label": "N_herm-7",
+      "parameters": {
+        "M0": 1000000000000.0,
+        "redshift": 0.0,
+        "dz": 0.25,
+        "zmax": 3.0,
+        "N_ma": 16,
+        "logmamin": 6.0,
+        "logmamax": 10.0,
+        "N_herm": 7,
+        "N_hermNa": 8,
+        "ct_th": 0.77,
+        "method": "pert2_shanks"
+      },
+      "seconds": 0.5949130989611149,
+      "warnings": [],
+      "states": {
+        "cdm_reference": {
+          "metrics": {
+            "count": 8408.309364872981,
+            "bound_mass_fraction": 0.025040721512215453,
+            "count_above_1e7": 216.71907506435718,
+            "mean_vmax_km_s": 2.133526487734049
+          },
+          "nodes": 784,
+          "file": "N_herm-7-cdm_reference.npz",
+          "sha256": "35ce84d4da20693a80a25961f184af6ed507a32d76ab597cd1ec7e8ab64801f3"
+        },
+        "sidm": {
+          "metrics": {
+            "count": 8368.809289257228,
+            "bound_mass_fraction": 0.02502917823136667,
+            "count_above_1e7": 216.65590060298138,
+            "mean_vmax_km_s": 2.343541939186808
+          },
+          "nodes": 784,
+          "file": "N_herm-7-sidm.npz",
+          "sha256": "6ac2715f36166f3a9c5a91feb111c8f3550e187083acd9ac41b6b5e38f43d88f"
+        }
+      },
+      "source_report": "validation/science/sashimi-si/convergence-b983435/report.json"
+    },
+    "N_hermNa-16": {
+      "label": "N_hermNa-16",
+      "parameters": {
+        "M0": 1000000000000.0,
+        "redshift": 0.0,
+        "dz": 0.25,
+        "zmax": 3.0,
+        "N_ma": 16,
+        "logmamin": 6.0,
+        "logmamax": 10.0,
+        "N_herm": 3,
+        "N_hermNa": 16,
+        "ct_th": 0.77,
+        "method": "pert2_shanks"
+      },
+      "seconds": 0.42844150704331696,
+      "warnings": [],
+      "states": {
+        "cdm_reference": {
+          "metrics": {
+            "count": 8400.106319736093,
+            "bound_mass_fraction": 0.02502142900460582,
+            "count_above_1e7": 216.54887396953208,
+            "mean_vmax_km_s": 2.1336100375944294
+          },
+          "nodes": 336,
+          "file": "N_hermNa-16-cdm_reference.npz",
+          "sha256": "d8c7d918fde78ab84250de5f38f51d234481097aaa602926fe99dc4979f0c5df"
+        },
+        "sidm": {
+          "metrics": {
+            "count": 8400.106319736093,
+            "bound_mass_fraction": 0.02502142900460582,
+            "count_above_1e7": 216.54887396953208,
+            "mean_vmax_km_s": 2.3237538571337515
+          },
+          "nodes": 336,
+          "file": "N_hermNa-16-sidm.npz",
+          "sha256": "1e7aff2c3e17283727b31a5b9a7b099e489d3533360781504e3e81bc7d96a7cd"
+        }
+      },
+      "source_report": "validation/science/sashimi-si/convergence-b983435/report.json"
+    },
+    "N_hermNa-32": {
+      "label": "N_hermNa-32",
+      "parameters": {
+        "M0": 1000000000000.0,
+        "redshift": 0.0,
+        "dz": 0.25,
+        "zmax": 3.0,
+        "N_ma": 16,
+        "logmamin": 6.0,
+        "logmamax": 10.0,
+        "N_herm": 3,
+        "N_hermNa": 32,
+        "ct_th": 0.77,
+        "method": "pert2_shanks"
+      },
+      "seconds": 0.7451296319486573,
+      "warnings": [],
+      "states": {
+        "cdm_reference": {
+          "metrics": {
+            "count": 8404.390132639299,
+            "bound_mass_fraction": 0.025025354926796792,
+            "count_above_1e7": 216.58047292009567,
+            "mean_vmax_km_s": 2.13343498009523
+          },
+          "nodes": 336,
+          "file": "N_hermNa-32-cdm_reference.npz",
+          "sha256": "c621694fce29ca611f26a057e0b8cf595eb54dd7586ff04cc9bddebcf0a56733"
+        },
+        "sidm": {
+          "metrics": {
+            "count": 8404.390132639299,
+            "bound_mass_fraction": 0.025025354926796792,
+            "count_above_1e7": 216.58047292009567,
+            "mean_vmax_km_s": 2.3235793303908174
+          },
+          "nodes": 336,
+          "file": "N_hermNa-32-sidm.npz",
+          "sha256": "e9566314b4ed4d0a6fe19cd5a07b3c7ccc2ee4f08b6ac24d788572bf2cd350e3"
+        }
+      },
+      "source_report": "validation/science/sashimi-si/convergence-b983435/report.json"
+    },
+    "N_ma-256": {
+      "label": "N_ma-256",
+      "parameters": {
+        "M0": 1000000000000.0,
+        "redshift": 0.0,
+        "dz": 0.25,
+        "zmax": 3.0,
+        "N_ma": 256,
+        "logmamin": 6.0,
+        "logmamax": 10.0,
+        "N_herm": 3,
+        "N_hermNa": 8,
+        "ct_th": 0.77,
+        "method": "pert2_shanks"
+      },
+      "seconds": 4.6391907130600885,
+      "warnings": [],
+      "states": {
+        "cdm_reference": {
+          "metrics": {
+            "count": 8360.53809611725,
+            "bound_mass_fraction": 0.029206434001108426,
+            "count_above_1e7": 274.14907476454675,
+            "mean_vmax_km_s": 2.3216829060560387
+          },
+          "nodes": 5376,
+          "file": "N_ma-256-cdm_reference.npz",
+          "sha256": "4f9c00a732a18c19f63c7da6781e28791ed27a8abbfbb9deabe25371530c7c1e"
+        },
+        "sidm": {
+          "metrics": {
+            "count": 8360.53809611725,
+            "bound_mass_fraction": 0.029206434001108426,
+            "count_above_1e7": 274.14907476454675,
+            "mean_vmax_km_s": 2.5346163025671316
+          },
+          "nodes": 5376,
+          "file": "N_ma-256-sidm.npz",
+          "sha256": "2f8bf35ef33f2eb85c97bd8aac9568865ff69f3b728de2b8459056ec6b17fb7d"
+        }
+      },
+      "source_report": "validation/science/sashimi-si/convergence-fine-a233326/report.json"
+    },
+    "N_ma-500": {
+      "label": "N_ma-500",
+      "parameters": {
+        "M0": 1000000000000.0,
+        "redshift": 0.0,
+        "dz": 0.25,
+        "zmax": 3.0,
+        "N_ma": 500,
+        "logmamin": 6.0,
+        "logmamax": 10.0,
+        "N_herm": 3,
+        "N_hermNa": 8,
+        "ct_th": 0.77,
+        "method": "pert2_shanks"
+      },
+      "seconds": 9.875485935946926,
+      "warnings": [],
+      "states": {
+        "cdm_reference": {
+          "metrics": {
+            "count": 8360.258825449868,
+            "bound_mass_fraction": 0.02935337801616965,
+            "count_above_1e7": 276.2987527183152,
+            "mean_vmax_km_s": 2.328083326052555
+          },
+          "nodes": 10500,
+          "file": "N_ma-500-cdm_reference.npz",
+          "sha256": "cfe254fe879a821359d58b98941dd4d973db4c036423e810654dcc4349d49747"
+        },
+        "sidm": {
+          "metrics": {
+            "count": 8360.258825449868,
+            "bound_mass_fraction": 0.02935337801616965,
+            "count_above_1e7": 276.2987527183152,
+            "mean_vmax_km_s": 2.541797708528018
+          },
+          "nodes": 10500,
+          "file": "N_ma-500-sidm.npz",
+          "sha256": "79249af401761f7282c17e21837dd43471f65c60c02bc8a8b08c8676239edd1b"
+        }
+      },
+      "source_report": "validation/science/sashimi-si/convergence-fine-a233326/report.json"
+    },
+    "dz-0.015625": {
+      "label": "dz-0.015625",
+      "parameters": {
+        "M0": 1000000000000.0,
+        "redshift": 0.0,
+        "dz": 0.015625,
+        "zmax": 3.0,
+        "N_ma": 16,
+        "logmamin": 6.0,
+        "logmamax": 10.0,
+        "N_herm": 3,
+        "N_hermNa": 8,
+        "ct_th": 0.77,
+        "method": "pert2_shanks"
+      },
+      "seconds": 12.076010462013073,
+      "warnings": [],
+      "states": {
+        "cdm_reference": {
+          "metrics": {
+            "count": 9390.997695756028,
+            "bound_mass_fraction": 0.036416833001907685,
+            "count_above_1e7": 300.2501177071389,
+            "mean_vmax_km_s": 2.2258146948408473
+          },
+          "nodes": 5472,
+          "file": "dz-0.015625-cdm_reference.npz",
+          "sha256": "b275360bfc9413b03baba0fc92334ecc0876bbf545fe0bd68cd5362a26de36d3"
+        },
+        "sidm": {
+          "metrics": {
+            "count": 9390.997695756028,
+            "bound_mass_fraction": 0.036416833001907685,
+            "count_above_1e7": 300.2501177071389,
+            "mean_vmax_km_s": 2.4188837392133684
+          },
+          "nodes": 5472,
+          "file": "dz-0.015625-sidm.npz",
+          "sha256": "6e53c7301f6cb2dcdc1a70c79e80badb7507b623e0491c690de9aa39c3cc920b"
+        }
+      },
+      "source_report": "validation/science/sashimi-si/convergence-fine-a233326/report.json"
+    },
+    "dz-0.01": {
+      "label": "dz-0.01",
+      "parameters": {
+        "M0": 1000000000000.0,
+        "redshift": 0.0,
+        "dz": 0.01,
+        "zmax": 3.0,
+        "N_ma": 16,
+        "logmamin": 6.0,
+        "logmamax": 10.0,
+        "N_herm": 3,
+        "N_hermNa": 8,
+        "ct_th": 0.77,
+        "method": "pert2_shanks"
+      },
+      "seconds": 31.197350042057224,
+      "warnings": [],
+      "states": {
+        "cdm_reference": {
+          "metrics": {
+            "count": 9443.251863518773,
+            "bound_mass_fraction": 0.036734490022069216,
+            "count_above_1e7": 304.5628827324811,
+            "mean_vmax_km_s": 2.2251148597775137
+          },
+          "nodes": 8592,
+          "file": "dz-0.01-cdm_reference.npz",
+          "sha256": "6506030fa94f4074c491f29ad1e1ded8484c51cd90783411bc1f2e1c6c4a3dbd"
+        },
+        "sidm": {
+          "metrics": {
+            "count": 9443.251863518773,
+            "bound_mass_fraction": 0.036734490022069216,
+            "count_above_1e7": 304.5628827324811,
+            "mean_vmax_km_s": 2.418141970683155
+          },
+          "nodes": 8592,
+          "file": "dz-0.01-sidm.npz",
+          "sha256": "fa9081fa72efa04c6603e304ee51862a30ad6934aa29dc90a255a07fdf37a9ec"
+        }
+      },
+      "source_report": "validation/science/sashimi-si/convergence-fine-a233326/report.json"
+    },
+    "dz-0.005": {
+      "label": "dz-0.005",
+      "parameters": {
+        "M0": 1000000000000.0,
+        "redshift": 0.0,
+        "dz": 0.005,
+        "zmax": 3.0,
+        "N_ma": 16,
+        "logmamin": 6.0,
+        "logmamax": 10.0,
+        "N_herm": 3,
+        "N_hermNa": 8,
+        "ct_th": 0.77,
+        "method": "pert2_shanks"
+      },
+      "seconds": 60.12714501703158,
+      "warnings": [],
+      "states": {
+        "cdm_reference": {
+          "metrics": {
+            "count": 9467.874422315017,
+            "bound_mass_fraction": 0.037018961063235635,
+            "count_above_1e7": 305.20779152632247,
+            "mean_vmax_km_s": 2.2265932273570037
+          },
+          "nodes": 17184,
+          "file": "dz-0.005-cdm_reference.npz",
+          "sha256": "109b0b715181c7f8c2af25d4f44b1acfdbc33ce8853a47aa7e17e457794de8a3"
+        },
+        "sidm": {
+          "metrics": {
+            "count": 9467.874422315017,
+            "bound_mass_fraction": 0.037018961063235635,
+            "count_above_1e7": 305.20779152632247,
+            "mean_vmax_km_s": 2.4196174662438175
+          },
+          "nodes": 17184,
+          "file": "dz-0.005-sidm.npz",
+          "sha256": "23bafa59aa21b7381b93aaa483db0d46591cb4da1f447f6649dc9a5b13b7881b"
+        }
+      },
+      "source_report": "validation/science/sashimi-si/convergence-fine-a233326/report.json"
+    },
+    "N_hermNa-64": {
+      "label": "N_hermNa-64",
+      "parameters": {
+        "M0": 1000000000000.0,
+        "redshift": 0.0,
+        "dz": 0.25,
+        "zmax": 3.0,
+        "N_ma": 16,
+        "logmamin": 6.0,
+        "logmamax": 10.0,
+        "N_herm": 3,
+        "N_hermNa": 64,
+        "ct_th": 0.77,
+        "method": "pert2_shanks"
+      },
+      "seconds": 0.47706118295900524,
+      "warnings": [],
+      "states": {
+        "cdm_reference": {
+          "metrics": {
+            "count": 8405.596746805159,
+            "bound_mass_fraction": 0.025034114010423967,
+            "count_above_1e7": 216.65536884354492,
+            "mean_vmax_km_s": 2.133579079457627
+          },
+          "nodes": 336,
+          "file": "N_hermNa-64-cdm_reference.npz",
+          "sha256": "5bfe2c19c26bbbdbb646bed39e88d3e2791ed70ef83582e529240a0ced15c358"
+        },
+        "sidm": {
+          "metrics": {
+            "count": 8405.596746805159,
+            "bound_mass_fraction": 0.025034114010423967,
+            "count_above_1e7": 216.65536884354492,
+            "mean_vmax_km_s": 2.323720540137858
+          },
+          "nodes": 336,
+          "file": "N_hermNa-64-sidm.npz",
+          "sha256": "8c239392ee01e7b7614447211b96e301f14f0da27886100e6bebb18b625bfcc7"
+        }
+      },
+      "source_report": "validation/science/sashimi-si/eps-catalog-31cfcad/report.json"
+    },
+    "N_hermNa-200": {
+      "label": "N_hermNa-200",
+      "parameters": {
+        "M0": 1000000000000.0,
+        "redshift": 0.0,
+        "dz": 0.25,
+        "zmax": 3.0,
+        "N_ma": 16,
+        "logmamin": 6.0,
+        "logmamax": 10.0,
+        "N_herm": 3,
+        "N_hermNa": 200,
+        "ct_th": 0.77,
+        "method": "pert2_shanks"
+      },
+      "seconds": 1.793107821024023,
+      "warnings": [],
+      "states": {
+        "cdm_reference": {
+          "metrics": {
+            "count": 8405.949549276307,
+            "bound_mass_fraction": 0.0250348682526771,
+            "count_above_1e7": 216.66224278031268,
+            "mean_vmax_km_s": 2.1335585258481022
+          },
+          "nodes": 336,
+          "file": "N_hermNa-200-cdm_reference.npz",
+          "sha256": "b310be95cf155a73eed43a5615992d1134c683b1d260fd39227b7c57e91d6bad"
+        },
+        "sidm": {
+          "metrics": {
+            "count": 8405.949549276307,
+            "bound_mass_fraction": 0.0250348682526771,
+            "count_above_1e7": 216.66224278031268,
+            "mean_vmax_km_s": 2.3236982883456143
+          },
+          "nodes": 336,
+          "file": "N_hermNa-200-sidm.npz",
+          "sha256": "e5a6a7c9181c7916535d460a053fe12b20c1980335735196e77f833f25a2cea3"
+        }
+      },
+      "source_report": "validation/science/sashimi-si/eps-catalog-31cfcad/report.json"
+    },
+    "odeint": {
+      "label": "odeint",
+      "parameters": {
+        "M0": 1000000000000.0,
+        "redshift": 0.0,
+        "dz": 0.25,
+        "zmax": 3.0,
+        "N_ma": 16,
+        "logmamin": 6.0,
+        "logmamax": 10.0,
+        "N_herm": 3,
+        "N_hermNa": 8,
+        "ct_th": 0.77,
+        "method": "odeint"
+      },
+      "seconds": 4.110083949984983,
+      "warnings": [],
+      "states": {
+        "cdm_reference": {
+          "metrics": {
+            "count": 8408.309364872981,
+            "bound_mass_fraction": 0.02408393430770907,
+            "count_above_1e7": 216.7190750643572,
+            "mean_vmax_km_s": 2.1130282186083504
+          },
+          "nodes": 336,
+          "file": "odeint-cdm_reference.npz",
+          "sha256": "773b6b87e9fb3aaf2c4699d94adbc70c690b0bead05174d2d11fb608dc17340c"
+        },
+        "sidm": {
+          "metrics": {
+            "count": 8408.309364872981,
+            "bound_mass_fraction": 0.02408393430770907,
+            "count_above_1e7": 216.7190750643572,
+            "mean_vmax_km_s": 2.3033197357419515
+          },
+          "nodes": 336,
+          "file": "odeint-sidm.npz",
+          "sha256": "7e71573d1a8b10119c7b13ee91956271507382362ac8478f177b39df767a54e3"
+        }
+      },
+      "source_report": "validation/science/sashimi-si/convergence-fine-a233326/report.json"
+    },
+    "odeint-tight": {
+      "label": "odeint-tight",
+      "parameters": {
+        "M0": 1000000000000.0,
+        "redshift": 0.0,
+        "dz": 0.25,
+        "zmax": 3.0,
+        "N_ma": 16,
+        "logmamin": 6.0,
+        "logmamax": 10.0,
+        "N_herm": 3,
+        "N_hermNa": 8,
+        "ct_th": 0.77,
+        "method": "odeint",
+        "rtol": 1e-10,
+        "atol": 1e-08
+      },
+      "seconds": 1.7607654799940065,
+      "warnings": [],
+      "states": {
+        "cdm_reference": {
+          "metrics": {
+            "count": 8408.309364872981,
+            "bound_mass_fraction": 0.024083933982826385,
+            "count_above_1e7": 216.7190750643572,
+            "mean_vmax_km_s": 2.1130282103291704
+          },
+          "nodes": 336,
+          "file": "odeint-tight-cdm_reference.npz",
+          "sha256": "088fc5efe02087e55b61a920381a755d542fbeb4a5c797d1ead9801f6cf4ece0"
+        },
+        "sidm": {
+          "metrics": {
+            "count": 8408.309364872981,
+            "bound_mass_fraction": 0.024083933982826385,
+            "count_above_1e7": 216.7190750643572,
+            "mean_vmax_km_s": 2.3033197266768926
+          },
+          "nodes": 336,
+          "file": "odeint-tight-sidm.npz",
+          "sha256": "59718d34b121f729de89fcc2154fcedc3a5777214895f477d94804e8f0b18265"
+        }
+      },
+      "source_report": "validation/science/sashimi-si/convergence-fine-a233326/report.json"
+    }
+  },
+  "repeated_catalog_checks": [
+    {
+      "label": "baseline",
+      "state": "cdm_reference",
+      "before": "validation/science/sashimi-si/convergence-b983435/baseline-cdm_reference.npz",
+      "after": "validation/science/sashimi-si/convergence-fine-a233326/baseline-cdm_reference.npz",
+      "arrays_bitwise_equal": true
+    },
+    {
+      "label": "baseline",
+      "state": "sidm",
+      "before": "validation/science/sashimi-si/convergence-b983435/baseline-sidm.npz",
+      "after": "validation/science/sashimi-si/convergence-fine-a233326/baseline-sidm.npz",
+      "arrays_bitwise_equal": true
+    },
+    {
+      "label": "baseline",
+      "state": "cdm_reference",
+      "before": "validation/science/sashimi-si/convergence-fine-a233326/baseline-cdm_reference.npz",
+      "after": "validation/science/sashimi-si/eps-catalog-31cfcad/baseline-cdm_reference.npz",
+      "arrays_bitwise_equal": true
+    },
+    {
+      "label": "baseline",
+      "state": "sidm",
+      "before": "validation/science/sashimi-si/convergence-fine-a233326/baseline-sidm.npz",
+      "after": "validation/science/sashimi-si/eps-catalog-31cfcad/baseline-sidm.npz",
+      "arrays_bitwise_equal": true
+    },
+    {
+      "label": "N_hermNa-64",
+      "state": "cdm_reference",
+      "before": "validation/science/sashimi-si/convergence-fine-a233326/N_hermNa-64-cdm_reference.npz",
+      "after": "validation/science/sashimi-si/eps-catalog-31cfcad/N_hermNa-64-cdm_reference.npz",
+      "arrays_bitwise_equal": true
+    },
+    {
+      "label": "N_hermNa-64",
+      "state": "sidm",
+      "before": "validation/science/sashimi-si/convergence-fine-a233326/N_hermNa-64-sidm.npz",
+      "after": "validation/science/sashimi-si/eps-catalog-31cfcad/N_hermNa-64-sidm.npz",
+      "arrays_bitwise_equal": true
+    },
+    {
+      "label": "N_hermNa-200",
+      "state": "cdm_reference",
+      "before": "validation/science/sashimi-si/convergence-fine-a233326/N_hermNa-200-cdm_reference.npz",
+      "after": "validation/science/sashimi-si/eps-catalog-31cfcad/N_hermNa-200-cdm_reference.npz",
+      "arrays_bitwise_equal": true
+    },
+    {
+      "label": "N_hermNa-200",
+      "state": "sidm",
+      "before": "validation/science/sashimi-si/convergence-fine-a233326/N_hermNa-200-sidm.npz",
+      "after": "validation/science/sashimi-si/eps-catalog-31cfcad/N_hermNa-200-sidm.npz",
+      "arrays_bitwise_equal": true
+    }
+  ],
+  "final_refinements": [
+    {
+      "before": "N_ma-256",
+      "after": "N_ma-500",
+      "state": "sidm",
+      "relative_percent": {
+        "count": -0.0033403432192047333,
+        "bound_mass_fraction": 0.5031220691154692,
+        "count_above_1e7": 0.7841273787317027,
+        "mean_vmax_km_s": 0.28333306124532776
+      }
+    },
+    {
+      "before": "dz-0.01",
+      "after": "dz-0.005",
+      "state": "sidm",
+      "relative_percent": {
+        "count": 0.26074237087083674,
+        "bound_mass_fraction": 0.7743976872838454,
+        "count_above_1e7": 0.211748978751225,
+        "mean_vmax_km_s": 0.06101773917954745
+      }
+    },
+    {
+      "before": "N_herm-5",
+      "after": "N_herm-7",
+      "state": "sidm",
+      "relative_percent": {
+        "count": 0.12780561303538107,
+        "bound_mass_fraction": 0.16028311551492536,
+        "count_above_1e7": 0.318155334404846,
+        "mean_vmax_km_s": 0.467465128538036
+      }
+    },
+    {
+      "before": "N_hermNa-64",
+      "after": "N_hermNa-200",
+      "state": "sidm",
+      "relative_percent": {
+        "count": 0.004197232888691893,
+        "bound_mass_fraction": 0.003012857786055534,
+        "count_above_1e7": 0.003172751639834992,
+        "mean_vmax_km_s": -0.0009575933017424987
+      }
+    },
+    {
+      "before": "baseline",
+      "after": "odeint",
+      "state": "sidm",
+      "relative_percent": {
+        "count": 0.0,
+        "bound_mass_fraction": -3.8209250641585424,
+        "count_above_1e7": 0.0,
+        "mean_vmax_km_s": -0.8757054445757917
+      }
+    },
+    {
+      "before": "odeint",
+      "after": "odeint-tight",
+      "state": "sidm",
+      "relative_percent": {
+        "count": 0.0,
+        "bound_mass_fraction": -1.348960187996795e-06,
+        "count_above_1e7": 0.0,
+        "mean_vmax_km_s": -3.935649361963556e-07
+      }
+    }
+  ]
+}

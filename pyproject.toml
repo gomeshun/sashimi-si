@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=69"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "sashimi-si"
-version = "0.1.0a1"
+version = "0.2.0rc1"
 description = "Semi-Analytical SubHalo Inference ModelIng for Self-Interacting Dark Matter"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -18,7 +18,7 @@ authors = [
   {name = "Hai-Bo Yu"},
 ]
 dependencies = [
-  "sashimi-itamae>=0.1.0a4",
+  "sashimi-itamae>=0.2.0rc1,<0.3",
   "numexpr>=2.8",
   "numpy>=1.26",
   "scipy>=1.11",
@@ -62,4 +62,4 @@ select = ["E", "F"]
 ignore = ["E501"]
 
 [tool.uv.sources]
-sashimi-itamae = {git = "https://github.com/gomeshun/itamae.git", rev = "e5c77cdf2832104752d641dd553902fc507885ba"}
+sashimi-itamae = {git = "https://github.com/gomeshun/itamae.git", rev = "dfa083d0d46181c376947ac7b2da829facaf2e8b"}
