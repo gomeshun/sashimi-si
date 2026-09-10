@@ -1,0 +1,64 @@
+{
+  "source_bundle": "https://github.com/gomeshun/sashimi-family/tree/codex/migration-release-20260910/validation/science/sashimi-si",
+  "summary_sha256": "812795554d78a085917de7494d70798781e5e6446f97cb332cadb689136de307",
+  "audit": "scripts/summarize_population_convergence.py recomputes all metrics from hash-verified saved catalogs; verifies finite arrays, nonnegative weights and fitted accretion virial-mass bound.",
+  "repeated_catalogs_bitwise_equal": [
+    {
+      "label": "baseline",
+      "state": "cdm_reference",
+      "before": "validation/science/sashimi-si/convergence-b983435/baseline-cdm_reference.npz",
+      "after": "validation/science/sashimi-si/convergence-fine-a233326/baseline-cdm_reference.npz",
+      "arrays_bitwise_equal": true
+    },
+    {
+      "label": "baseline",
+      "state": "sidm",
+      "before": "validation/science/sashimi-si/convergence-b983435/baseline-sidm.npz",
+      "after": "validation/science/sashimi-si/convergence-fine-a233326/baseline-sidm.npz",
+      "arrays_bitwise_equal": true
+    },
+    {
+      "label": "baseline",
+      "state": "cdm_reference",
+      "before": "validation/science/sashimi-si/convergence-fine-a233326/baseline-cdm_reference.npz",
+      "after": "validation/science/sashimi-si/eps-catalog-31cfcad/baseline-cdm_reference.npz",
+      "arrays_bitwise_equal": true
+    },
+    {
+      "label": "baseline",
+      "state": "sidm",
+      "before": "validation/science/sashimi-si/convergence-fine-a233326/baseline-sidm.npz",
+      "after": "validation/science/sashimi-si/eps-catalog-31cfcad/baseline-sidm.npz",
+      "arrays_bitwise_equal": true
+    },
+    {
+      "label": "N_hermNa-64",
+      "state": "cdm_reference",
+      "before": "validation/science/sashimi-si/convergence-fine-a233326/N_hermNa-64-cdm_reference.npz",
+      "after": "validation/science/sashimi-si/eps-catalog-31cfcad/N_hermNa-64-cdm_reference.npz",
+      "arrays_bitwise_equal": true
+    },
+    {
+      "label": "N_hermNa-64",
+      "state": "sidm",
+      "before": "validation/science/sashimi-si/convergence-fine-a233326/N_hermNa-64-sidm.npz",
+      "after": "validation/science/sashimi-si/eps-catalog-31cfcad/N_hermNa-64-sidm.npz",
+      "arrays_bitwise_equal": true
+    },
+    {
+      "label": "N_hermNa-200",
+      "state": "cdm_reference",
+      "before": "validation/science/sashimi-si/convergence-fine-a233326/N_hermNa-200-cdm_reference.npz",
+      "after": "validation/science/sashimi-si/eps-catalog-31cfcad/N_hermNa-200-cdm_reference.npz",
+      "arrays_bitwise_equal": true
+    },
+    {
+      "label": "N_hermNa-200",
+      "state": "sidm",
+      "before": "validation/science/sashimi-si/convergence-fine-a233326/N_hermNa-200-sidm.npz",
+      "after": "validation/science/sashimi-si/eps-catalog-31cfcad/N_hermNa-200-sidm.npz",
+      "arrays_bitwise_equal": true
+    }
+  ],
+  "states_sha256": "63005e774fd674e64788e1ac41b656b2c6875bcaa26b50af1377884b2bae32f1"
+}
