@@ -19,7 +19,7 @@ The codes allow to calculate various subhalo properties efficiently using semi-a
 - Daneng Yang
 - Hai-Bo Yu
 
-Please send enquiries to Shin'ichiro Ando (s.ando@uva.nl). We have checked that the codes work with python 3.10 but cannot guarantee for other versions of python. In any case, we cannot help with any technical issues not directly related to the content of SASHIMI (such as installation, sub-packages required, etc.)
+Please send enquiries to Shin'ichiro Ando (s.ando@uva.nl). The migration target supports Python 3.11–3.13. In any case, we cannot help with any technical issues not directly related to the content of SASHIMI (such as installation, sub-packages required, etc.)
 
 ## What can we do with SASHIMI-SIDM?
 
@@ -40,106 +40,57 @@ When you use the outcome of this package for your scientific output, please cite
 
 Note this is one of the variants of SASHIMI, which is based on its original version for CDM [https://github.com/shinichiroando/sashimi-c]
 
-## Opt-in ITAMAE migration
+## Standard API and independent validation
 
-The established `sashimi_si` import path and its 27-array return contract remain
-the legacy public API. The migration is exposed through a separate module, so
-using ITAMAE is an explicit import-time choice:
+Python 3.11–3.13 is the supported migration/release target. Install the candidate
+`sashimi-itamae` artifact first, followed by the SI artifact; public-index release
+is a later, separately approved step. Development uses the exact committed
+`uv` source pin.
 
 ```python
-from sashimi_si_itamae import subhalo_properties
+from sashimi_si import SubhaloProperties
 
-model = subhalo_properties(physics_mode="consistent")
-
-# Historical 27-array contract, calculated with migrated shared mechanisms.
-legacy_tuple = model.subhalo_properties_calc(
-    M0=1.0e10 * model.Msun,
-    dz=0.5,
-    zmax=1.0,
-    N_ma=4,
-    N_herm=2,
-    N_hermNa=2,
-)
-
-# Named CDM-reference and SIDM views with ITAMAE catalog semantics.
+model = SubhaloProperties(sigma0_m=147.1, w=24.33)
 catalogs = model.subhalo_catalogs_calc(
-    M0=1.0e10 * model.Msun,
-    dz=0.5,
-    zmax=1.0,
-    N_ma=4,
-    N_herm=2,
-    N_hermNa=2,
+    M0=1e10, dz=0.5, zmax=1.0, N_ma=4, N_herm=2, N_hermNa=2,
+    logmamin=5., logmamax=7.,
 )
-sidm_catalog = catalogs["sidm"]
+sidm = catalogs["sidm"]
+cdm = catalogs["cdm_reference"]
 ```
 
-The catalog keeps `weight_base`, `weight_concentration`, and
-`weight_survival` as independent factors. Its columns use ITAMAE canonical
-units (`Msun`, `Mpc`, `km/s`, and `Msun/Mpc^3`), and its metadata records the
-catalog schema, model, backend, state, and migration provenance.
+The standard import uses the shared ITAMAE executor. The old `physics_mode`
+argument has been removed; requesting it raises `TypeError`. Compatibility
+import modules are aliases to the same classes. The historical 27-field tuple
+is a format conversion from the newly generated catalogs, and does not execute
+an old calculation path.
 
-`physics_mode="consistent"` is the opt-in default. The common migration façade
-also accepts `physics_mode="legacy"`. SASHIMI-SI has no known mode-dependent
-physical correction: both labels intentionally retain the same SIDM cross
-sections, gravothermal/profile evolution, formation-time choice, disruption
-prescription, parameters, and golden result. The mode label is recorded in
-metadata for cross-variant workflow consistency.
+Both states retain aligned initial nodes, independent base/concentration
+weights, and explicit survival. `valid_accretion` flags whether formation precedes
+accretion. SIDM values for unformed nodes are uncomputed zero placeholders and
+have zero final weight. Both states apply the common formation and truncation
+gates; SIDM adds its profile validity rule. Catalogs use `Msun`, `Mpc`, `km/s`,
+and `Msun/Mpc^3`. The tuple adapter alone retains its historical Mpc/s velocities.
 
-Both labels use the corrected upstream physics merged in commit `e17d366`:
-the growth-factor derivative has no spurious factor of `h^-2`, the
-gravothermal derivative uses the published `tau^7` coefficient, Eq. (3.3) is
-normalized by the running CDM history, and the diagnostic and evolution paths
-share one analytic effective cross section. `physics_mode="legacy"` means the
-current corrected `sashimi_si` public model; it does not restore the known-bad
-pre-2026-07-14 equations, and no pre-fix golden is distributed.
+[Usage walkthrough](notebooks/usage_walkthrough.ipynb) teaches the API.
+[Scientific comparison](notebooks/scientific_validation.ipynb) uses independently
+executed, immutable reference B arrays and checks full catalogs and observables.
+The corrected upstream `e17d366` remains reference A. A known-bad earlier SI
+prescription is not restored. See [the formation-boundary evidence](docs/formation-validity.md)
+and [the API transition](docs/standard-api-migration.md).
 
-The shared mechanisms supplied by ITAMAE are the flat-LCDM background, Shanks
-sequence acceleration, NFW mass inversion, variance protocol, backend
-identifier, and weighted-catalog schema. SIDM physics remains in
-`sashimi_si.py`.
-
-For a development installation on Python 3.11 or newer:
+SIDM cross sections and calibrated gravothermal/profile maps are in
+`sashimi_si_physics.py`. ITAMAE supplies the numerical executor, common background,
+NFW inverse, quadrature and catalog/provenance contracts. Metadata records the
+calculation specification, interaction parameters, grids, solver, cosmology,
+units and source revisions. The SI calibration retains its published rounded
+G convention; changing it requires a controlled physical comparison.
 
 ```bash
-uv sync --extra test
-uv run python -m pytest test_sashimi.py tests
+uv run --extra test python -m pytest test_sashimi.py tests
+uv run --extra demo jupyter nbconvert --to notebook --execute \
+  --output-dir artifacts notebooks/usage_walkthrough.ipynb
 ```
-
-Until ITAMAE is released on PyPI, the committed `uv` source pins the tested
-ITAMAE revision from its public GitHub repository.
-
-### Migration demonstration and known warnings
-
-[`itamae_migration_demo.ipynb`](itamae_migration_demo.ipynb) is a lightweight,
-executable comparison of the public legacy tuple, the migrated legacy option,
-and the migrated consistent option. It checks the 27-array contract and shows
-the SIDM subhalo mass function and accumulated satellite number as both a
-figure and a numerical table. The legacy and consistent migration curves
-intentionally overlap because both select the corrected upstream physics.
-
-Re-execute the committed demonstration from a source checkout with:
-
-```bash
-uv run --extra demo jupyter nbconvert \
-  --to notebook --execute --inplace itamae_migration_demo.ipynb
-```
-
-The source distribution includes the notebook at its repository-relative path.
-The wheel installs it as
-`share/sashimi-si/itamae_migration_demo.ipynb` below the installation prefix.
-
-The demonstration captures two known classes of `RuntimeWarning`. The
-effective-cross-section interpolation evaluates its direct expression before
-selecting the stable large-`a` asymptotic branch, and the true legacy Shanks
-solver evaluates zero-denominator intermediate expressions before applying its
-fallback. These warnings concern discarded intermediate arithmetic; validated
-catalog arrays and weights remain finite. They are not a physics difference
-between migration modes. Larger validation grids can additionally warn while
-evaluating a square root for an invalid trial SIDM profile or an EPS
-normalization outside its active accretion mask. Those nodes are subsequently
-masked or rejected; the regression suite requires the surviving catalog to be
-finite and physical.
-
 
 ## Examples
 

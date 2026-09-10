@@ -1,407 +1,134 @@
-"""Regression tests for the SASHIMI-SI ITAMAE migration boundary."""
+"""The standard API is checked against an independent frozen/patch reference."""
 
 import json
 from pathlib import Path
-
+import warnings
 import numpy as np
 import pytest
-
-import sashimi_si
-import sashimi_si_itamae
 from itamae.backends import BackendConfig
 from itamae.cosmology import NativeFlatLCDM
-from itamae.halo import invert_nfw_mass_function
-from itamae.provenance import MIGRATION_METADATA_KEYS
+from itamae.provenance import CALCULATION_METADATA_KEYS
+from itamae.types import WeightedSubhaloCatalog
 from itamae.units import NativeUnits
-from sashimi_si_itamae_migration import (
-    ItamaeHaloModel,
-    ItamaeSubhaloProperties,
-    ItamaeTidalStrippingSolver,
-    create_itamae_model,
-)
-from sashimi_si import TidalStrippingSolver, halo_model, subhalo_properties
+from sashimi_si import HaloModel, SubhaloProperties, TidalStrippingSolver, CALCULATION_SPECIFICATION
+import sashimi_si_itamae as aliases
 
-
-_GOLDEN_PROVENANCE = Path(__file__).parent / "golden" / "sidm_small_catalog_provenance.json"
-with _GOLDEN_PROVENANCE.open(encoding="utf-8") as input_file:
-    _GOLDEN = json.load(input_file)
-
-SMALL_CATALOG_PARAMETERS = dict(_GOLDEN["parameters"])
-SMALL_CATALOG_GOLDEN_SUMS = np.asarray(_GOLDEN["golden_sums"], dtype=float)
-
-
-def test_golden_sidecar_provenance_is_complete() -> None:
-    """The SI sidecar documents the inline full-catalog regression."""
-    assert _GOLDEN["fixture_schema"] == "sashimi-family:golden-provenance:v1"
-    assert _GOLDEN["fixture_category"] == "full_small_catalog_golden"
-    assert _GOLDEN["fixture_format"] == "sidecar-for-inline-regression"
-    assert _GOLDEN["variant"] == "sashimi-si"
-    assert len(_GOLDEN["generated_repository_revision"]) == 40
-    assert len(_GOLDEN["itamae_source_revision"]) == 40
-    assert set(_GOLDEN["physics_modes"]) == {"legacy", "consistent"}
-    assert len(_GOLDEN["golden_sums"]) == 27
-    assert _GOLDEN["parameters"] == SMALL_CATALOG_PARAMETERS
-    assert _GOLDEN["constructor_parameters"]["physics_mode"] == [
-        "consistent",
-        "legacy",
-    ]
-    assert _GOLDEN["cosmology"]["backend_identifier"].startswith(
-        "array=numpy;cosmology=native-flatlcdm:"
-    )
-    assert _GOLDEN["constructor_parameters"]["backend_config"]["cosmology_backend"][
-        "parameters"
-    ] == _GOLDEN["cosmology"]["parameters"]
-    cosmology_parameters = _GOLDEN["cosmology"]["parameters"]
-    backend = BackendConfig(
-        cosmology=NativeFlatLCDM(
-            omega_m0=cosmology_parameters["omega_m0"],
-            h=cosmology_parameters["h"],
-        ),
-        units=NativeUnits(),
-        array=_GOLDEN["constructor_parameters"]["backend_config"]["array"],
-    )
-    for physics_mode in _GOLDEN["constructor_parameters"]["physics_mode"]:
-        model = create_itamae_model(
-            backend_config=backend,
-            physics_mode=physics_mode,
-        )
-        assert model.physics_mode == physics_mode
-        assert model.itamae_backend.identifier == _GOLDEN["cosmology"][
-            "backend_identifier"
-        ]
-
-
-def _mass_function(mass, weight, bin_edges):
-    """Return dN/dln(m) on fixed physical-mass bins."""
-
-    log_edges = np.log(np.asarray(bin_edges, dtype=float))
-    counts, _ = np.histogram(
-        np.log(np.asarray(mass, dtype=float)),
-        bins=log_edges,
-        weights=np.asarray(weight, dtype=float),
-    )
-    return counts / np.diff(log_edges)
-
-
-def _accumulated_satellite_number(mass, weight, thresholds):
-    """Return the expected number of subhaloes above each mass threshold."""
-
-    mass = np.asarray(mass, dtype=float)
-    weight = np.asarray(weight, dtype=float)
-    thresholds = np.asarray(thresholds, dtype=float)
-    return np.asarray([np.sum(weight[mass >= threshold]) for threshold in thresholds])
+REF = Path(__file__).parent / "references"
+PARAMETERS = json.loads((REF / "B-all.json").read_text())["calculation"]["parameters"]
 
 
 @pytest.fixture(scope="module")
-def legacy_mode_observable_products():
-    """Evaluate true legacy and migrated-legacy products on one small grid."""
+def products():
+    model = SubhaloProperties()
+    with warnings.catch_warnings(record=True) as captured:
+        warnings.simplefilter("always", RuntimeWarning)
+        result = model.subhalo_properties_calc(**PARAMETERS)
+        catalogs = model.subhalo_catalogs_calc(**PARAMETERS)
+    assert not captured
+    return model, result, catalogs
 
-    legacy = subhalo_properties().subhalo_properties_calc(**SMALL_CATALOG_PARAMETERS)
-    migrated_model = create_itamae_model(physics_mode="legacy")
-    migrated = migrated_model.subhalo_properties_calc(**SMALL_CATALOG_PARAMETERS)
-    catalogs = migrated_model.subhalo_catalogs_calc(**SMALL_CATALOG_PARAMETERS)
-    return legacy, migrated, catalogs
 
-
-def test_itamae_cosmology_matches_legacy_background() -> None:
-    """The adapted background should reproduce the legacy implementation."""
-    legacy = halo_model()
-    migrated = ItamaeHaloModel()
-    redshift = np.array([0.0, 0.5, 1.0, 3.0, 7.0])
-
-    np.testing.assert_allclose(
-        migrated.Hubble(redshift), legacy.Hubble(redshift), rtol=2.0e-12, atol=0.0
+def test_historical_provenance_is_preserved():
+    original = json.loads(
+        (Path(__file__).parent / "golden/sidm_small_catalog_provenance.json").read_text()
     )
-    np.testing.assert_allclose(
-        migrated.growthD(redshift), legacy.growthD(redshift), rtol=2.0e-12, atol=0.0
-    )
-    np.testing.assert_allclose(
-        migrated.rhocrit(redshift), legacy.rhocrit(redshift), rtol=2.0e-12, atol=0.0
-    )
+    assert set(original["physics_modes"]) == {"legacy", "consistent"}
+    reference = json.loads((REF / "B-all.json").read_text())
+    assert reference["role"] == "B"
+    assert reference["independent_process"]
+    assert len(reference["source_revision"]) == 40
+    assert reference["worker_sha256"]
+    assert reference["source_export_sha256"]
 
 
-def test_itamae_cosmology_preserves_shared_halo_calculations() -> None:
-    """Shared halo primitives should remain unchanged before SIDM evolution."""
-    legacy = halo_model()
-    migrated = ItamaeHaloModel()
-    mass = np.array([1.0e8, 1.0e10, 1.0e12]) * legacy.Msun
-    redshift = np.array([0.0, 1.0, 3.0])
-
-    np.testing.assert_allclose(
-        migrated.sigmaMz(mass, redshift),
-        legacy.sigmaMz(mass, redshift),
-        rtol=2.0e-12,
-        atol=0.0,
-    )
-    np.testing.assert_allclose(
-        migrated.Mvir_from_M200_fit(mass, redshift),
-        legacy.Mvir_from_M200_fit(mass, redshift),
-        rtol=2.0e-12,
-        atol=0.0,
-    )
+def test_standard_api_aliases_have_one_calculation_path():
+    assert aliases.subhalo_properties is SubhaloProperties
+    assert aliases.halo_model is HaloModel
+    assert aliases.TidalStrippingSolver is TidalStrippingSolver
+    for mode in ("legacy", "consistent", "unknown"):
+        with pytest.raises(TypeError, match="physics_mode"):
+            SubhaloProperties(physics_mode=mode)
 
 
-def test_itamae_shanks_solver_matches_legacy() -> None:
-    """Migrated perturbative stripping should reproduce the legacy solver."""
-    host_mass = 1.0e10
-    legacy = TidalStrippingSolver(host_mass, z_min=0.0, z_max=1.5, n_z_interp=32)
-    migrated = ItamaeTidalStrippingSolver(
-        host_mass, z_min=0.0, z_max=1.5, n_z_interp=32
-    )
-    mass = np.array([1.0e6, 1.0e7, 1.0e8])
-
-    np.testing.assert_allclose(
-        migrated.subhalo_mass_stripped_pert2_shanks(mass, 1.0, 0.0),
-        legacy.subhalo_mass_stripped_pert2_shanks(mass, 1.0, 0.0),
-        rtol=2.0e-12,
-        atol=0.0,
-    )
+def test_all_27_arrays_match_independent_corrected_reference(products):
+    _, result, _ = products
+    with np.load(REF / "B-accurate.npz") as reference:
+        for i, value in enumerate(result):
+            expected = reference[f"tuple_{i}"]
+            if i in (25, 26):
+                np.testing.assert_array_equal(value, expected)
+            else:
+                np.testing.assert_allclose(value, expected, rtol=5e-12, atol=1e-300)
 
 
-def test_normal_constructor_uses_instance_local_dependencies() -> None:
-    """The opt-in constructor must not mutate legacy module dependencies."""
-    legacy_solver = sashimi_si.TidalStrippingSolver
-    legacy = subhalo_properties()
-    migrated = create_itamae_model()
-
-    assert legacy.tidal_solver_factory is legacy_solver
-    assert migrated.tidal_solver_factory is ItamaeTidalStrippingSolver
-    assert migrated.ct_func is invert_nfw_mass_function
-    assert sashimi_si.TidalStrippingSolver is legacy_solver
-    assert callable(migrated.sigma_eff_m)
-
-
-def test_public_opt_in_module_leaves_legacy_api_unchanged() -> None:
-    """Changing the imported module should be the only opt-in action."""
-    assert sashimi_si.subhalo_properties is subhalo_properties
-    assert sashimi_si.TidalStrippingSolver is TidalStrippingSolver
-    assert sashimi_si_itamae.subhalo_properties is ItamaeSubhaloProperties
-    assert sashimi_si_itamae.TidalStrippingSolver is ItamaeTidalStrippingSolver
-    assert sashimi_si_itamae.halo_model is ItamaeHaloModel
-
-
-@pytest.mark.parametrize("physics_mode", ["consistent", "legacy"])
-def test_small_full_catalog_golden_and_legacy_agreement(physics_mode: str) -> None:
-    """Both SI mode labels should retain the canonical full-catalog result."""
-    legacy = subhalo_properties().subhalo_properties_calc(**SMALL_CATALOG_PARAMETERS)
-    migrated_model = create_itamae_model(physics_mode=physics_mode)
-    migrated = migrated_model.subhalo_properties_calc(**SMALL_CATALOG_PARAMETERS)
-
-    assert len(migrated) == 27
-    assert all(np.asarray(value).shape == (16,) for value in migrated)
-    sums = np.array([np.sum(np.asarray(value, dtype=float)) for value in migrated])
-    np.testing.assert_allclose(
-        sums,
-        SMALL_CATALOG_GOLDEN_SUMS,
-        rtol=_GOLDEN["comparison"]["sum_rtol"],
-        atol=_GOLDEN["comparison"]["default_atol"],
-    )
-
-    for index, (actual, reference) in enumerate(
-        zip(migrated, legacy, strict=True)
-    ):
-        if index in {25, 26}:
-            np.testing.assert_array_equal(actual, reference)
-        else:
-            np.testing.assert_allclose(
-                actual,
-                reference,
-                rtol=(
-                    _GOLDEN["comparison"]["array_index_21_rtol"]
-                    if index == 21
-                    else _GOLDEN["comparison"]["default_rtol"]
-                ),
-                atol=(
-                    _GOLDEN["comparison"]["array_index_21_atol"]
-                    if index == 21
-                    else _GOLDEN["comparison"]["default_atol"]
-                ),
-            )
-
-
-@pytest.mark.parametrize(
-    ("state", "weight_index"),
-    [("cdm_reference", 23), ("sidm", 24)],
-)
-def test_legacy_mode_mass_function_and_accumulated_satellite_number_match(
-    state: str,
-    weight_index: int,
-    legacy_mode_observable_products,
-) -> None:
-    """High-level population observables must match the true public legacy model."""
-
-    legacy, migrated, catalogs = legacy_mode_observable_products
+@pytest.mark.parametrize(("state", "wi"), [("cdm_reference", 23), ("sidm", 24)])
+def test_weights_observables_units_and_roundtrip(products, tmp_path, state, wi):
+    model, values, catalogs = products
     catalog = catalogs[state]
-    bin_edges = np.geomspace(1.0e4, 1.0e7, 10)
-    thresholds = np.asarray([1.0e4, 1.0e5, 1.0e6, 1.0e7])
-
-    legacy_mass = legacy[11]
-    legacy_weight = legacy[weight_index]
-    migrated_mass = migrated[11]
-    migrated_weight = migrated[weight_index]
-
+    assert set(catalog.weights) == {"weight_base", "weight_concentration", "weight_survival"}
+    np.testing.assert_array_equal(catalog.weight_final, values[wi])
+    np.testing.assert_array_equal(
+        catalog.weight_final, np.prod(list(catalog.weights.values()), axis=0)
+    )
+    assert all(np.all(np.isfinite(v)) for v in catalog.columns.values())
+    assert all(np.all(v >= 0) for v in catalog.weights.values())
     np.testing.assert_allclose(
-        migrated_mass,
-        legacy_mass,
-        rtol=5.0e-12,
-        atol=1.0e-300,
+        catalog.columns["v_max_cdm_acc"], values[5] / (model.km / model.s), rtol=3e-16
     )
-    np.testing.assert_allclose(
-        migrated_weight,
-        legacy_weight,
-        rtol=5.0e-12,
-        atol=1.0e-300,
-    )
-    np.testing.assert_allclose(
-        catalog.columns["m_bound"],
-        legacy_mass,
-        rtol=5.0e-12,
-        atol=1.0e-300,
-    )
-    np.testing.assert_allclose(
-        catalog.weight_final,
-        legacy_weight,
-        rtol=5.0e-12,
-        atol=1.0e-300,
-    )
-
-    legacy_mass_function = _mass_function(
-        legacy_mass,
-        legacy_weight,
-        bin_edges,
-    )
-    legacy_accumulated = _accumulated_satellite_number(
-        legacy_mass,
-        legacy_weight,
-        thresholds,
-    )
-    for mass, weight in (
-        (migrated_mass, migrated_weight),
-        (catalog.columns["m_bound"], catalog.weight_final),
-    ):
+    assert set(CALCULATION_METADATA_KEYS) <= set(catalog.metadata)
+    assert "physics_mode" not in catalog.metadata
+    assert catalog.metadata["calculation_specification"] == CALCULATION_SPECIFICATION
+    assert catalog.metadata["state"] == state
+    assert catalog.metadata["calculation_parameters"]["method"] == "pert2_shanks"
+    with np.load(REF / "B-accurate.npz") as reference:
+        mass, weight = reference["tuple_11"], reference[f"tuple_{wi}"]
+        bins = np.geomspace(1e4, 1e7, 10)
         np.testing.assert_allclose(
-            _mass_function(mass, weight, bin_edges),
-            legacy_mass_function,
-            rtol=5.0e-12,
-            atol=1.0e-300,
+            np.histogram(catalog.columns["m_bound"], bins, weights=catalog.weight_final)[0],
+            np.histogram(mass, bins, weights=weight)[0],
+            rtol=5e-12,
         )
-        np.testing.assert_allclose(
-            _accumulated_satellite_number(mass, weight, thresholds),
-            legacy_accumulated,
-            rtol=5.0e-12,
-            atol=1.0e-300,
-        )
+        for threshold in (1e4, 1e5, 1e6, 1e7):
+            np.testing.assert_allclose(
+                catalog.weight_final[catalog.columns["m_bound"] >= threshold].sum(),
+                weight[mass >= threshold].sum(),
+                rtol=5e-12,
+            )
+    archive = tmp_path / f"{state}.npz"
+    catalog.to_npz(archive)
+    restored = WeightedSubhaloCatalog.from_npz(archive)
+    assert dict(restored.metadata) == dict(catalog.metadata)
+    for key in catalog.columns:
+        np.testing.assert_array_equal(catalog.columns[key], restored.columns[key])
 
 
-@pytest.mark.parametrize("physics_mode", ["consistent", "legacy"])
-def test_generated_catalogs_factor_weights_and_metadata(
-    physics_mode: str, tmp_path: Path
-) -> None:
-    """Catalog views should retain independent generation-stage factors."""
-    model = create_itamae_model(physics_mode=physics_mode)
-    legacy_result, factors = model.subhalo_properties_calc(
-        **SMALL_CATALOG_PARAMETERS,
-        return_weight_factors=True,
-    )
-    catalogs = model.catalogs_from_legacy(
-        legacy_result,
-        weight_factors=factors,
-    )
-
-    assert set(catalogs) == {"cdm_reference", "sidm"}
-    for state, weight_index in (("cdm_reference", 23), ("sidm", 24)):
-        catalog = catalogs[state]
-        assert set(catalog.weights) == {
-            "weight_base",
-            "weight_concentration",
-            "weight_survival",
-        }
-        np.testing.assert_allclose(
-            catalog.weight_final,
-            legacy_result[weight_index],
-            rtol=2.0e-15,
-            atol=0.0,
+def test_paired_states_keep_initial_node_identity(products):
+    _, _, catalogs = products
+    for name in catalogs["cdm_reference"].columns:
+        np.testing.assert_array_equal(
+            catalogs["cdm_reference"].columns[name], catalogs["sidm"].columns[name]
         )
-        assert catalog.metadata["schema_version"] == "1.0"
-        assert set(MIGRATION_METADATA_KEYS) <= set(catalog.metadata)
-        assert catalog.metadata["sashimi_variant"] == "sashimi-si"
-        assert len(catalog.metadata["itamae_source_revision"]) == 40
-        assert len(catalog.metadata["sashimi_source_revision"]) == 40
-        assert catalog.metadata["sashimi_version"] == "0.1.0a1"
-        assert catalog.metadata["catalog_schema_version"] == "1.0"
-        assert catalog.metadata["canonical_unit_schema"] == "1.0"
-        assert catalog.metadata["backend_identifier"] == _GOLDEN["cosmology"][
-            "backend_identifier"
-        ]
-        assert catalog.metadata["cosmology_parameters"] == _GOLDEN["cosmology"][
-            "parameters"
-        ]
-        assert catalog.metadata["variance_identifier"] == "sashimi-si:analytic-cdm-fit:v1"
-        assert catalog.metadata["power_identifier"] == "sashimi-si:cdm-linear-power:v1"
-        assert catalog.metadata["solver_identifier"] == (
-            "sashimi-si:gravothermal-tidal-stripping:v1"
-        )
-        assert catalog.metadata["cosmology_parameters"] == {
-            "omega_m0": 0.315,
-            "h": 0.674,
-            "omega_lambda0": 0.685,
-        }
-        assert catalog.metadata["backend_identifier"] == model.itamae_backend.identifier
-        assert catalog.metadata["state"] == state
-        assert catalog.metadata["physics_mode"] == physics_mode
-        assert catalog.metadata["physics_mode_equivalence"] == "legacy=consistent"
-        assert catalog.metadata["weight_factorization"] == "generation-stage"
-        assert catalog.metadata["source_identifier"] == (
-            "sashimi-si:upstream-physics:e17d3664dac677b604fd4ff02fb2af105a6937fa"
-        )
-        np.testing.assert_allclose(
-            catalog.weight_final,
-            catalog.weights["weight_base"]
-            * catalog.weights["weight_concentration"]
-            * catalog.weights["weight_survival"],
-            rtol=0.0,
-            atol=0.0,
-        )
-        assert all(np.all(value >= 0.0) for value in catalog.weights.values())
-        archive = tmp_path / f"{state}.npz"
-        catalog.to_npz(archive)
-        restored = type(catalog).from_npz(archive)
-        for name in catalog.columns:
-            np.testing.assert_array_equal(restored.columns[name], catalog.columns[name])
-        assert dict(restored.metadata) == dict(catalog.metadata)
-
-    np.testing.assert_allclose(
-        catalogs["cdm_reference"].columns["v_max_cdm_acc"],
-        legacy_result[5] / (model.km / model.s),
-        rtol=0.0,
-        atol=0.0,
-    )
-    assert catalogs["cdm_reference"].metadata["model_identifier"] == (
-        "sashimi-si:cdm-reference:v1"
-    )
-    assert catalogs["sidm"].metadata["model_identifier"] == (
-        "sashimi-si:sidm-parametric:v1"
-    )
-
-
-def test_public_catalog_state_alias_and_validation() -> None:
-    """The CDM alias should work and invalid modes or states should fail."""
-    with pytest.raises(ValueError, match="physics_mode"):
-        create_itamae_model(physics_mode="unknown")
-    with pytest.raises(ValueError, match="OmegaM=0.315"):
-        ItamaeHaloModel(
-            cosmology_backend=NativeFlatLCDM(omega_m0=0.3, h=0.674)
+    for name in ("weight_base", "weight_concentration"):
+        np.testing.assert_array_equal(
+            catalogs["cdm_reference"].weights[name], catalogs["sidm"].weights[name]
         )
 
-    model = create_itamae_model()
-    cdm = model.subhalo_catalog_calc(
-        **SMALL_CATALOG_PARAMETERS,
-        state="cdm",
-    )
-    assert cdm.metadata["state"] == "cdm_reference"
 
+def test_backend_is_passed_to_tidal_solver():
+    config = BackendConfig(cosmology=NativeFlatLCDM(omega_m0=0.315, h=0.674), units=NativeUnits())
+    solver = TidalStrippingSolver(1e10, z_max=1.5, n_z_interp=32, backend_config=config)
+    assert solver.itamae_backend is config
+    mass = np.array([1e6, 1e7, 1e8])
+    bound = solver.subhalo_mass_stripped_pert2_shanks(mass, 1.0, 0.0)
+    assert np.all(bound > 0) and np.all(bound <= mass)
+
+
+def test_public_state_and_cosmology_validation():
+    with pytest.raises(ValueError, match=r"OmegaM=0\.315"):
+        HaloModel(cosmology_backend=NativeFlatLCDM(omega_m0=0.3, h=0.674))
     with pytest.raises(ValueError, match="state must"):
-        model.subhalo_catalog_calc(
-            **SMALL_CATALOG_PARAMETERS,
-            state="invalid",
-        )
+        SubhaloProperties().subhalo_catalog_calc(**PARAMETERS, state="invalid")
+    assert (
+        SubhaloProperties().subhalo_catalog_calc(**PARAMETERS, state="cdm").metadata["state"]
+        == "cdm_reference"
+    )

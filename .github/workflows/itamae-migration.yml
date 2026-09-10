@@ -41,6 +41,8 @@ jobs:
       - name: Lint migration code
         run: >-
           uv run --no-sync ruff check
+          sashimi_si.py
+          sashimi_si_physics.py
           sashimi_si_itamae.py
           sashimi_si_itamae_migration.py
           sashimi_si_itamae_components.py

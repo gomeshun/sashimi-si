@@ -28,14 +28,14 @@ def test_sidm_weight_includes_the_shared_cdm_truncation_gate():
 
 def test_formed_nodes_and_both_weights_match_independent_reference():
     reference_dir = Path(__file__).parent / "formation_reference"
-    provenance = json.loads((reference_dir / "B-all-formation.json").read_text())
+    provenance = json.loads((reference_dir / "B-accurate-formation.json").read_text())
     model = create_itamae_model()
     parameters = provenance["calculation"]["parameters"]
     catalogs = model.subhalo_catalogs_calc(**parameters)
     valid = catalogs["sidm"].columns["valid_accretion"]
     result = model.subhalo_properties_calc(**parameters)
     assert valid.size == 168 and valid.sum() == 164
-    with np.load(reference_dir / "B-all-formation.npz") as reference:
+    with np.load(reference_dir / "B-accurate-formation.npz") as reference:
         for i, actual in enumerate(result):
             mask = np.ones_like(valid) if i in (23, 24) else valid
             np.testing.assert_allclose(
