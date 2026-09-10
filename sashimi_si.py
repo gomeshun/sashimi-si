@@ -1237,14 +1237,18 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
             xmax     = (delca-delcM)**2/(2.*(self.s_func(mmax)-sM))
             normB    = special.gamma(0.5)*special.gammainc(0.5,xmax)/np.sqrt(np.pi)
             # those reside in the exponential part of Eq. (14) 
-            Phi      = self.Ffunc_Yang(delcM,delca,sM,sa)/normB*np.heaviside(mmax-ma,0)
+            d1, d2, s1, s2, norm, allowed = np.broadcast_arrays(delcM, delca, sM, sa, normB, mmax > ma)
+            Phi = np.zeros(s2.shape)
+            Phi[allowed] = self.Ffunc_Yang(d1[allowed], d2[allowed], s1[allowed], s2[allowed]) / norm[allowed]
         elif Na_model==1:
             delca    = self.deltac_func(zacc_2d)
             sM       = self.s_func(M200)
             sa       = self.s_func(ma)
             xmin     = self.s_func(mmax)-self.s_func(M200)
             normB    = 1./np.sqrt(2*np.pi)*delca*2./xmin**0.5*special.hyp2f1(0.5,0.,1.5,-sM/xmin)
-            Phi      = self.Ffunc(delca,sM,sa)/normB*np.heaviside(mmax-ma,0)
+            d, s1, s2, norm, allowed = np.broadcast_arrays(delca, sM, sa, normB, mmax > ma)
+            Phi = np.zeros(s2.shape)
+            Phi[allowed] = self.Ffunc(d[allowed], s1[allowed], s2[allowed]) / norm[allowed]
         elif Na_model==2:
             delca    = self.deltac_func(zacc_2d)
             sM       = self.s_func(M200)
@@ -1254,14 +1258,19 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
                            *(delca/np.sqrt(sM))**-0.01*(2./(1.-0.38))*sM**(-0.38/2.) \
                            *xmin**(0.5*(0.38-1.)) \
                            *special.hyp2f1(0.5*(1-0.38),-0.38/2.,0.5*(3.-0.38),-sM/xmin)
-            Phi      = self.Ffunc(delca,sM,sa)*self.Gfunc(delca,sM,sa)/normB \
-                           *np.heaviside(mmax-ma,0)
+            d, s1, s2, norm, allowed = np.broadcast_arrays(delca, sM, sa, normB, mmax > ma)
+            Phi = np.zeros(s2.shape)
+            Phi[allowed] = self.Ffunc(d[allowed], s1[allowed], s2[allowed]) * self.Gfunc(d[allowed], s1[allowed], s2[allowed]) / norm[allowed]
+        else:
+            raise ValueError("Na_model must be 1, 2, or 3.")
+        if not np.all(np.isfinite(Phi)):
+            raise ValueError("Non-finite EPS accretion kernel inside its active mass domain.")
         # calculate Na
         if N_herm==1:
-            F2t = np.nan_to_num(Phi)
-            F2  =F2t.reshape((len(zacc_2d),len(ma)))
+            F2t = Phi
+            F2  =F2t[0]
         else:
-            F2 = np.sum(np.nan_to_num(Phi)*wwi/np.sqrt(np.pi),axis=0)
+            F2 = np.sum(Phi*wwi/np.sqrt(np.pi),axis=0)
         Na = F2*self.dsdm(ma,0.)*self.dMdz(Mhost,zacc_2d,z0)*(1.+zacc_2d)
         return Na
 

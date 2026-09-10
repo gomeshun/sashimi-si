@@ -165,7 +165,7 @@ class ItamaeMigrationMixin:
         eps = np.where(small_correction, partial_2, accelerated)
         return ma * np.exp(eps)
 
-    def subhalo_properties_calc(
+    def _calculate_population(
         self,
         M0,
         redshift=0.0,
@@ -181,7 +181,6 @@ class ItamaeMigrationMixin:
         ct_th=0.0,
         M0_at_redshift=False,
         method="pert2_shanks",
-        return_weight_factors=False,
         **kwargs: Any,
     ):
         """Run SIDM physical stages through the shared population executor."""
@@ -340,15 +339,19 @@ class ItamaeMigrationMixin:
                 "weight_survival": execution.survival["sidm"].astype(float),
             },
         }
-        if return_weight_factors:
-            return result, factors
-        return result
+        return result, factors, columns
+
+    def subhalo_properties_calc(self, *args, return_weight_factors=False, **kwargs):
+        """Return the historical tuple format of the generated population."""
+        result, factors, _ = self._calculate_population(*args, **kwargs)
+        return (result, factors) if return_weight_factors else result
 
     def catalogs_from_legacy(
         self,
         result,
         *,
         weight_factors: Mapping[str, Mapping[str, Any]],
+        validity: Mapping[str, Any] | None = None,
     ) -> Mapping[str, WeightedSubhaloCatalog]:
         """Convert legacy arrays and generation-stage factors into catalogs.
 
@@ -413,6 +416,8 @@ class ItamaeMigrationMixin:
             columns[name] = values
         columns["survive_cdm"] = np.asarray(result[25], dtype=bool)
         columns["survive_sidm"] = np.asarray(result[26], dtype=bool)
+        if validity is not None:
+            columns.update(validity)
         expected_states = {"cdm_reference", "sidm"}
         if set(weight_factors) != expected_states:
             raise ValueError(f"weight_factors must contain {sorted(expected_states)}.")
@@ -425,6 +430,8 @@ class ItamaeMigrationMixin:
                 "density": "Msun / Mpc3",
             },
             "weight_factorization": "generation-stage",
+            "validity_policy": "formed-before-accretion; shared-CDM-truncation; SIDM-profile",
+            "uncomputed_sidm_value": "zero where valid_accretion is false",
             "physics_mode_equivalence": "legacy=consistent",
             "cosmology_parameters": {
                 "omega_m0": float(self.OmegaM),
@@ -477,14 +484,11 @@ class ItamaeMigrationMixin:
         """Calculate and return both CDM-reference and SIDM catalog views."""
         if "return_weight_factors" in kwargs:
             raise ValueError("subhalo_catalogs_calc manages return_weight_factors internally.")
-        result, weight_factors = self.subhalo_properties_calc(
-            *args,
-            return_weight_factors=True,
-            **kwargs,
-        )
+        result, weight_factors, columns = self._calculate_population(*args, **kwargs)
         return self.catalogs_from_legacy(
             result,
             weight_factors=weight_factors,
+            validity={"valid_accretion": columns["valid_accretion"]},
         )
 
     def subhalo_catalog_calc(self, *args: Any, state: str = "sidm", **kwargs: Any):

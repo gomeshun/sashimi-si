@@ -17,14 +17,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.13"]
+        python-version: ["3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
       - name: Check out pinned public ITAMAE
         uses: actions/checkout@v4
         with:
           repository: gomeshun/itamae
-          ref: 970cda1bdf6f556993f07f4c1b6bcac02323dd9d
+          ref: 5da8dbbbd88f3f45dd7d2fbe66f11203d9632fa7
           path: .itamae
       - name: Export migration provenance revisions
         run: |

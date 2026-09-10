@@ -65,6 +65,7 @@ class SIDMAccretionSlices:
             "rmax_ba": rmax_ba,
             "Vmax_ba": Vmax_ba,
             "t_f": self.t_f,
+            "valid_accretion": self.z_f > za,
         }
         return batch, context
 
@@ -144,34 +145,41 @@ class SIDMProfileEvolution:
             (context["rmax_ba"], rmax_aa[:, 1:]),
             axis=1,
         )
-        t_c = self.model.t_collapse(
-            self.model.sigma_eff_m(Vmax_CDM),
-            rmax_CDM,
-            Vmax_CDM,
-        )
-        tt_ratio = ((self.model.t_U - context["t_f"]) / t_c)[:, -1, :]
-        Vmax_sidm, rmax_sidm, rho_s_sidm, r_s_sidm, r_c_sidm = (
-            self.model.param_model.master_function(
-                Vmax_CDM,
-                rmax_CDM,
-                t,
-                context["t_f"],
+        # Formation is a domain boundary, already a zero-weight gate in the
+        # archived SI model. Never integrate a SIDM history backwards in time.
+        valid = context["valid_accretion"]
+        shape = (self.N_herm, n_mass)
+        outputs = [np.zeros(shape) for _ in range(5)]
+        acc_outputs = [np.zeros(shape) for _ in range(5)]
+        tt_ratio = np.zeros(shape)
+        if np.any(valid):
+            t_c = self.model.t_collapse(
+                self.model.sigma_eff_m(Vmax_CDM[..., valid]),
+                rmax_CDM[..., valid],
+                Vmax_CDM[..., valid],
             )
-        )
-        t2 = self.model.t_U - self.model.lookback_time(context["z_ba"])
-        (
-            v_max_sidm_acc,
-            rmax_sidm_acc,
-            rho_s_sidm_acc,
-            r_s_sidm_acc,
-            r_c_sidm_acc,
-        ) = self.model.param_model.master_function(
-            context["Vmax_ba"],
-            context["rmax_ba"],
-            t2,
-            context["t_f"],
-        )
+            tt_ratio[:, valid] = ((self.model.t_U - context["t_f"][valid]) / t_c)[:, -1, :]
+            evolved_valid = self.model.param_model.master_function(
+                Vmax_CDM[..., valid],
+                rmax_CDM[..., valid],
+                t[..., valid],
+                context["t_f"][valid],
+            )
+            t2 = self.model.t_U - self.model.lookback_time(context["z_ba"][..., valid])
+            acc_valid = self.model.param_model.master_function(
+                context["Vmax_ba"][..., valid],
+                context["rmax_ba"][..., valid],
+                t2,
+                context["t_f"][valid],
+            )
+            for destination, value in zip(outputs, evolved_valid, strict=True):
+                destination[:, valid] = value
+            for destination, value in zip(acc_outputs, acc_valid, strict=True):
+                destination[:, valid] = value
+        Vmax_sidm, rmax_sidm, rho_s_sidm, r_s_sidm, r_c_sidm = outputs
+        v_max_sidm_acc, rmax_sidm_acc, rho_s_sidm_acc, r_s_sidm_acc, r_c_sidm_acc = acc_outputs
         return {
+            "valid_accretion": np.broadcast_to(valid, shape).reshape(-1),
             "r_s_sidm_acc": r_s_sidm_acc.reshape(-1),
             "rho_s_sidm_acc": rho_s_sidm_acc.reshape(-1),
             "r_c_sidm_acc": r_c_sidm_acc.reshape(-1),
@@ -199,21 +207,19 @@ class SIDMSurvival:
     ct_threshold: float
 
     def select(self, batch, initial, evolved, context):
-        return {
-            "cdm_reference": evolved["c_t_cdm"] > self.ct_threshold,
-            "sidm": (
-                (
-                    (evolved["v_max_sidm"] < 0.0)
-                    + (evolved["rmax_sidm"] < 0.0)
-                    + (evolved["v_max_sidm_acc"] < 0.0)
-                    + (evolved["rmax_sidm_acc"] < 0.0)
-                    + (evolved["r_c_sidm"] < 0.0)
-                    + (evolved["r_c_sidm_acc"] < 0.0)
-                )
-                == 1
-            )
-            == 0,
-        }
+        formed = evolved["valid_accretion"]
+        cdm = formed & (evolved["c_t_cdm"] > self.ct_threshold)
+        profile_valid = np.ones_like(formed, dtype=bool)
+        for name in (
+            "v_max_sidm",
+            "rmax_sidm",
+            "v_max_sidm_acc",
+            "rmax_sidm_acc",
+            "r_c_sidm",
+            "r_c_sidm_acc",
+        ):
+            profile_valid &= evolved[name] >= 0.0
+        return {"cdm_reference": cdm, "sidm": cdm & profile_valid}
 
 
 @dataclass(frozen=True, slots=True)
@@ -222,6 +228,7 @@ class SIDMCatalogColumns:
 
     def build(self, batch, initial, evolved, survival_masks, context):
         return {
+            "valid_accretion": evolved["valid_accretion"],
             "m200_acc": batch.m200_acc,
             "z_acc": batch.z_acc,
             "r_s_cdm_acc": initial["r_s_cdm_acc"],
