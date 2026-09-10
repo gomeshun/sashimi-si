@@ -155,6 +155,31 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
             * np.exp(-((delc2 - delc1) ** 2) / (2.0 * (s2 - s1)))
         )
 
+    def _normalized_yang_kernel(self, delc1, delc2, s1, s2, smin):
+        """Yang Eq. (14) divided by its mass-support integral, including gap=0.
+
+        For x=delta/sqrt(2*(smin-s1)), erf(x)/x tends to 2/sqrt(pi).
+        The small-x series evaluates that ratio before the vanishing factors
+        are divided. This is the same normalized kernel, with no weight cut.
+        """
+        d1, d2, a, b, minimum = np.broadcast_arrays(delc1, delc2, s1, s2, smin)
+        gap, ds, dsmin = d2 - d1, b - a, minimum - a
+        if np.any(gap < 0) or np.any(ds <= 0) or np.any(dsmin <= 0):
+            raise ValueError("Normalized Yang kernel requires nonnegative barrier gap and positive variance gaps.")
+        x2 = gap**2 / (2.0 * dsmin)
+        small = x2 < 1e-8
+        result = np.empty_like(x2, dtype=float)
+        x = x2[small]
+        integral = 1.0 - x / 3.0 + x**2 / 10.0 - x**3 / 42.0 + x**4 / 216.0
+        result[small] = (
+            np.sqrt(dsmin[small]) / (2.0 * ds[small]**1.5)
+            * np.exp(-gap[small]**2 / (2.0 * ds[small])) / integral
+        )
+        regular = ~small
+        norm = special.gamma(0.5) * special.gammainc(0.5, x2[regular]) / np.sqrt(np.pi)
+        result[regular] = self.Ffunc_Yang(d1[regular], d2[regular], a[regular], b[regular]) / norm
+        return result
+
     def Na_calc(self, ma, zacc, Mhost, z0=0.0, N_herm=200, Nrand=1000, Na_model=3):
         """Returns Na, Eq. (3) of Yang et al. (2011)
 
@@ -208,15 +233,13 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
             delca = self.deltac_func(zacc_2d)
             sM = self.s_func(Mmax)
             sa = self.s_func(ma)
-            xmax = (delca - delcM) ** 2 / (2.0 * (self.s_func(mmax) - sM))
-            normB = special.gamma(0.5) * special.gammainc(0.5, xmax) / np.sqrt(np.pi)
             # those reside in the exponential part of Eq. (14)
-            d1, d2, s1, s2, norm, allowed = np.broadcast_arrays(
-                delcM, delca, sM, sa, normB, mmax > ma
+            d1, d2, s1, s2, smin, allowed = np.broadcast_arrays(
+                delcM, delca, sM, sa, self.s_func(mmax), mmax > ma
             )
             Phi = np.zeros(s2.shape)
-            Phi[allowed] = (
-                self.Ffunc_Yang(d1[allowed], d2[allowed], s1[allowed], s2[allowed]) / norm[allowed]
+            Phi[allowed] = self._normalized_yang_kernel(
+                d1[allowed], d2[allowed], s1[allowed], s2[allowed], smin[allowed]
             )
         elif Na_model == 1:
             delca = self.deltac_func(zacc_2d)

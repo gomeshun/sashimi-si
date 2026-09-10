@@ -1,0 +1,194 @@
+FFFFFFF                                                                  [100%]
+=================================== FAILURES ===================================
+____ test_normalized_yang_kernel_against_independent_definite_integral[0.0] ____
+
+gap = 0.0
+
+    @pytest.mark.parametrize("gap", [0., 1e-12, 1e-6, 1e-3, 1., 10.])
+    def test_normalized_yang_kernel_against_independent_definite_integral(gap):
+        model = SubhaloProperties()
+        ds, dsmin = 8., 3.
+        x = gap / np.sqrt(2 * dsmin)
+        normalization = quad(lambda t: np.exp(-(x*t)**2), 0., 1., epsabs=1e-14)[0]
+        expected = np.sqrt(dsmin) / (2 * ds**1.5) * np.exp(-gap**2 / (2*ds)) / normalization
+>       actual = model._normalized_yang_kernel(1., 1.+gap, 1., 1.+ds, 1.+dsmin)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'SubhaloProperties' object has no attribute '_normalized_yang_kernel'
+
+tests/test_eps_normalized_limit.py:17: AttributeError
+___ test_normalized_yang_kernel_against_independent_definite_integral[1e-12] ___
+
+gap = 1e-12
+
+    @pytest.mark.parametrize("gap", [0., 1e-12, 1e-6, 1e-3, 1., 10.])
+    def test_normalized_yang_kernel_against_independent_definite_integral(gap):
+        model = SubhaloProperties()
+        ds, dsmin = 8., 3.
+        x = gap / np.sqrt(2 * dsmin)
+        normalization = quad(lambda t: np.exp(-(x*t)**2), 0., 1., epsabs=1e-14)[0]
+        expected = np.sqrt(dsmin) / (2 * ds**1.5) * np.exp(-gap**2 / (2*ds)) / normalization
+>       actual = model._normalized_yang_kernel(1., 1.+gap, 1., 1.+ds, 1.+dsmin)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'SubhaloProperties' object has no attribute '_normalized_yang_kernel'
+
+tests/test_eps_normalized_limit.py:17: AttributeError
+___ test_normalized_yang_kernel_against_independent_definite_integral[1e-06] ___
+
+gap = 1e-06
+
+    @pytest.mark.parametrize("gap", [0., 1e-12, 1e-6, 1e-3, 1., 10.])
+    def test_normalized_yang_kernel_against_independent_definite_integral(gap):
+        model = SubhaloProperties()
+        ds, dsmin = 8., 3.
+        x = gap / np.sqrt(2 * dsmin)
+        normalization = quad(lambda t: np.exp(-(x*t)**2), 0., 1., epsabs=1e-14)[0]
+        expected = np.sqrt(dsmin) / (2 * ds**1.5) * np.exp(-gap**2 / (2*ds)) / normalization
+>       actual = model._normalized_yang_kernel(1., 1.+gap, 1., 1.+ds, 1.+dsmin)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'SubhaloProperties' object has no attribute '_normalized_yang_kernel'
+
+tests/test_eps_normalized_limit.py:17: AttributeError
+___ test_normalized_yang_kernel_against_independent_definite_integral[0.001] ___
+
+gap = 0.001
+
+    @pytest.mark.parametrize("gap", [0., 1e-12, 1e-6, 1e-3, 1., 10.])
+    def test_normalized_yang_kernel_against_independent_definite_integral(gap):
+        model = SubhaloProperties()
+        ds, dsmin = 8., 3.
+        x = gap / np.sqrt(2 * dsmin)
+        normalization = quad(lambda t: np.exp(-(x*t)**2), 0., 1., epsabs=1e-14)[0]
+        expected = np.sqrt(dsmin) / (2 * ds**1.5) * np.exp(-gap**2 / (2*ds)) / normalization
+>       actual = model._normalized_yang_kernel(1., 1.+gap, 1., 1.+ds, 1.+dsmin)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'SubhaloProperties' object has no attribute '_normalized_yang_kernel'
+
+tests/test_eps_normalized_limit.py:17: AttributeError
+____ test_normalized_yang_kernel_against_independent_definite_integral[1.0] ____
+
+gap = 1.0
+
+    @pytest.mark.parametrize("gap", [0., 1e-12, 1e-6, 1e-3, 1., 10.])
+    def test_normalized_yang_kernel_against_independent_definite_integral(gap):
+        model = SubhaloProperties()
+        ds, dsmin = 8., 3.
+        x = gap / np.sqrt(2 * dsmin)
+        normalization = quad(lambda t: np.exp(-(x*t)**2), 0., 1., epsabs=1e-14)[0]
+        expected = np.sqrt(dsmin) / (2 * ds**1.5) * np.exp(-gap**2 / (2*ds)) / normalization
+>       actual = model._normalized_yang_kernel(1., 1.+gap, 1., 1.+ds, 1.+dsmin)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'SubhaloProperties' object has no attribute '_normalized_yang_kernel'
+
+tests/test_eps_normalized_limit.py:17: AttributeError
+___ test_normalized_yang_kernel_against_independent_definite_integral[10.0] ____
+
+gap = 10.0
+
+    @pytest.mark.parametrize("gap", [0., 1e-12, 1e-6, 1e-3, 1., 10.])
+    def test_normalized_yang_kernel_against_independent_definite_integral(gap):
+        model = SubhaloProperties()
+        ds, dsmin = 8., 3.
+        x = gap / np.sqrt(2 * dsmin)
+        normalization = quad(lambda t: np.exp(-(x*t)**2), 0., 1., epsabs=1e-14)[0]
+        expected = np.sqrt(dsmin) / (2 * ds**1.5) * np.exp(-gap**2 / (2*ds)) / normalization
+>       actual = model._normalized_yang_kernel(1., 1.+gap, 1., 1.+ds, 1.+dsmin)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'SubhaloProperties' object has no attribute '_normalized_yang_kernel'
+
+tests/test_eps_normalized_limit.py:17: AttributeError
+______ test_si_host_quadrature_refinement_includes_finite_zero_gap_nodes _______
+
+    def test_si_host_quadrature_refinement_includes_finite_zero_gap_nodes():
+        model = SubhaloProperties()
+        redshift = np.arange(.25, 3.25, .25)
+        m200 = model.Mzi(np.geomspace(1e6, 1e10, 16), redshift[:, None])
+        mass = model.Mvir_from_M200_fit(m200, redshift[:, None])
+        with np.errstate(all="raise"):
+>           accretion = model.Na_calc(mass, redshift, 1e12, N_herm=64)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_eps_normalized_limit.py:27: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sashimi_si.SubhaloProperties object at 0x705a02186210>
+ma = array([[1.01246934e+06, 1.86979069e+06, 3.45304786e+06, 6.37691730e+06,
+        1.17765334e+07, 2.17481505e+07, 4.0162...31896738e+07, 1.49558663e+08, 2.68425156e+08,
+        4.80828886e+08, 8.59363111e+08, 1.53185628e+09, 2.72219965e+09]])
+zacc = array([0.25, 0.5 , 0.75, 1.  , 1.25, 1.5 , 1.75, 2.  , 2.25, 2.5 , 2.75,
+       3.  ])
+Mhost = 1000000000000.0, z0 = 0.0, N_herm = 64, Nrand = 1000, Na_model = 3
+
+    def Na_calc(self, ma, zacc, Mhost, z0=0.0, N_herm=200, Nrand=1000, Na_model=3):
+        """Returns Na, Eq. (3) of Yang et al. (2011)
+    
+        Parameters
+        ---
+        ma : float
+            The mass of the subhalo.
+        zacc : float
+            The accretion redshift of the subhalo.
+        Mhost : float
+            The mass of the host halo.
+        z0 : float
+            The redshift.
+        N_herm : int
+            The number of Hermite-Gauss quadrature points.
+        Nrand : int
+            The number of random numbers.
+        Na_model : int
+            The model to calculate Na. Default is 3.
+    
+        Returns
+        ---
+        Na : float
+            The value of Na.
+    
+        References
+        ---
+            - Yang et al. (2011), https://arxiv.org/abs/1104.1757
+        """
+        zacc_2d = zacc.reshape(-1, 1)
+        M200_0 = self.Mzzi(Mhost, zacc_2d, z0)
+        logM200_0 = np.log10(M200_0)
+    
+        xxi, wwi = hermgauss(N_herm)
+        xxi = xxi.reshape(-1, 1, 1)
+        wwi = wwi.reshape(-1, 1, 1)
+        # Eq. (21) in Yang et al. (2011)
+        sigmalogM200 = 0.12 - 0.15 * np.log10(M200_0 / Mhost)
+        logM200 = np.sqrt(2.0) * sigmalogM200 * xxi + logM200_0
+        M200 = 10.0**logM200
+    
+        mmax = np.minimum(M200, Mhost / 2.0)
+        Mmax = np.minimum(M200_0 + mmax, Mhost)
+    
+        if Na_model == 3:
+            zlist = zacc_2d * np.linspace(1, 0, Nrand)
+            iMmax = np.argmin(np.abs(self.Mzzi(Mhost, zlist, z0) - Mmax), axis=-1)
+            z_Max = zlist[np.arange(len(zlist)), iMmax]
+            z_Max_3d = z_Max.reshape(N_herm, len(zlist), 1)
+            delcM = self.deltac_func(z_Max_3d)
+            delca = self.deltac_func(zacc_2d)
+            sM = self.s_func(Mmax)
+            sa = self.s_func(ma)
+            xmax = (delca - delcM) ** 2 / (2.0 * (self.s_func(mmax) - sM))
+            normB = special.gamma(0.5) * special.gammainc(0.5, xmax) / np.sqrt(np.pi)
+            # those reside in the exponential part of Eq. (14)
+            d1, d2, s1, s2, norm, allowed = np.broadcast_arrays(
+                delcM, delca, sM, sa, normB, mmax > ma
+            )
+            Phi = np.zeros(s2.shape)
+            Phi[allowed] = (
+>               self.Ffunc_Yang(d1[allowed], d2[allowed], s1[allowed], s2[allowed]) / norm[allowed]
+E               FloatingPointError: invalid value encountered in divide
+
+sashimi_si.py:219: FloatingPointError
+=========================== short test summary info ============================
+FAILED tests/test_eps_normalized_limit.py::test_normalized_yang_kernel_against_independent_definite_integral[0.0]
+FAILED tests/test_eps_normalized_limit.py::test_normalized_yang_kernel_against_independent_definite_integral[1e-12]
+FAILED tests/test_eps_normalized_limit.py::test_normalized_yang_kernel_against_independent_definite_integral[1e-06]
+FAILED tests/test_eps_normalized_limit.py::test_normalized_yang_kernel_against_independent_definite_integral[0.001]
+FAILED tests/test_eps_normalized_limit.py::test_normalized_yang_kernel_against_independent_definite_integral[1.0]
+FAILED tests/test_eps_normalized_limit.py::test_normalized_yang_kernel_against_independent_definite_integral[10.0]
+FAILED tests/test_eps_normalized_limit.py::test_si_host_quadrature_refinement_includes_finite_zero_gap_nodes
+7 failed in 1.37s
