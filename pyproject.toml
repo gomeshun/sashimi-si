@@ -35,7 +35,7 @@ demo = [
   "matplotlib>=3.8",
   "nbconvert>=7",
 ]
-test = ["pytest>=8"]
+test = ["pytest>=8", "setuptools>=77"]
 
 [tool.setuptools]
 py-modules = [

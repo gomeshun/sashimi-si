@@ -37,7 +37,7 @@ jobs:
       - name: Create test environment
         run: uv venv --python "${{ matrix.python-version }}"
       - name: Install pinned ITAMAE and test tools
-        run: uv pip install ./.itamae pytest numexpr tqdm ruff
+        run: uv pip install ./.itamae pytest numexpr tqdm ruff setuptools
       - name: Lint migration code
         run: >-
           uv run --no-sync ruff check
