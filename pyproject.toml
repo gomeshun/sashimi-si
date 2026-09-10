@@ -62,4 +62,4 @@ select = ["E", "F"]
 ignore = ["E501"]
 
 [tool.uv.sources]
-sashimi-itamae = {git = "https://github.com/gomeshun/itamae.git", rev = "5da8dbbbd88f3f45dd7d2fbe66f11203d9632fa7"}
+sashimi-itamae = {git = "https://github.com/gomeshun/itamae.git", rev = "e5c77cdf2832104752d641dd553902fc507885ba"}

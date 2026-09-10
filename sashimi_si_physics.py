@@ -1,11 +1,11 @@
 """SIDM cross sections, calibrated profiles, host and tidal physical kernels."""
 
-from itamae.evolution import shanks_transform
+from itamae.evolution import shanks_transform, solve_evolution
 import numpy as np
 from scipy import integrate
 from scipy import optimize
 from scipy import special
-from scipy.integrate import odeint, cumulative_trapezoid
+from scipy.integrate import cumulative_trapezoid
 from scipy.interpolate import interp1d
 import numexpr as ne
 
@@ -849,20 +849,32 @@ class SITidalKernels(SIHaloKernels):
         )
 
     def subhalo_mass_stripped_odeint(self, ma, za, z0, **kwargs):
-        """Solve the subhalo mass stripping equation using the odeint function.
+        """Integrate the owned tidal RHS through ITAMAE's odeint controller.
 
-        If z0 is scalar, then the function returns the final mass of the subhalo at z0.
-        If z0 is an array, then the function returns the mass of the subhalo at all redshifts in za.
+        Numerical options retain SciPy meanings. A supplied Dfun keeps this
+        method's historical state-first signature; ITAMAE receives time first.
+        The controller owns args/tfirst/full_output, which are not accepted as
+        duplicate overrides. Repeated times and zero evolution are preserved.
         """
-        if np.isscalar(z0):
-            zcalc = np.linspace(za, z0, 100)
-            sol = odeint(self.msolve, ma, zcalc, **kwargs)
-            return sol[-1]
-        else:
-            sol = odeint(self.msolve, ma, z0, **kwargs)
-            return sol
+        options = dict(kwargs)
+        rtol, atol = options.pop("rtol", None), options.pop("atol", None)
+        jacobian = options.get("Dfun")
+        if callable(jacobian):
+            options["Dfun"] = lambda time, state: jacobian(state, time)
+        scalar_output = np.isscalar(z0)
+        zcalc = np.linspace(za, z0, 100) if scalar_output else np.asarray(z0)
+        solution = solve_evolution(
+            lambda time, state: self.msolve(state, time),
+            ma,
+            zcalc,
+            method="odeint",
+            rtol=rtol,
+            atol=atol,
+            odeint_options=options,
+            allow_repeated_times=True,
+        )
+        return solution[-1] if scalar_output else solution
 
-    # Functions to calculate perturbative corrections to the subhalo mass function
     def Phi(self, z):
         """subhalo stripping factor assuming zetaMz(z) = 0.
         The stripping rate dm/dt is given by
