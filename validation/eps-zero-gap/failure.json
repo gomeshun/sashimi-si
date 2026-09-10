@@ -1,0 +1,22 @@
+{
+  "source_revision": "b9834354d565046a782d84285476f0f60c4248f8",
+  "core_revision": "c2d7b9afb9773bc8cb5b2ee142d70d95cc3afe3b",
+  "parameters": {
+    "Mhost": 1000000000000.0,
+    "N_herm": 64,
+    "Nrand": 1000,
+    "Na_model": 3,
+    "zacc": "arange(0.25,3.25,0.25)",
+    "m200": "Mzi(geomspace(1e6,1e10,16),zacc[:,None])",
+    "ma": "Mvir_from_M200_fit(m200,zacc[:,None])"
+  },
+  "failure": {
+    "nonfinite_active_kernel_nodes": 57,
+    "barrier_gap": 0,
+    "raw_hermite_weight_min": 5.535706535856702e-49,
+    "raw_hermite_weight_max": 3.4211380112556006e-39,
+    "exception": "Non-finite EPS accretion kernel inside its active mass domain."
+  },
+  "arrays_sha256": "84a1298820e4eb0173ae1985ec068114f11b9df6a3d8e47453ae3b5a308d7623",
+  "probe": "Original Na_calc method copied for observation; replace its existing final nonfinite-guard exception by saving intermediate arrays. Product source was not changed."
+}
