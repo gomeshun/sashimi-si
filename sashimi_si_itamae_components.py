@@ -2,8 +2,9 @@
 
 The pre-accretion histories, cross section, collapse/profile maps and survival
 rules belong to SASHIMI-SI. Components share node identity and base weights;
-CDM reference and SIDM survival remain separate. Internal historical units are
-converted at the adapter's explicit catalog boundary.
+CDM reference and SIDM survival remain separate. Stage states use canonical
+Msun, Mpc, km/s and Msun/Mpc^3. The SI-owned history context and physical kernels
+retain their historical Mpc/s velocity unit; conversions are explicit here.
 """
 
 from __future__ import annotations
@@ -88,7 +89,8 @@ class SIDMInitialStructure:
                 * (context["Vmax_ba"][:, -1, :] / (context["rmax_ba"][:, -1, :] / 2.1626)) ** 2
             ).reshape(-1),
             "rmax_cdm_acc": context["rmax_ba"][:, -1, :].reshape(-1),
-            "v_max_cdm_acc": context["Vmax_ba"][:, -1, :].reshape(-1),
+            "v_max_cdm_acc": context["Vmax_ba"][:, -1, :].reshape(-1)
+            / (self.model.km / self.model.s),
         }
 
 
@@ -121,7 +123,8 @@ class SIDMProfileEvolution:
             axis=1,
         )
         Vmax_acc = np.expand_dims(
-            initial["v_max_cdm_acc"].reshape(self.N_herm, n_mass),
+            initial["v_max_cdm_acc"].reshape(self.N_herm, n_mass)
+            * (self.model.km / self.model.s),
             axis=1,
         )
         Vmax_aa = Vmax_acc * (2.0**0.4 * (m_aa / ma) ** 0.3 * (1.0 + m_aa / ma) ** -0.4)
@@ -187,17 +190,17 @@ class SIDMProfileEvolution:
             "rho_s_sidm_acc": rho_s_sidm_acc.reshape(-1),
             "r_c_sidm_acc": r_c_sidm_acc.reshape(-1),
             "rmax_sidm_acc": rmax_sidm_acc.reshape(-1),
-            "v_max_sidm_acc": v_max_sidm_acc.reshape(-1),
+            "v_max_sidm_acc": v_max_sidm_acc.reshape(-1) / (self.model.km / self.model.s),
             "m_bound": np.broadcast_to(m_aa[-1], (self.N_herm, n_mass)).reshape(-1),
             "r_s_cdm": r_s_cdm.reshape(-1),
             "rho_s_cdm": rho_s_cdm.reshape(-1),
             "rmax_cdm": rmax_cdm.reshape(-1),
-            "v_max_cdm": v_max_cdm.reshape(-1),
+            "v_max_cdm": v_max_cdm.reshape(-1) / (self.model.km / self.model.s),
             "r_s_sidm": r_s_sidm.reshape(-1),
             "rho_s_sidm": rho_s_sidm.reshape(-1),
             "r_c_sidm": r_c_sidm.reshape(-1),
             "rmax_sidm": rmax_sidm.reshape(-1),
-            "v_max_sidm": Vmax_sidm.reshape(-1),
+            "v_max_sidm": Vmax_sidm.reshape(-1) / (self.model.km / self.model.s),
             "c_t_cdm": c_t_cdm.reshape(-1),
             "collapse_time_ratio": tt_ratio.reshape(-1),
         }
