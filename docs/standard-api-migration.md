@@ -26,8 +26,8 @@ Validation used ITAMAE `5da8dbbbd88f3f45dd7d2fbe66f11203d9632fa7`:
 - Both the usage walkthrough and separate scientific notebook execute in fresh
   kernels. The scientific notebook includes the 168/164-node formation case.
 
-The total-cross-section formula has a separate, pending scientific adoption
-question. This API refactor does not change it. Further convergence, full
+The separate total-cross-section correction was adopted by the user after
+independent review on 2026-09-10; see [total cross section](total-cross-section.md). Further convergence, full
 release artifact checks and publication are later units; these tests alone do
 not establish a new physical calibration.
 

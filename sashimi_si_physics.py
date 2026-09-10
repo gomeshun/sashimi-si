@@ -240,8 +240,8 @@ class SIDM_cross_section(SIUnits):
         SIUnits.__init__(self)
 
     def dsigmadcostheta(self, sigma0_m, w, v, costheta):
-        r"""Returns Eq. (1.2) of Yang et al. (2023) divided by m.
-        Eq. (1.2) is given by
+        r"""Return the Rutherford differential cross section divided by m.
+        Yang et al. (2023), PDF Eq. (1.3) (HTML Eq. (3)), gives
 
         $$
         \frac{d\sigma}{d\cos\theta} = \frac{\sigma_0 w^4}{2(w^2+v^2\sin^2(\theta/2))^2}
@@ -265,7 +265,12 @@ class SIDM_cross_section(SIUnits):
         return sigma0_m * w**4 / 2.0 / (w**2 + v**2 / 2.0 * (1.0 - costheta)) ** 2
 
     def sigma_total(self, sigma0_m, w, v):
-        """Returns the total cross section of SIDM divided by m. See Yang et al. (2022) [arXiv:2205.03392]
+        """Return the angular integral of the Rutherford differential cross section.
+
+        sigma_total/m = (sigma0/m) / (1 + v**2/w**2). See the text
+        following Eq. (2.1) of Yang & Yu (2022), arXiv:2205.03392
+        (Eq. (1) in the arXiv HTML). No additional azimuth factor applies
+        because dsigmadcostheta is already differential in cos(theta).
 
         Parameters
         ---
@@ -281,7 +286,7 @@ class SIDM_cross_section(SIUnits):
         sigma_total_m : float
             The value of the total cross section of SIDM divided by m.
         """
-        return sigma0_m / (1.0 + v**2 / w**2) ** 2
+        return sigma0_m / (1.0 + v**2 / w**2)
 
     def sigma_viscosity(self, sigma0_m, w, v):
         """Returns the viscosity cross section of SIDM divided by m, given by Eq. (2.7) of Yang et al. (2022) [arXiv:2205.03392].
