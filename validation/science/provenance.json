@@ -59,5 +59,6 @@
       "after": "validation/science/sashimi-si/eps-catalog-31cfcad/N_hermNa-200-sidm.npz",
       "arrays_bitwise_equal": true
     }
-  ]
+  ],
+  "states_sha256": "63005e774fd674e64788e1ac41b656b2c6875bcaa26b50af1377884b2bae32f1"
 }

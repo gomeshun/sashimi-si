@@ -31,3 +31,7 @@ The inactive `release-workflow.yml.example` stays outside `.github/workflows`.
 Before any later enabling, configure a protected PyPI environment with required
 human reviewers and trusted publishing; manual dispatch alone is insufficient.
 No upload workflow or release tag is enabled during this preparation.
+
+All 49 SI tests pass with the installed 0.2.0rc1 candidate/core. Scientific and
+usage notebooks execute in fresh kernels, with figures inspected; the source
+distribution includes the hash-verified summaries used by the scientific cells.
