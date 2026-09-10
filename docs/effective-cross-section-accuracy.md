@@ -38,4 +38,5 @@ survival masks are bitwise unchanged. B/C comparisons keep their existing
 numerical prescription.
 
 The separate question about `sigma_total` concerns a different formula and is
-not resolved or changed by this numerical evaluation repair.
+not changed by this numerical evaluation repair. It was subsequently adopted
+and corrected in the separate [total-cross-section unit](total-cross-section.md).
