@@ -52,7 +52,7 @@ def test_standard_api_aliases_have_one_calculation_path():
 
 def test_all_27_arrays_match_independent_corrected_reference(products):
     _, result, _ = products
-    with np.load(REF / "B-all.npz") as reference:
+    with np.load(REF / "B-accurate.npz") as reference:
         for i, value in enumerate(result):
             expected = reference[f"tuple_{i}"]
             if i in (25, 26):
@@ -80,7 +80,7 @@ def test_weights_observables_units_and_roundtrip(products, tmp_path, state, wi):
     assert catalog.metadata["calculation_specification"] == CALCULATION_SPECIFICATION
     assert catalog.metadata["state"] == state
     assert catalog.metadata["calculation_parameters"]["method"] == "pert2_shanks"
-    with np.load(REF / "B-all.npz") as reference:
+    with np.load(REF / "B-accurate.npz") as reference:
         mass, weight = reference["tuple_11"], reference[f"tuple_{wi}"]
         bins = np.geomspace(1e4, 1e7, 10)
         np.testing.assert_allclose(

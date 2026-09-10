@@ -31,7 +31,7 @@ from sashimi_si_itamae_components import (
     SIDMCatalogColumns,
 )
 
-CALCULATION_SPECIFICATION = "sashimi-si:paired-catalog:2026-09-10:v1"
+CALCULATION_SPECIFICATION = "sashimi-si:paired-catalog:2026-09-10:v2"
 
 
 class HaloModel(SIHaloKernels):
@@ -453,6 +453,7 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
                             "omega_lambda0": self.OmegaL,
                         },
                         "density_convention": "SI calibrated rounded G",
+                        "effective_cross_section_evaluation": "positive-laguerre64-20to703:polynomial6-above703:v1",
                         "weight_factorization": "generation-stage",
                         "validity_policy": "formed-before-accretion; shared-CDM-truncation; SIDM-profile",
                         "uncomputed_sidm_value": "zero where valid_accretion is false",

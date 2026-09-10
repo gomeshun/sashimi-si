@@ -359,9 +359,9 @@ class SIDM_cross_section(SIUnits):
 
         where Ei(-a) is the exponential integral function.
 
-        For large a (i.e. when a > a_threshold), the asymptotic behavior gives
-            sigma_eff -> sigma0_m.
-        In that case, the function returns sigma0_m.
+        For a > a_threshold, a degree-limited asymptotic expansion approaches
+        sigma0_m. For 20 <= a <= a_threshold, a positive integral evaluates the
+        same expression without subtractive cancellation.
 
         Parameters
         ----------
@@ -370,7 +370,7 @@ class SIDM_cross_section(SIUnits):
         w : float
             The value of w (in the same units as used in the numerical methods).
         a_threshold : float, optional
-            The threshold for a above which sigma_eff is set to sigma0_m.
+            The threshold for switching to the degree-limited asymptotic expansion.
             (Default is 703., based on that Ei(-a) returns NaN for such large a.)
         degree : int, optional
             The degree of the polynomial expansion used for large a.
@@ -394,12 +394,22 @@ class SIDM_cross_section(SIUnits):
             1 / a
         )  # Evaluate the polynomial at 1/a
         sigma_eff = np.array(sigma_eff_asymp, copy=True)
-        analytic = a <= a_threshold
-        sigma_eff[analytic] = (
+        # At large a the direct expression subtracts nearly equal numbers.
+        # Its positive integral representation avoids that cancellation:
+        # ratio = integral_0^inf u*exp(-u)/(1+u/a)^2 du.
+        direct = (a <= a_threshold) & (a < 20.0)
+        sigma_eff[direct] = (
             -sigma0_m
-            * a[analytic] ** 2
-            * (np.exp(a[analytic]) * (1 + a[analytic]) * special.expi(-a[analytic]) + 1)
+            * a[direct] ** 2
+            * (np.exp(a[direct]) * (1 + a[direct]) * special.expi(-a[direct]) + 1)
         )
+        stable = (a <= a_threshold) & ~direct
+        if np.any(stable):
+            nodes, weights = special.roots_genlaguerre(64, 1.0)
+            sigma_eff[stable] = sigma0_m * np.sum(
+                weights / (1.0 + nodes / a[stable, None]) ** 2,
+                axis=-1,
+            )
         # Interpolate the result to create a function that can be evaluated at any Vmax
         f_int = interp1d(Vmax, sigma_eff)
         return f_int

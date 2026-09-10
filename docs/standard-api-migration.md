@@ -16,14 +16,13 @@ from a hidden legacy implementation.
 The explicit backend propagates into the tidal solver. Interaction parameters,
 formation/truncation validity, solver options, grids, cosmology, SI rounded-G
 convention and source revisions are recorded under calculation specification
-`sashimi-si:paired-catalog:2026-09-10:v1`. The defaults remain unchanged.
+`sashimi-si:paired-catalog:2026-09-10:v2`. The defaults remain unchanged.
 
 Validation used ITAMAE `5da8dbbbd88f3f45dd7d2fbe66f11203d9632fa7`:
 
-- All 35 equation, migration, formation-boundary, weak-interaction, serialization
+- All 36 equation, migration, formation-boundary, weak-interaction, serialization
   and public-contract tests pass, with no runtime warnings.
-- All 27 small-catalog fields match independent corrected reference B within
-  8.77e-15 relative difference. The established 5e-12 tolerance is unchanged.
+- All 27 small-catalog fields match independent corrected reference B within the established tolerance. The established 5e-12 tolerance is unchanged.
 - Both the usage walkthrough and separate scientific notebook execute in fresh
   kernels. The scientific notebook includes the 168/164-node formation case.
 
@@ -31,3 +30,7 @@ The total-cross-section formula has a separate, pending scientific adoption
 question. This API refactor does not change it. Further convergence, full
 release artifact checks and publication are later units; these tests alone do
 not establish a new physical calibration.
+
+The subsequent numerical evaluation correction is documented separately in
+[effective cross-section accuracy](effective-cross-section-accuracy.md). It uses
+a distinct commit and independent B patch; the physical formula is unchanged.
