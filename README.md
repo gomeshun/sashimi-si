@@ -4,7 +4,7 @@
 
 ## Hands-on usage walkthrough
 
-Start with [the executable usage walkthrough](notebooks/usage_walkthrough.ipynb): interaction parameters, matched CDM/SIDM catalogues, structure plots, export and checks. The **Usage walkthrough** CI executes every cell and uploads the result. This mandatory migration deliverable is tracked in [sashimi-family #28](https://github.com/gomeshun/sashimi-family/issues/28).
+Start with [the physical usage walkthrough](notebooks/usage_walkthrough.ipynb): a Milky Way scale population, subhalo mass functions, weighted Vmax–rmax distributions and a numerical refinement comparison. The **Usage walkthrough** CI executes every cell from an installed package and uploads the result. See [package layout and setup](docs/package-layout.md) for the `src/` structure and preserved historical examples.
 
 # Semi-Analytical SubHalo Inference ModelIng for Self-Interacting Dark Matter (SASHIMI-SIDM)
 [![arXiv](https://img.shields.io/badge/arXiv-2403.16633%20-green.svg)](https://arxiv.org/abs/2403.16633)
@@ -80,7 +80,7 @@ prescription is not restored. See [the formation-boundary evidence](docs/formati
 and [the API transition](docs/standard-api-migration.md).
 
 SIDM cross sections and calibrated gravothermal/profile maps are in
-`sashimi_si_physics.py`. ITAMAE supplies the numerical executor, common background,
+`src/sashimi_si/_physics.py`. ITAMAE supplies the numerical executor, common background,
 NFW inverse, quadrature and catalog/provenance contracts. Metadata records the
 calculation specification, interaction parameters, grids, solver, cosmology,
 units and source revisions. The SI calibration retains its published rounded
@@ -94,7 +94,7 @@ uv run --extra demo jupyter nbconvert --to notebook --execute \
 
 ## Examples
 
-The file 'sashimi_si.py' contains all the variables and functions that are used to compute various subhalo properties. Please read 'sample.ipynb' for more extensive examples.
+The `sashimi_si` package provides the variables and functions used to compute subhalo properties. See [the physical walkthrough](notebooks/usage_walkthrough.ipynb) for current examples; the original sample is retained in `notebooks/archive/`.
 
 Here, as a minimal example, is how you generate a semi-analytical catalog of subhalos:
 

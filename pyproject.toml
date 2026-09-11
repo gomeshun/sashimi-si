@@ -38,17 +38,17 @@ demo = [
 test = ["pytest>=8", "setuptools>=77"]
 
 [tool.setuptools]
+package-dir = {"" = "src"}
 py-modules = [
-  "sashimi_si",
-  "sashimi_si_physics",
   "sashimi_si_itamae",
-  "sashimi_si_itamae_migration",
   "sashimi_si_itamae_components",
+  "sashimi_si_itamae_migration",
   "sashimi_si_itamae_variance",
+  "sashimi_si_physics",
 ]
 
-[tool.setuptools.data-files]
-"share/sashimi-si" = ["itamae_migration_demo.ipynb"]
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -62,4 +62,4 @@ select = ["E", "F"]
 ignore = ["E501"]
 
 [tool.uv.sources]
-sashimi-itamae = {git = "https://github.com/gomeshun/itamae.git", rev = "dfa083d0d46181c376947ac7b2da829facaf2e8b"}
+sashimi-itamae = {git = "https://github.com/gomeshun/itamae.git", rev = "23d01e8758a88b061b87de9e488c38ec89fd8e4f"}

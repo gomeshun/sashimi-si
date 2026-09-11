@@ -16,14 +16,14 @@ from itamae.halo import invert_nfw_mass_function
 from itamae.provenance import build_calculation_metadata
 from itamae.types import WeightedSubhaloCatalog
 from itamae.units import NativeUnits
-from sashimi_si_physics import (
+from ._physics import (
     SIHaloKernels,
     SIUnits,
     SITidalKernels,
     SIDM_cross_section,
     SIDM_parametric_model,
 )
-from sashimi_si_itamae_components import (
+from ._itamae_components import (
     SIDMAccretionSlices,
     SIDMInitialStructure,
     SIDMProfileEvolution,
