@@ -39,3 +39,39 @@ def test_effective_cross_section_cancellation_against_65_digits():
     np.testing.assert_allclose(f.y[selected], expected, rtol=5e-13)
 
 
+@pytest.mark.parametrize("prescription", [1, 2, 3])
+@pytest.mark.parametrize("order", [1, 4, 64, 200])
+def test_eps_redshift_mass_shape_and_support(prescription, order):
+    model = si.subhalo_properties()
+    z = np.array([.25, .5, 1.])
+    ma = model.Mvir_from_M200_fit(np.logspace(7, 11, 5)[None, :]*model.Msun,
+                                 z[:, None])
+    with np.errstate(divide="raise", invalid="raise", over="raise"):
+        rate = model.Na_calc(ma, z, 1e12*model.Msun, N_herm=order,
+                             Na_model=prescription)
+    assert rate.shape == (3, 5)
+    assert np.all(np.isfinite(rate)) and np.all(rate >= 0)
+
+
+def test_zero_barrier_gap_keeps_finite_normalized_kernel(monkeypatch):
+    model = si.subhalo_properties()
+    monkeypatch.setattr(model, "deltac_func", lambda z: np.ones_like(z)*1.686)
+    z = np.array([.5, 1.])
+    # At zero barrier gap the normalized kernel remains positive, rather than
+    # being silently replaced by zero via nan_to_num.
+    rate = model.Na_calc(np.array([1e7, 1e8])*model.Msun, z,
+                         1e12*model.Msun, N_herm=4, Na_model=3)
+    assert np.all(np.isfinite(rate)) and np.all(rate > 0)
+
+
+def test_nfw_inverse_resolves_survival_boundary():
+    model = si.subhalo_properties()
+    radii = np.array([.77-1e-8, .77+1e-8, 1e-5, 500.])
+    with mp.workdps(65):
+        mass = np.array([float(mp.log1p(mp.mpf(float(x)))-mp.mpf(float(x))/(1+mp.mpf(float(x)))) for x in radii])
+    actual = model.ct_func(mass)
+    np.testing.assert_allclose(actual, radii, rtol=1e-11)
+    np.testing.assert_array_equal(actual > .77, radii > .77)
+    assert model.ct_func(0.) == 0.
+
+
