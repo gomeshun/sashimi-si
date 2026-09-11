@@ -87,7 +87,7 @@ units and source revisions. The SI calibration retains its published rounded
 G convention; changing it requires a controlled physical comparison.
 
 ```bash
-uv run --extra test python -m pytest test_sashimi.py tests
+uv run --extra test python -m pytest tests
 uv run --extra demo jupyter nbconvert --to notebook --execute \
   --output-dir artifacts notebooks/usage_walkthrough.ipynb
 ```

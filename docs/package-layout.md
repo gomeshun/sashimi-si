@@ -42,5 +42,6 @@ the importable package, required runtime data and compatibility modules. Verify
 both installed wheels and wheels rebuilt from source distributions outside the
 checkout; a source-tree import alone is not a packaging test.
 
-The former root `test_sashimi.py` is preserved under `validation/legacy/`.
+The former root `test_sashimi.py` is now `tests/test_physics_equations.py`.
+Its independent equation checks run together with the migration regressions.
 It is a historical equation audit rather than part of the current regression suite.
