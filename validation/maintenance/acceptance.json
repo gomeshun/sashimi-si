@@ -1,0 +1,133 @@
+{
+  "variant": "si",
+  "gate_specification": "standalone-picard-gates-2026-09-11-v1",
+  "passed": true,
+  "checks": [
+    {
+      "name": "independent mass accuracy",
+      "passed": true,
+      "details": 0.0002842533796276747
+    },
+    {
+      "name": "independent reference convergence",
+      "passed": true,
+      "details": 1.3905543383430086e-11
+    },
+    {
+      "name": "frozen supported domain completed",
+      "passed": true,
+      "details": {
+        "cases": 45,
+        "domain_failures": []
+      }
+    },
+    {
+      "name": "whole catalog median speedup",
+      "passed": true,
+      "details": 1.1379286329163372
+    },
+    {
+      "name": "three process repetitions",
+      "passed": true,
+      "details": 3
+    },
+    {
+      "name": "ordinary catalog has no fallback",
+      "passed": true,
+      "details": [
+        [],
+        [],
+        []
+      ]
+    },
+    {
+      "name": "picard-scenario-1000.0-result.json completed",
+      "passed": true,
+      "details": []
+    },
+    {
+      "name": "picard-scenario-1000.0-result.json mass function",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "picard-scenario-0.1-result.json completed",
+      "passed": true,
+      "details": []
+    },
+    {
+      "name": "picard-scenario-0.1-result.json collapse_weight_fraction zero reference",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "picard-scenario-0.1-result.json mass function",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "picard-scenario-147.1-result.json completed",
+      "passed": true,
+      "details": []
+    },
+    {
+      "name": "picard-scenario-147.1-result.json mass function",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "picard-grid-refinement-result.json completed",
+      "passed": true,
+      "details": []
+    },
+    {
+      "name": "picard-grid-refinement-result.json mass function",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "picard-final-catalog.json completed",
+      "passed": true,
+      "details": []
+    },
+    {
+      "name": "picard-final-catalog.json mass function",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "catalog mass error",
+      "passed": true,
+      "details": 2.703029324357953e-05
+    },
+    {
+      "name": "smooth catalog observables",
+      "passed": true,
+      "details": 6.088745322407918e-06
+    },
+    {
+      "name": "survival masks",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "explicit survival and collapse boundary audit",
+      "passed": true,
+      "details": {
+        "catalogs": 5,
+        "changed_nodes": 0
+      }
+    },
+    {
+      "name": "standalone numerical helper present",
+      "passed": true,
+      "details": "005643cd500fbdab74896933bdb7779bca8ca73feca0c27b7bd3956e09a745e1"
+    }
+  ],
+  "source_sha256": {
+    "sashimi_si_numerics.py": "a2b58bf8329fb6cf97a2bffe1ea41b20f45ba7ac5f033e4de2010f0627b661de",
+    "picard_tidal_stripping.py": "005643cd500fbdab74896933bdb7779bca8ca73feca0c27b7bd3956e09a745e1",
+    "sashimi_si.py": "6324794b9fc894e56d54b92f29a881cf5dd2ce9d94ca3abb52d2f51eb4174145"
+  },
+  "limits": "Numerical agreement and runtime evidence only. No simulation calibration, downstream inference, main merge, or publication."
+}

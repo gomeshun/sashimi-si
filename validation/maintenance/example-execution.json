@@ -1,0 +1,67 @@
+{
+  "notebook": "sample.ipynb",
+  "source_sha256": "7405aecb1cc0ff2b5bd209cd50bba02925ac77bc24b17e2db447c9e7faa80251",
+  "python": "3.13.12 (main, Mar  3 2026, 15:01:51) [Clang 21.1.4 ]",
+  "grid_overrides": {
+    "N_ma": 32,
+    "N_herm": 3,
+    "N_hermNa": 16,
+    "dz": 0.2,
+    "zmax": 2.0
+  },
+  "cells": [
+    {
+      "index": 0,
+      "status": "passed",
+      "warnings": []
+    },
+    {
+      "index": 2,
+      "status": "passed",
+      "warnings": []
+    },
+    {
+      "index": 4,
+      "status": "passed",
+      "warnings": []
+    },
+    {
+      "index": 7,
+      "status": "passed",
+      "warnings": [
+        "divide by zero encountered in log10",
+        "FigureCanvasAgg is non-interactive, and thus cannot be shown"
+      ]
+    },
+    {
+      "index": 9,
+      "status": "passed",
+      "warnings": [
+        "divide by zero encountered in log10",
+        "FigureCanvasAgg is non-interactive, and thus cannot be shown"
+      ]
+    },
+    {
+      "index": 11,
+      "status": "passed",
+      "warnings": [
+        "FigureCanvasAgg is non-interactive, and thus cannot be shown"
+      ]
+    },
+    {
+      "index": 13,
+      "status": "passed",
+      "warnings": [
+        "FigureCanvasAgg is non-interactive, and thus cannot be shown"
+      ]
+    }
+  ],
+  "other_overrides": [
+    "NumPy RNG seed 20260911",
+    "F bootstrap repetitions 2",
+    "F diagnostic mass plot 1e6..1e16 Msun"
+  ],
+  "not_executed": [],
+  "passed": true,
+  "itamae_imported": false
+}

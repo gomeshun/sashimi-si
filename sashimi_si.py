@@ -1,4 +1,6 @@
 import numpy as np
+from picard_tidal_stripping import endpoint_mass, history_mass, direct_log_mass, cached_host_mass, cached_scalar_variance
+from sashimi_si_numerics import invert_nfw_mass_function
 from scipy import integrate
 from scipy import interpolate
 from scipy import optimize
@@ -225,7 +227,7 @@ class SIDM_cross_section(units_and_constants):
 
 
     def dsigmadcostheta(self, sigma0_m, w, v, costheta):
-        """ Returns Eq. (1.2) of Yang et al. (2023) divided by m.
+        r""" Returns Eq. (1.3) of Yang et al. (2023) divided by m.
         Eq. (1.2) is given by
 
         $$
@@ -267,7 +269,7 @@ class SIDM_cross_section(units_and_constants):
         sigma_total_m : float
             The value of the total cross section of SIDM divided by m.
         """
-        return sigma0_m/(1.+v**2/w**2)**2
+        return sigma0_m/(1.+v**2/w**2)
     
     
     def sigma_viscosity(self, sigma0_m, w, v):
@@ -294,7 +296,7 @@ class SIDM_cross_section(units_and_constants):
 
     
     def sigma_eff_m_interpolate(self, sigma0_m, w):
-        """ Returns the interpolation function of the effective cross section of SIDM divided by m.
+        r""" Returns the interpolation function of the effective cross section of SIDM divided by m.
         The effective cross section is defined by Eq. (1.1) of Yang et al. (2023) [arXiv:2305.16176]:
 
         $$
@@ -331,24 +333,22 @@ class SIDM_cross_section(units_and_constants):
         return f_int
     
 
-    def sigma_eff_m_interpolate_analytical(self,sigma0_m, w,
-                             a_threshold=703.,
-                             degree=6):
+    def sigma_eff_m_interpolate_analytical(self, sigma0_m, w, a_threshold=703.0, degree=6):
         """
         Returns the analytic evaluation of the effective cross section of SIDM divided by m,
         simplified via the substitution
             a = w^2/(4*nu_eff^2)   with   nu_eff = 0.64 * Vmax.
-        
+
         The expression is:
-        
+
             sigma_eff = -sigma0_m * a^2 * [ exp(a) * (1+a) * Ei(-a) + 1 ]
-        
+
         where Ei(-a) is the exponential integral function.
-        
-        For large a (i.e. when a > a_threshold), the asymptotic behavior gives
-            sigma_eff -> sigma0_m.
-        In that case, the function returns sigma0_m.
-        
+
+        For a > a_threshold, a degree-limited asymptotic expansion approaches
+        sigma0_m. For 20 <= a <= a_threshold, a positive integral evaluates the
+        same expression without subtractive cancellation.
+
         Parameters
         ----------
         sigma0_m : float
@@ -356,7 +356,7 @@ class SIDM_cross_section(units_and_constants):
         w : float
             The value of w (in the same units as used in the numerical methods).
         a_threshold : float, optional
-            The threshold for a above which sigma_eff is set to sigma0_m.
+            The threshold for switching to the degree-limited asymptotic expansion.
             (Default is 703., based on that Ei(-a) returns NaN for such large a.)
         degree : int, optional
             The degree of the polynomial expansion used for large a.
@@ -367,21 +367,35 @@ class SIDM_cross_section(units_and_constants):
             The effective cross section of SIDM divided by m.
         """
         # dummy Vmax for the interpolation
-        Vmax = np.logspace(-5.,3.,1000)*self.km/self.s
+        Vmax = np.logspace(-5.0, 3.0, 1000) * self.km / self.s
         # Compute the effective velocity dispersion
         nu_eff = 0.64 * Vmax
         a = w**2 / (4 * nu_eff**2)
-        # Compute the expression based on the analytic result:
-        # sigma_eff = -sigma0_m * a^2 * [ exp(a)*(1+a)*Ei(-a) + 1 ]
-        # special.expi(-a) returns Ei(-a)
-        expr = - sigma0_m * a**2 * ( np.exp(a) * (1 + a) * special.expi(-a) + 1 )
         # For a > a_threshold, return sigma0_m (i.e., effective cross section converges to sigma0_m)
         # sigma_eff_asymp = sigma0_m * (1 - 4/a + 18/a**2 - 96/a**3 + 600/a**4 - 4320/a**5)  # + (-1)^k(k+1)!(k+1)/a^k + ...
         # sigma_eff_asymp = sigma0_m  # Asymptotic behavior for large a
         # NOTE: instead, we use Polynomial expansion for large a
-        coeff = [(-1)**k * special.factorial(k+1)*(k + 1) for k in range(degree + 1)]
-        sigma_eff_asymp = sigma0_m * np.polynomial.Polynomial(coeff)(1/a)  # Evaluate the polynomial at 1/a
-        sigma_eff = np.where(a > a_threshold, sigma_eff_asymp, expr)
+        coeff = [(-1) ** k * special.factorial(k + 1) * (k + 1) for k in range(degree + 1)]
+        sigma_eff_asymp = sigma0_m * np.polynomial.Polynomial(coeff)(
+            1 / a
+        )  # Evaluate the polynomial at 1/a
+        sigma_eff = np.array(sigma_eff_asymp, copy=True)
+        # At large a the direct expression subtracts nearly equal numbers.
+        # Its positive integral representation avoids that cancellation:
+        # ratio = integral_0^inf u*exp(-u)/(1+u/a)^2 du.
+        direct = (a <= a_threshold) & (a < 20.0)
+        sigma_eff[direct] = (
+            -sigma0_m
+            * a[direct] ** 2
+            * (np.exp(a[direct]) * (1 + a[direct]) * special.expi(-a[direct]) + 1)
+        )
+        stable = (a <= a_threshold) & ~direct
+        if np.any(stable):
+            nodes, weights = special.roots_genlaguerre(64, 1.0)
+            sigma_eff[stable] = sigma0_m * np.sum(
+                weights / (1.0 + nodes / a[stable, None]) ** 2,
+                axis=-1,
+            )
         # Interpolate the result to create a function that can be evaluated at any Vmax
         f_int = interp1d(Vmax, sigma_eff)
         return f_int
@@ -639,7 +653,7 @@ class SIDM_parametric_model(SIDM_cross_section):
         return rc
     
 
-    def master_function(self, Vmax_CDM, rmax_CDM, t, t_f):
+    def master_function(self, Vmax_CDM, rmax_CDM, t, t_f, *, collapse_time=None):
         """ Calculate the properties of a SIDM halo at a given time t according to the integral approach proposed by Yang et al. (2023) [arXiv:2305.16176].
 
         Parameters
@@ -669,13 +683,30 @@ class SIDM_parametric_model(SIDM_cross_section):
         # NOTE: In the equation just below Eq. (3.3) of Yang et al. (2023), dVmax_{Model}/dtt and
         # drmax_{Model}/dtt are normalized by Vmax_{CDM}(t) and rmax_{CDM}(t) evaluated at the running
         # time t of the integral, not by their values at the accretion time t_f.
-        t_c         = self.t_collapse(self.sigma_eff_m(Vmax_CDM),rmax_CDM,Vmax_CDM)
-        integrand   = self.dVmaxSIDMdtt_numexpr_optimized((t-t_f)/t_c,Vmax_CDM)/t_c
-        VmaxSIDM_z0 = Vmax_CDM[:,-1]+integrate.simpson(integrand,x=t*np.ones((len(Vmax_CDM),1,1)),axis=1)
-        integrand   = self.drmaxSIDMdtt_numexpr_optimized((t-t_f)/t_c,rmax_CDM)/t_c
-        rmaxSIDM_z0 = rmax_CDM[:,-1]+integrate.simpson(integrand,x=t*np.ones((len(rmax_CDM),1,1)),axis=1)
-        
-        tt             = np.minimum(((t-t_f)/t_c)[:,-1],self.tt_th)
+        if collapse_time is None:
+            t_c = self.t_collapse(self.sigma_eff_m(Vmax_CDM),rmax_CDM,Vmax_CDM)
+        else:
+            # A catalog already needs this same array for its collapse
+            # diagnostic. Reuse it without changing the SIDM time integral.
+            t_c = np.asarray(collapse_time)
+            if t_c.shape != Vmax_CDM.shape or np.any(np.isnan(t_c)) or np.any(t_c<=0):
+                raise ValueError("collapse_time must match the history and be positive (infinity denotes zero scattering).")
+        if collapse_time is not None:
+            # Broadcasting keeps one copy of the common time grid. Simpson's
+            # formula and endpoints are identical to the expanded legacy grid.
+            scaled_time = (t-t_f)/t_c
+            time_grid = t[None, ...]
+            integrand = self.dVmaxSIDMdtt_numexpr_optimized(scaled_time,Vmax_CDM)/t_c
+            VmaxSIDM_z0 = Vmax_CDM[:,-1]+integrate.simpson(integrand,x=time_grid,axis=1)
+            integrand = self.drmaxSIDMdtt_numexpr_optimized(scaled_time,rmax_CDM)/t_c
+            rmaxSIDM_z0 = rmax_CDM[:,-1]+integrate.simpson(integrand,x=time_grid,axis=1)
+            tt = np.minimum(scaled_time[:,-1],self.tt_th)
+        else:
+            integrand = self.dVmaxSIDMdtt_numexpr_optimized((t-t_f)/t_c,Vmax_CDM)/t_c
+            VmaxSIDM_z0 = Vmax_CDM[:,-1]+integrate.simpson(integrand,x=t*np.ones((len(Vmax_CDM),1,1)),axis=1)
+            integrand = self.drmaxSIDMdtt_numexpr_optimized((t-t_f)/t_c,rmax_CDM)/t_c
+            rmaxSIDM_z0 = rmax_CDM[:,-1]+integrate.simpson(integrand,x=t*np.ones((len(rmax_CDM),1,1)),axis=1)
+            tt = np.minimum(((t-t_f)/t_c)[:,-1],self.tt_th)
         Vmax0_CDM_fict = self.get_Vmax0(VmaxSIDM_z0,tt)
         rmax0_CDM_fict = self.get_rmax0(rmaxSIDM_z0,tt)
         rs0_CDM_fict   = rmax0_CDM_fict/2.1626
@@ -720,6 +751,8 @@ class TidalStrippingSolver(halo_model):
     @M0.setter
     def M0(self, value):
         self._M0 = value
+        self._picard_tables = {}
+        self._picard_coefficients = {}
         self.reset_interpolation(
             z_max=self.z_max, 
             z_min=self.z_min,
@@ -770,7 +803,11 @@ class TidalStrippingSolver(halo_model):
         self.eps_33 = lambda _za, _z: self._eps_33_interp(_z) - self._eps_33_interp(_za)
 
 
-    def Mzvir(self,z):
+    def Mzvir(self, z):
+        return cached_host_mass(self, z)
+
+
+    def _Mzvir_uncached(self, z):
         Mz200 = self.Mzzi(self.M0,z,0.)
         Mvir = self.Mvir_from_M200_fit(Mz200,z)
         return Mvir
@@ -992,10 +1029,14 @@ class TidalStrippingSolver(halo_model):
         eps_1 = eps_10 + ln_ma * eps_11
         eps_2 = eps_20 + ln_ma * eps_21 + ln_ma**2 * eps_22
         eps_2m1 = (eps_20 - eps_10) + ln_ma * (eps_21 - eps_11) + ln_ma**2 * eps_22
-        eps_shanks = - eps_2**2 / eps_2m1
-        eps_shanks = np.where(np.isnan(eps_shanks), 0, eps_shanks)
+        eps_shanks = np.divide(-eps_2**2, eps_2m1,
+                               out=np.zeros_like(eps_2), where=eps_2m1 != 0)
+        if np.any((eps_2m1 == 0) & (eps_2 != 0)):
+            raise ValueError("Singular Shanks correction; select the direct ODE solver.")
         # When the correction is too small, the Shanks transformation may not be stable.
-        eps_shanks = np.where(np.abs((eps_1+eps_2)/eps_0) < 0.02, 0, eps_shanks)
+        relative_correction = np.divide(eps_1+eps_2, eps_0,
+            out=np.zeros_like(eps_2), where=eps_0 != 0)
+        eps_shanks = np.where(np.abs(relative_correction) < 0.02, 0, eps_shanks)
         eps = eps_0 + eps_1 + eps_2 + eps_shanks
         # import pandas as pd
         # df = pd.DataFrame({'z': _z, 'eps_0': eps_0, 'eps_1': eps_1, 'eps_2': eps_2, 'eps_shanks': eps_shanks, 'eps': eps})
@@ -1023,7 +1064,7 @@ class TidalStrippingSolver(halo_model):
         return ma * np.exp(eps)
     
     
-    def subhalo_mass_stripped(self,ma,za,z,method="pert2_shanks",**kwargs):
+    def subhalo_mass_stripped(self,ma,za,z,method="picard",**kwargs):
         """ A wrapper function to calculate subhalo mass stripping.
         
         Parameters
@@ -1035,7 +1076,9 @@ class TidalStrippingSolver(halo_model):
         z : float
             final redshift.
         method : str, optional
-            method to calculate the subhalo mass stripping.
+            Method to calculate the subhalo mass stripping.
+            - "picard" (default): native Picard full mass history.
+            - "dop853": direct integration of log mass.
             - "odeint" : use odeint to solve the differential equation.
             - "pert0" : use perturbative method with zeroth-order correction.
             - "pert1" : use perturbative method with first-order correction.
@@ -1043,7 +1086,7 @@ class TidalStrippingSolver(halo_model):
             - "pert2_shanks" : use perturbative method with second-order correction and Shanks transformation.
             - "pert3" : use perturbative method with third-order correction.
         kwargs : dict, optional
-            additional arguments for the odeint function.
+            Options for the selected solver; unknown options raise TypeError.
 
         Returns
         -------
@@ -1066,6 +1109,12 @@ class TidalStrippingSolver(halo_model):
         #         return self.subhalo_mass_stripped_pert3(ma,za,z)
         #     case _:
         #         raise ValueError(f"Invalid method: {method}")
+        if method == "picard":
+            return history_mass(self,ma,za,z,**kwargs)
+        if method == "dop853":
+            return direct_log_mass(self,ma,za,z,**kwargs)
+        if kwargs and method != "odeint":
+            raise TypeError(f"Solver options are not accepted by {method}: {sorted(kwargs)}")
         if method == "odeint":
             # NOTE: odeint returns (len(z),len(ma)) array for array input.
             return self.subhalo_mass_stripped_odeint(ma,za,z,**kwargs)
@@ -1122,8 +1171,7 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
 
         self.beta          = beta
 
-        ctemp              = np.linspace(0,100,1000)
-        self.ct_func       = interp1d(self.fc(ctemp),ctemp,fill_value='extrapolate')
+        self.ct_func = invert_nfw_mass_function
 
 
 
@@ -1163,8 +1211,33 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
             *np.exp(-(delc2-delc1)**2/(2.*(s2-s1)))
 
     
-    def Na_calc(self, ma, zacc, Mhost, z0=0., N_herm=200, Nrand=1000, Na_model=3):
-        """ Returns Na, Eq. (3) of Yang et al. (2011) 
+    def _normalized_yang_kernel(self, delc1, delc2, s1, s2, smin):
+        """Yang Eq. (14) divided by its mass-support integral, including gap=0.
+
+        For x=delta/sqrt(2*(smin-s1)), erf(x)/x tends to 2/sqrt(pi).
+        The small-x series evaluates that ratio before the vanishing factors
+        are divided. This is the same normalized kernel, with no weight cut.
+        """
+        d1, d2, a, b, minimum = np.broadcast_arrays(delc1, delc2, s1, s2, smin)
+        gap, ds, dsmin = d2 - d1, b - a, minimum - a
+        if np.any(gap < 0) or np.any(ds <= 0) or np.any(dsmin <= 0):
+            raise ValueError("Normalized Yang kernel requires nonnegative barrier gap and positive variance gaps.")
+        x2 = gap**2 / (2.0 * dsmin)
+        small = x2 < 1e-8
+        result = np.empty_like(x2, dtype=float)
+        x = x2[small]
+        integral = 1.0 - x / 3.0 + x**2 / 10.0 - x**3 / 42.0 + x**4 / 216.0
+        result[small] = (
+            np.sqrt(dsmin[small]) / (2.0 * ds[small]**1.5)
+            * np.exp(-gap[small]**2 / (2.0 * ds[small])) / integral
+        )
+        regular = ~small
+        norm = special.gamma(0.5) * special.gammainc(0.5, x2[regular]) / np.sqrt(np.pi)
+        result[regular] = self.Ffunc_Yang(d1[regular], d2[regular], a[regular], b[regular]) / norm
+        return result
+
+    def Na_calc(self, ma, zacc, Mhost, z0=0.0, N_herm=200, Nrand=1000, Na_model=3):
+        """Returns Na, Eq. (3) of Yang et al. (2011)
 
         Parameters
         ---
@@ -1187,71 +1260,116 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
         ---
         Na : float
             The value of Na.
-        
+
         References
         ---
             - Yang et al. (2011), https://arxiv.org/abs/1104.1757
         """
-        zacc_2d   = zacc.reshape(-1,1)
-        M200_0    = self.Mzzi(Mhost,zacc_2d,z0)
+        zacc_2d = zacc.reshape(-1, 1)
+        M200_0 = self.Mzzi(Mhost, zacc_2d, z0)
         logM200_0 = np.log10(M200_0)
 
-        xxi,wwi = hermgauss(N_herm)
-        xxi = xxi.reshape(-1,1,1)
-        wwi = wwi.reshape(-1,1,1)
-        # Eq. (21) in Yang et al. (2011) 
-        sigmalogM200 = 0.12-0.15*np.log10(M200_0/Mhost)
-        logM200 = np.sqrt(2.)*sigmalogM200*xxi+logM200_0
-        M200 = 10.**logM200
-            
-        mmax = np.minimum(M200,Mhost/2.)
-        Mmax = np.minimum(M200_0+mmax,Mhost)
-        
-        if Na_model==3:
-            zlist    = zacc_2d*np.linspace(1,0,Nrand)
-            iMmax    = np.argmin(np.abs(self.Mzzi(Mhost,zlist,z0)-Mmax),axis=-1)
-            z_Max    = zlist[np.arange(len(zlist)),iMmax]
-            z_Max_3d = z_Max.reshape(N_herm,len(zlist),1)
-            delcM    = self.deltac_func(z_Max_3d)
-            delca    = self.deltac_func(zacc_2d)
-            sM       = self.s_func(Mmax)
-            sa       = self.s_func(ma)
-            xmax     = (delca-delcM)**2/(2.*(self.s_func(mmax)-sM))
-            normB    = special.gamma(0.5)*special.gammainc(0.5,xmax)/np.sqrt(np.pi)
-            # those reside in the exponential part of Eq. (14) 
-            Phi      = self.Ffunc_Yang(delcM,delca,sM,sa)/normB*np.heaviside(mmax-ma,0)
-        elif Na_model==1:
-            delca    = self.deltac_func(zacc_2d)
-            sM       = self.s_func(M200)
-            sa       = self.s_func(ma)
-            xmin     = self.s_func(mmax)-self.s_func(M200)
-            normB    = 1./np.sqrt(2*np.pi)*delca*2./xmin**0.5*special.hyp2f1(0.5,0.,1.5,-sM/xmin)
-            Phi      = self.Ffunc(delca,sM,sa)/normB*np.heaviside(mmax-ma,0)
-        elif Na_model==2:
-            delca    = self.deltac_func(zacc_2d)
-            sM       = self.s_func(M200)
-            sa       = self.s_func(ma)
-            xmin     = self.s_func(mmax)-self.s_func(M200)
-            normB    = 1./np.sqrt(2.*np.pi)*delca*0.57 \
-                           *(delca/np.sqrt(sM))**-0.01*(2./(1.-0.38))*sM**(-0.38/2.) \
-                           *xmin**(0.5*(0.38-1.)) \
-                           *special.hyp2f1(0.5*(1-0.38),-0.38/2.,0.5*(3.-0.38),-sM/xmin)
-            Phi      = self.Ffunc(delca,sM,sa)*self.Gfunc(delca,sM,sa)/normB \
-                           *np.heaviside(mmax-ma,0)
-        # calculate Na
-        if N_herm==1:
-            F2t = np.nan_to_num(Phi)
-            F2  =F2t.reshape((len(zacc_2d),len(ma)))
+        xxi, wwi = hermgauss(N_herm)
+        xxi = xxi.reshape(-1, 1, 1)
+        wwi = wwi.reshape(-1, 1, 1)
+        # Eq. (21) in Yang et al. (2011)
+        sigmalogM200 = 0.12 - 0.15 * np.log10(M200_0 / Mhost)
+        logM200 = np.sqrt(2.0) * sigmalogM200 * xxi + logM200_0
+        M200 = 10.0**logM200
+
+        mmax = np.minimum(M200, Mhost / 2.0)
+        Mmax = np.minimum(M200_0 + mmax, Mhost)
+
+        if Na_model == 3:
+            zlist = zacc_2d * np.linspace(1, 0, Nrand)
+            iMmax = np.argmin(np.abs(self.Mzzi(Mhost, zlist, z0) - Mmax), axis=-1)
+            z_Max = zlist[np.arange(len(zlist)), iMmax]
+            z_Max_3d = z_Max.reshape(N_herm, len(zlist), 1)
+            delcM = self.deltac_func(z_Max_3d)
+            delca = self.deltac_func(zacc_2d)
+            sM = self.s_func(Mmax)
+            sa = self.s_func(ma)
+            # those reside in the exponential part of Eq. (14)
+            d1, d2, s1, s2, smin, allowed = np.broadcast_arrays(
+                delcM, delca, sM, sa, self.s_func(mmax), mmax > ma
+            )
+            Phi = np.zeros(s2.shape)
+            Phi[allowed] = self._normalized_yang_kernel(
+                d1[allowed], d2[allowed], s1[allowed], s2[allowed], smin[allowed]
+            )
+        elif Na_model == 1:
+            delca = self.deltac_func(zacc_2d)
+            sM = self.s_func(M200)
+            sa = self.s_func(ma)
+            xmin = self.s_func(mmax) - self.s_func(M200)
+            d_norm, s_norm, x_norm = np.broadcast_arrays(delca, sM, xmin)
+            if np.any(x_norm < 0):
+                raise ValueError("EPS normalization requires a nonnegative variance support gap.")
+            positive = x_norm > 0
+            normB = np.full(x_norm.shape, np.inf)
+            d_pos, s_pos, x_pos = d_norm[positive], s_norm[positive], x_norm[positive]
+            normB[positive] = (
+                1.0
+                / np.sqrt(2 * np.pi)
+                * d_pos
+                * 2.0
+                / x_pos**0.5
+                * special.hyp2f1(0.5, 0.0, 1.5, -s_pos / x_pos)
+            )
+            d, s1, s2, norm, allowed = np.broadcast_arrays(delca, sM, sa, normB, mmax > ma)
+            if np.any((s2 - s1)[allowed] <= 0):
+                raise ValueError("EPS accretion requires positive variance gaps in its active mass domain.")
+            Phi = np.zeros(s2.shape)
+            Phi[allowed] = self.Ffunc(d[allowed], s1[allowed], s2[allowed]) / norm[allowed]
+        elif Na_model == 2:
+            delca = self.deltac_func(zacc_2d)
+            sM = self.s_func(M200)
+            sa = self.s_func(ma)
+            xmin = self.s_func(mmax) - self.s_func(M200)
+            d_norm, s_norm, x_norm = np.broadcast_arrays(delca, sM, xmin)
+            if np.any(x_norm < 0):
+                raise ValueError("EPS normalization requires a nonnegative variance support gap.")
+            positive = x_norm > 0
+            normB = np.full(x_norm.shape, np.inf)
+            d_pos, s_pos, x_pos = d_norm[positive], s_norm[positive], x_norm[positive]
+            normB[positive] = (
+                1.0
+                / np.sqrt(2.0 * np.pi)
+                * d_pos
+                * 0.57
+                * (d_pos / np.sqrt(s_pos)) ** -0.01
+                * (2.0 / (1.0 - 0.38))
+                * s_pos ** (-0.38 / 2.0)
+                * x_pos ** (0.5 * (0.38 - 1.0))
+                * special.hyp2f1(0.5 * (1 - 0.38), -0.38 / 2.0, 0.5 * (3.0 - 0.38), -s_pos / x_pos)
+            )
+            d, s1, s2, norm, allowed = np.broadcast_arrays(delca, sM, sa, normB, mmax > ma)
+            if np.any((s2 - s1)[allowed] <= 0):
+                raise ValueError("EPS accretion requires positive variance gaps in its active mass domain.")
+            Phi = np.zeros(s2.shape)
+            Phi[allowed] = (
+                self.Ffunc(d[allowed], s1[allowed], s2[allowed])
+                * self.Gfunc(d[allowed], s1[allowed], s2[allowed])
+                / norm[allowed]
+            )
         else:
-            F2 = np.sum(np.nan_to_num(Phi)*wwi/np.sqrt(np.pi),axis=0)
-        Na = F2*self.dsdm(ma,0.)*self.dMdz(Mhost,zacc_2d,z0)*(1.+zacc_2d)
+            raise ValueError("Na_model must be 1, 2, or 3.")
+        if not np.all(np.isfinite(Phi)):
+            raise ValueError("Non-finite EPS accretion kernel inside its active mass domain.")
+        # calculate Na
+        if N_herm == 1:
+            F2t = Phi
+            F2 = F2t[0]
+        else:
+            F2 = np.sum(Phi * wwi / np.sqrt(np.pi), axis=0)
+        Na = F2 * self.dsdm(ma, 0.0) * self.dMdz(Mhost, zacc_2d, z0) * (1.0 + zacc_2d)
         return Na
 
     
     def subhalo_properties_calc(self, M0, redshift=0.0, dz=0.01, zmax=5.0, N_ma=500, sigmalogc=0.128,
                                 N_herm=20, logmamin=6, logmamax=None, N_hermNa=200, Na_model=3, 
                                 ct_th=0., M0_at_redshift=False,
-                                method="pert2_shanks", **kwargs):
+                                method="picard", **kwargs):
         """
         This is the main function of SASHIMI-C, which makes a semi-analytical subhalo catalog.
         
@@ -1282,8 +1400,8 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
         (Optional) ct_th:          Threshold value for c_t(=r_t/r_s) parameter, below which a subhalo is assumed to
                                    be completely desrupted. Suggested values: 0.77 or 0 (no desruption; default).
         (Optional) M0_at_redshift: If True, M0 is regarded as the mass at a given redshift, instead of z=0.
-        (Optional) method:         Method to calculate the subhalo mass stripping. (default: "pert2_shanks")
-        (Optional) kwargs:         Additional arguments for the odeint function.
+        (Optional) method:         Method to calculate the subhalo mass stripping. (default: "picard")
+        (Optional) kwargs:         Options for the selected solver; unknown options raise TypeError.
         
         ------
         Output
@@ -1424,6 +1542,7 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
             z_max=zmax,
             n_z_interp=64
         )
+        self.stripping_solver = solver
         
         # def t_collapse(sigma_eff_m, rmax, Vmax):
         #     """ Returns the collapse time of a subhalo according to Eq. (2.2) of Yang et al. (2023)
@@ -1440,7 +1559,7 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
         w1           = w1.reshape(-1,1,1)
         for iz, za in tqdm.tqdm(enumerate(zdist_accreted),total=len(zdist_accreted),desc='Calculating subhalo properties'):
             # Before accretion (ba) onto the host
-            z_ba    = np.linspace(z_f,za,100)
+            z_ba    = np.linspace(np.maximum(z_f, za), za, 100)
             m200_ba = self.Mzi(ma200_0,z_ba)  # This is valid for redshift = 0. case for now
             # NOTE: m200_ba.shape = (len(z_ba),len(ma200_z0)) = (100,N_ma) = (100,500) (for default values)
             ma               = ma_matrix_accreted[iz]  # shape = (N_ma,)
@@ -1492,22 +1611,31 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
             # NOTE: shape = (len(z_ba)+len(zcalc)-1,len(ma200_z0)) = (199,N_ma) = (199,500) (for default values)
             Vmax_CDM         = np.concatenate((Vmax_ba,Vmax_aa[:,1:]),axis=1)
             rmax_CDM         = np.concatenate((rmax_ba,rmax_aa[:,1:]),axis=1)
-            t_c              = self.t_collapse(self.sigma_eff_m(Vmax_CDM),rmax_CDM,Vmax_CDM)
+            # Unformed nodes already have zero final weight. Do not evolve
+            # their SIDM histories backwards or return NaN placeholder profiles.
+            valid = z_f > za
+            if np.any(valid):
+                t_c = self.t_collapse(self.sigma_eff_m(Vmax_CDM[..., valid]),
+                                      rmax_CDM[..., valid], Vmax_CDM[..., valid])
+                tt_ratio[iz, :, valid] = (((self.t_U-t_f[valid])/t_c)[:, -1]).T
+                evolved = self.param_model.master_function(
+                    Vmax_CDM[..., valid], rmax_CDM[..., valid], t[..., valid], t_f[valid],
+                    collapse_time=t_c if method=="picard" else None)
+                t2 = t[:len(z_ba), valid] if method=="picard" else self.t_U-self.lookback_time(z_ba[..., valid])
+                accreted = self.param_model.master_function(
+                    Vmax_ba[..., valid], rmax_ba[..., valid], t2, t_f[valid],
+                    collapse_time=t_c[:, :len(z_ba)] if method=="picard" else None)
+                for destination, value in zip(
+                    (VmaxSIDM_z0, rmaxSIDM_z0, rhosSIDM_z0, rsSIDM_z0, rcSIDM_z0), evolved):
+                    destination[iz][:, valid] = value
+                for destination, value in zip(
+                    (VmaxSIDM_acc, rmaxSIDM_acc, rhosSIDM_acc, rsSIDM_acc, rcSIDM_acc), accreted):
+                    destination[iz][:, valid] = value
+            surviveSIDM[iz] = np.broadcast_to(valid, (N_herm, N_ma)).copy()
+            for field in (VmaxSIDM_z0, rmaxSIDM_z0, VmaxSIDM_acc,
+                          rmaxSIDM_acc, rcSIDM_z0, rcSIDM_acc):
+                surviveSIDM[iz] *= field[iz] >= 0
 
-            tt_ratio[iz]     = ((self.t_U-t_f)/t_c)[:,-1]
-
-            VmaxSIDM_z0[iz], rmaxSIDM_z0[iz], rhosSIDM_z0[iz], rsSIDM_z0[iz], rcSIDM_z0[iz] \
-                = self.param_model.master_function(Vmax_CDM,rmax_CDM,t,t_f)
-
-            t2               = self.t_U-self.lookback_time(z_ba)
-
-            VmaxSIDM_acc[iz], rmaxSIDM_acc[iz], rhosSIDM_acc[iz], rsSIDM_acc[iz], rcSIDM_acc[iz] \
-                = self.param_model.master_function(Vmax_ba,rmax_ba,t2,t_f)
-
-
-            surviveSIDM[iz]  = np.where(((VmaxSIDM_z0[iz]<0.)+(rmaxSIDM_z0[iz]<0.)\
-                                          +(VmaxSIDM_acc[iz]<0.)+(rmaxSIDM_acc[iz]<0.)\
-                                          +(rcSIDM_z0[iz]<0.)+(rcSIDM_acc[iz]<0.))==1,False,True)
 
 
         Na           = self.Na_calc(ma_matrix,zdist,M0,z0=0.,N_herm=N_hermNa,Nrand=1000,

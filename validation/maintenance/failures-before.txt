@@ -1,0 +1,1430 @@
+.FFFFFFFFFFFFF.FF.FFFFFF.                                                [100%]
+=================================== FAILURES ===================================
+_____________________ test_total_is_angular_integral[0.1] ______________________
+
+ratio = 0.1
+
+    @pytest.mark.parametrize("ratio", [0., .1, 1., 3., 10., 30., 100.])
+    def test_total_is_angular_integral(ratio):
+        model = si.SIDM_cross_section()
+        expected, _ = quad(lambda mu: model.dsigmadcostheta(1., 1., ratio, mu),
+                           -1., 1., epsabs=1e-13, epsrel=1e-12)
+>       np.testing.assert_allclose(model.sigma_total(1., 1., ratio), expected, rtol=5e-12)
+
+test_minor_updates.py:19: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (<function assert_allclose.<locals>.compare at 0x7b151fd05620>, array(0.98029605), array(0.99009901))
+kwds = {'err_msg': '', 'verbose': True, 'header': 'Not equal to tolerance rtol=5e-12, atol=0', 'equal_nan': True}
+
+    @wraps(func)
+    def inner(*args, **kwds):
+        with self._recreate_cm():
+>           return func(*args, **kwds)
+                   ^^^^^^^^^^^^^^^^^^^
+E           AssertionError: 
+E           Not equal to tolerance rtol=5e-12, atol=0
+E           
+E           Mismatched elements: 1 / 1 (100%)
+E           Max absolute difference: 0.00980296
+E           Max relative difference: 0.00990099
+E            x: array(0.980296)
+E            y: array(0.990099)
+
+/home/gomesu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/contextlib.py:81: AssertionError
+_____________________ test_total_is_angular_integral[1.0] ______________________
+
+ratio = 1.0
+
+    @pytest.mark.parametrize("ratio", [0., .1, 1., 3., 10., 30., 100.])
+    def test_total_is_angular_integral(ratio):
+        model = si.SIDM_cross_section()
+        expected, _ = quad(lambda mu: model.dsigmadcostheta(1., 1., ratio, mu),
+                           -1., 1., epsabs=1e-13, epsrel=1e-12)
+>       np.testing.assert_allclose(model.sigma_total(1., 1., ratio), expected, rtol=5e-12)
+
+test_minor_updates.py:19: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (<function assert_allclose.<locals>.compare at 0x7b151fd05760>, array(0.25), array(0.5))
+kwds = {'err_msg': '', 'verbose': True, 'header': 'Not equal to tolerance rtol=5e-12, atol=0', 'equal_nan': True}
+
+    @wraps(func)
+    def inner(*args, **kwds):
+        with self._recreate_cm():
+>           return func(*args, **kwds)
+                   ^^^^^^^^^^^^^^^^^^^
+E           AssertionError: 
+E           Not equal to tolerance rtol=5e-12, atol=0
+E           
+E           Mismatched elements: 1 / 1 (100%)
+E           Max absolute difference: 0.25
+E           Max relative difference: 0.5
+E            x: array(0.25)
+E            y: array(0.5)
+
+/home/gomesu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/contextlib.py:81: AssertionError
+_____________________ test_total_is_angular_integral[3.0] ______________________
+
+ratio = 3.0
+
+    @pytest.mark.parametrize("ratio", [0., .1, 1., 3., 10., 30., 100.])
+    def test_total_is_angular_integral(ratio):
+        model = si.SIDM_cross_section()
+        expected, _ = quad(lambda mu: model.dsigmadcostheta(1., 1., ratio, mu),
+                           -1., 1., epsabs=1e-13, epsrel=1e-12)
+>       np.testing.assert_allclose(model.sigma_total(1., 1., ratio), expected, rtol=5e-12)
+
+test_minor_updates.py:19: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (<function assert_allclose.<locals>.compare at 0x7b151fd058a0>, array(0.01), array(0.1))
+kwds = {'err_msg': '', 'verbose': True, 'header': 'Not equal to tolerance rtol=5e-12, atol=0', 'equal_nan': True}
+
+    @wraps(func)
+    def inner(*args, **kwds):
+        with self._recreate_cm():
+>           return func(*args, **kwds)
+                   ^^^^^^^^^^^^^^^^^^^
+E           AssertionError: 
+E           Not equal to tolerance rtol=5e-12, atol=0
+E           
+E           Mismatched elements: 1 / 1 (100%)
+E           Max absolute difference: 0.09
+E           Max relative difference: 0.9
+E            x: array(0.01)
+E            y: array(0.1)
+
+/home/gomesu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/contextlib.py:81: AssertionError
+_____________________ test_total_is_angular_integral[10.0] _____________________
+
+ratio = 10.0
+
+    @pytest.mark.parametrize("ratio", [0., .1, 1., 3., 10., 30., 100.])
+    def test_total_is_angular_integral(ratio):
+        model = si.SIDM_cross_section()
+        expected, _ = quad(lambda mu: model.dsigmadcostheta(1., 1., ratio, mu),
+                           -1., 1., epsabs=1e-13, epsrel=1e-12)
+>       np.testing.assert_allclose(model.sigma_total(1., 1., ratio), expected, rtol=5e-12)
+
+test_minor_updates.py:19: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (<function assert_allclose.<locals>.compare at 0x7b151fd972e0>, array(9.80296049e-05), array(0.00990099))
+kwds = {'err_msg': '', 'verbose': True, 'header': 'Not equal to tolerance rtol=5e-12, atol=0', 'equal_nan': True}
+
+    @wraps(func)
+    def inner(*args, **kwds):
+        with self._recreate_cm():
+>           return func(*args, **kwds)
+                   ^^^^^^^^^^^^^^^^^^^
+E           AssertionError: 
+E           Not equal to tolerance rtol=5e-12, atol=0
+E           
+E           Mismatched elements: 1 / 1 (100%)
+E           Max absolute difference: 0.00980296
+E           Max relative difference: 0.99009901
+E            x: array(9.80296e-05)
+E            y: array(0.009901)
+
+/home/gomesu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/contextlib.py:81: AssertionError
+_____________________ test_total_is_angular_integral[30.0] _____________________
+
+ratio = 30.0
+
+    @pytest.mark.parametrize("ratio", [0., .1, 1., 3., 10., 30., 100.])
+    def test_total_is_angular_integral(ratio):
+        model = si.SIDM_cross_section()
+        expected, _ = quad(lambda mu: model.dsigmadcostheta(1., 1., ratio, mu),
+                           -1., 1., epsabs=1e-13, epsrel=1e-12)
+>       np.testing.assert_allclose(model.sigma_total(1., 1., ratio), expected, rtol=5e-12)
+
+test_minor_updates.py:19: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (<function assert_allclose.<locals>.compare at 0x7b151fd97100>, array(1.23182898e-06), array(0.00110988))
+kwds = {'err_msg': '', 'verbose': True, 'header': 'Not equal to tolerance rtol=5e-12, atol=0', 'equal_nan': True}
+
+    @wraps(func)
+    def inner(*args, **kwds):
+        with self._recreate_cm():
+>           return func(*args, **kwds)
+                   ^^^^^^^^^^^^^^^^^^^
+E           AssertionError: 
+E           Not equal to tolerance rtol=5e-12, atol=0
+E           
+E           Mismatched elements: 1 / 1 (100%)
+E           Max absolute difference: 0.00110865
+E           Max relative difference: 0.99889012
+E            x: array(1.231829e-06)
+E            y: array(0.00111)
+
+/home/gomesu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/contextlib.py:81: AssertionError
+____________________ test_total_is_angular_integral[100.0] _____________________
+
+ratio = 100.0
+
+    @pytest.mark.parametrize("ratio", [0., .1, 1., 3., 10., 30., 100.])
+    def test_total_is_angular_integral(ratio):
+        model = si.SIDM_cross_section()
+        expected, _ = quad(lambda mu: model.dsigmadcostheta(1., 1., ratio, mu),
+                           -1., 1., epsabs=1e-13, epsrel=1e-12)
+>       np.testing.assert_allclose(model.sigma_total(1., 1., ratio), expected, rtol=5e-12)
+
+test_minor_updates.py:19: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (<function assert_allclose.<locals>.compare at 0x7b151fd97380>, array(9.9980003e-09), array(9.9990001e-05))
+kwds = {'err_msg': '', 'verbose': True, 'header': 'Not equal to tolerance rtol=5e-12, atol=0', 'equal_nan': True}
+
+    @wraps(func)
+    def inner(*args, **kwds):
+        with self._recreate_cm():
+>           return func(*args, **kwds)
+                   ^^^^^^^^^^^^^^^^^^^
+E           AssertionError: 
+E           Not equal to tolerance rtol=5e-12, atol=0
+E           
+E           Mismatched elements: 1 / 1 (100%)
+E           Max absolute difference: 9.9980003e-05
+E           Max relative difference: 0.99990001
+E            x: array(9.998e-09)
+E            y: array(9.999e-05)
+
+/home/gomesu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/contextlib.py:81: AssertionError
+____________ test_effective_cross_section_has_no_discarded_overflow ____________
+
+    def test_effective_cross_section_has_no_discarded_overflow():
+        model = si.SIDM_cross_section()
+        with np.errstate(over="raise", invalid="raise"):
+>           f = model.sigma_eff_m_interpolate_analytical(1., 24.33 * model.km/model.s)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+test_minor_updates.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sashimi_si.SIDM_cross_section object at 0x7b1555e72990>, sigma0_m = 1.0
+w = 7.883992222942319e-19, a_threshold = 703.0, degree = 6
+
+    def sigma_eff_m_interpolate_analytical(self,sigma0_m, w,
+                             a_threshold=703.,
+                             degree=6):
+        """
+        Returns the analytic evaluation of the effective cross section of SIDM divided by m,
+        simplified via the substitution
+            a = w^2/(4*nu_eff^2)   with   nu_eff = 0.64 * Vmax.
+    
+        The expression is:
+    
+            sigma_eff = -sigma0_m * a^2 * [ exp(a) * (1+a) * Ei(-a) + 1 ]
+    
+        where Ei(-a) is the exponential integral function.
+    
+        For large a (i.e. when a > a_threshold), the asymptotic behavior gives
+            sigma_eff -> sigma0_m.
+        In that case, the function returns sigma0_m.
+    
+        Parameters
+        ----------
+        sigma0_m : float
+            The value of sigma_0 / m.
+        w : float
+            The value of w (in the same units as used in the numerical methods).
+        a_threshold : float, optional
+            The threshold for a above which sigma_eff is set to sigma0_m.
+            (Default is 703., based on that Ei(-a) returns NaN for such large a.)
+        degree : int, optional
+            The degree of the polynomial expansion used for large a.
+            (Default is 6, which gives a good approximation for large a.)
+        Returns
+        -------
+        sigma_eff : float or np.ndarray
+            The effective cross section of SIDM divided by m.
+        """
+        # dummy Vmax for the interpolation
+        Vmax = np.logspace(-5.,3.,1000)*self.km/self.s
+        # Compute the effective velocity dispersion
+        nu_eff = 0.64 * Vmax
+        a = w**2 / (4 * nu_eff**2)
+        # Compute the expression based on the analytic result:
+        # sigma_eff = -sigma0_m * a^2 * [ exp(a)*(1+a)*Ei(-a) + 1 ]
+        # special.expi(-a) returns Ei(-a)
+>       expr = - sigma0_m * a**2 * ( np.exp(a) * (1 + a) * special.expi(-a) + 1 )
+                                     ^^^^^^^^^
+E       FloatingPointError: overflow encountered in exp
+
+sashimi_si.py:377: FloatingPointError
+_________ test_effective_cross_section_cancellation_against_65_digits __________
+
+    def test_effective_cross_section_cancellation_against_65_digits():
+        model = si.SIDM_cross_section()
+        w = 24.33 * model.km/model.s
+        f = model.sigma_eff_m_interpolate_analytical(1., w)
+        a = w*w/(4*(.64*f.x)**2)
+        selected = np.flatnonzero((a >= 20) & (a <= 703))
+        with mp.workdps(65):
+            expected = np.array([float(-mp.mpf(float(a[i]))**2 *
+                (mp.exp(float(a[i]))*(1+mp.mpf(float(a[i])))*mp.ei(-float(a[i]))+1))
+                for i in selected])
+>       np.testing.assert_allclose(f.y[selected], expected, rtol=5e-13)
+
+test_minor_updates.py:39: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (<function assert_allclose.<locals>.compare at 0x7b151fd05f80>, array([0.99420464, 0.9939884 , 0.99376415, 0.99353159,...541832, 0.87138496, 0.86724164,
+       0.86298666, 0.85861837, 0.85413516, 0.84953551, 0.84481797,
+       0.83998116]))
+kwds = {'err_msg': '', 'verbose': True, 'header': 'Not equal to tolerance rtol=5e-13, atol=0', 'equal_nan': True}
+
+    @wraps(func)
+    def inner(*args, **kwds):
+        with self._recreate_cm():
+>           return func(*args, **kwds)
+                   ^^^^^^^^^^^^^^^^^^^
+E           AssertionError: 
+E           Not equal to tolerance rtol=5e-13, atol=0
+E           
+E           Mismatched elements: 55 / 96 (57.3%)
+E           Max absolute difference: 5.72356607e-11
+E           Max relative difference: 5.76222821e-11
+E            x: array([0.994205, 0.993988, 0.993764, 0.993532, 0.99329 , 0.99304 ,
+E                  0.992781, 0.992512, 0.992233, 0.991944, 0.991644, 0.991333,
+E                  0.991011, 0.990677, 0.990331, 0.989971, 0.989599, 0.989213,...
+E            y: array([0.994205, 0.993988, 0.993764, 0.993532, 0.99329 , 0.99304 ,
+E                  0.992781, 0.992512, 0.992233, 0.991944, 0.991644, 0.991333,
+E                  0.991011, 0.990677, 0.990331, 0.989971, 0.989599, 0.989213,...
+
+/home/gomesu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/contextlib.py:81: AssertionError
+________________ test_eps_redshift_mass_shape_and_support[1-1] _________________
+
+prescription = 1, order = 1
+
+    @pytest.mark.parametrize("prescription", [1, 2, 3])
+    @pytest.mark.parametrize("order", [1, 4, 64, 200])
+    def test_eps_redshift_mass_shape_and_support(prescription, order):
+        model = si.subhalo_properties()
+        z = np.array([.25, .5, 1.])
+        ma = model.Mvir_from_M200_fit(np.logspace(7, 11, 5)[None, :]*model.Msun,
+                                     z[:, None])
+        with np.errstate(divide="raise", invalid="raise", over="raise"):
+>           rate = model.Na_calc(ma, z, 1e12*model.Msun, N_herm=order,
+                                 Na_model=prescription)
+
+test_minor_updates.py:50: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sashimi_si.subhalo_properties object at 0x7b151fd986d0>
+ma = array([[1.08573719e+07, 1.08995189e+08, 1.09530603e+09, 1.10214847e+10,
+        1.11091904e+11],
+       [1.06723011e+0...     1.08801891e+11],
+       [1.04848971e+07, 1.05140584e+08, 1.05492728e+09, 1.05916978e+10,
+        1.06425045e+11]])
+zacc = array([0.25, 0.5 , 1.  ]), Mhost = 1000000000000.0, z0 = 0.0, N_herm = 1
+Nrand = 1000, Na_model = 1
+
+    def Na_calc(self, ma, zacc, Mhost, z0=0., N_herm=200, Nrand=1000, Na_model=3):
+        """ Returns Na, Eq. (3) of Yang et al. (2011)
+    
+        Parameters
+        ---
+        ma : float
+            The mass of the subhalo.
+        zacc : float
+            The accretion redshift of the subhalo.
+        Mhost : float
+            The mass of the host halo.
+        z0 : float
+            The redshift.
+        N_herm : int
+            The number of Hermite-Gauss quadrature points.
+        Nrand : int
+            The number of random numbers.
+        Na_model : int
+            The model to calculate Na. Default is 3.
+    
+        Returns
+        ---
+        Na : float
+            The value of Na.
+    
+        References
+        ---
+            - Yang et al. (2011), https://arxiv.org/abs/1104.1757
+        """
+        zacc_2d   = zacc.reshape(-1,1)
+        M200_0    = self.Mzzi(Mhost,zacc_2d,z0)
+        logM200_0 = np.log10(M200_0)
+    
+        xxi,wwi = hermgauss(N_herm)
+        xxi = xxi.reshape(-1,1,1)
+        wwi = wwi.reshape(-1,1,1)
+        # Eq. (21) in Yang et al. (2011)
+        sigmalogM200 = 0.12-0.15*np.log10(M200_0/Mhost)
+        logM200 = np.sqrt(2.)*sigmalogM200*xxi+logM200_0
+        M200 = 10.**logM200
+    
+        mmax = np.minimum(M200,Mhost/2.)
+        Mmax = np.minimum(M200_0+mmax,Mhost)
+    
+        if Na_model==3:
+            zlist    = zacc_2d*np.linspace(1,0,Nrand)
+            iMmax    = np.argmin(np.abs(self.Mzzi(Mhost,zlist,z0)-Mmax),axis=-1)
+            z_Max    = zlist[np.arange(len(zlist)),iMmax]
+            z_Max_3d = z_Max.reshape(N_herm,len(zlist),1)
+            delcM    = self.deltac_func(z_Max_3d)
+            delca    = self.deltac_func(zacc_2d)
+            sM       = self.s_func(Mmax)
+            sa       = self.s_func(ma)
+            xmax     = (delca-delcM)**2/(2.*(self.s_func(mmax)-sM))
+            normB    = special.gamma(0.5)*special.gammainc(0.5,xmax)/np.sqrt(np.pi)
+            # those reside in the exponential part of Eq. (14)
+            Phi      = self.Ffunc_Yang(delcM,delca,sM,sa)/normB*np.heaviside(mmax-ma,0)
+        elif Na_model==1:
+            delca    = self.deltac_func(zacc_2d)
+            sM       = self.s_func(M200)
+            sa       = self.s_func(ma)
+            xmin     = self.s_func(mmax)-self.s_func(M200)
+            normB    = 1./np.sqrt(2*np.pi)*delca*2./xmin**0.5*special.hyp2f1(0.5,0.,1.5,-sM/xmin)
+            Phi      = self.Ffunc(delca,sM,sa)/normB*np.heaviside(mmax-ma,0)
+        elif Na_model==2:
+            delca    = self.deltac_func(zacc_2d)
+            sM       = self.s_func(M200)
+            sa       = self.s_func(ma)
+            xmin     = self.s_func(mmax)-self.s_func(M200)
+            normB    = 1./np.sqrt(2.*np.pi)*delca*0.57 \
+                           *(delca/np.sqrt(sM))**-0.01*(2./(1.-0.38))*sM**(-0.38/2.) \
+                           *xmin**(0.5*(0.38-1.)) \
+                           *special.hyp2f1(0.5*(1-0.38),-0.38/2.,0.5*(3.-0.38),-sM/xmin)
+            Phi      = self.Ffunc(delca,sM,sa)*self.Gfunc(delca,sM,sa)/normB \
+                           *np.heaviside(mmax-ma,0)
+        # calculate Na
+        if N_herm==1:
+            F2t = np.nan_to_num(Phi)
+>           F2  =F2t.reshape((len(zacc_2d),len(ma)))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           ValueError: cannot reshape array of size 15 into shape (3,3)
+
+sashimi_si.py:1244: ValueError
+________________ test_eps_redshift_mass_shape_and_support[1-2] _________________
+
+prescription = 2, order = 1
+
+    @pytest.mark.parametrize("prescription", [1, 2, 3])
+    @pytest.mark.parametrize("order", [1, 4, 64, 200])
+    def test_eps_redshift_mass_shape_and_support(prescription, order):
+        model = si.subhalo_properties()
+        z = np.array([.25, .5, 1.])
+        ma = model.Mvir_from_M200_fit(np.logspace(7, 11, 5)[None, :]*model.Msun,
+                                     z[:, None])
+        with np.errstate(divide="raise", invalid="raise", over="raise"):
+>           rate = model.Na_calc(ma, z, 1e12*model.Msun, N_herm=order,
+                                 Na_model=prescription)
+
+test_minor_updates.py:50: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sashimi_si.subhalo_properties object at 0x7b151fdacad0>
+ma = array([[1.08573719e+07, 1.08995189e+08, 1.09530603e+09, 1.10214847e+10,
+        1.11091904e+11],
+       [1.06723011e+0...     1.08801891e+11],
+       [1.04848971e+07, 1.05140584e+08, 1.05492728e+09, 1.05916978e+10,
+        1.06425045e+11]])
+zacc = array([0.25, 0.5 , 1.  ]), Mhost = 1000000000000.0, z0 = 0.0, N_herm = 1
+Nrand = 1000, Na_model = 2
+
+    def Na_calc(self, ma, zacc, Mhost, z0=0., N_herm=200, Nrand=1000, Na_model=3):
+        """ Returns Na, Eq. (3) of Yang et al. (2011)
+    
+        Parameters
+        ---
+        ma : float
+            The mass of the subhalo.
+        zacc : float
+            The accretion redshift of the subhalo.
+        Mhost : float
+            The mass of the host halo.
+        z0 : float
+            The redshift.
+        N_herm : int
+            The number of Hermite-Gauss quadrature points.
+        Nrand : int
+            The number of random numbers.
+        Na_model : int
+            The model to calculate Na. Default is 3.
+    
+        Returns
+        ---
+        Na : float
+            The value of Na.
+    
+        References
+        ---
+            - Yang et al. (2011), https://arxiv.org/abs/1104.1757
+        """
+        zacc_2d   = zacc.reshape(-1,1)
+        M200_0    = self.Mzzi(Mhost,zacc_2d,z0)
+        logM200_0 = np.log10(M200_0)
+    
+        xxi,wwi = hermgauss(N_herm)
+        xxi = xxi.reshape(-1,1,1)
+        wwi = wwi.reshape(-1,1,1)
+        # Eq. (21) in Yang et al. (2011)
+        sigmalogM200 = 0.12-0.15*np.log10(M200_0/Mhost)
+        logM200 = np.sqrt(2.)*sigmalogM200*xxi+logM200_0
+        M200 = 10.**logM200
+    
+        mmax = np.minimum(M200,Mhost/2.)
+        Mmax = np.minimum(M200_0+mmax,Mhost)
+    
+        if Na_model==3:
+            zlist    = zacc_2d*np.linspace(1,0,Nrand)
+            iMmax    = np.argmin(np.abs(self.Mzzi(Mhost,zlist,z0)-Mmax),axis=-1)
+            z_Max    = zlist[np.arange(len(zlist)),iMmax]
+            z_Max_3d = z_Max.reshape(N_herm,len(zlist),1)
+            delcM    = self.deltac_func(z_Max_3d)
+            delca    = self.deltac_func(zacc_2d)
+            sM       = self.s_func(Mmax)
+            sa       = self.s_func(ma)
+            xmax     = (delca-delcM)**2/(2.*(self.s_func(mmax)-sM))
+            normB    = special.gamma(0.5)*special.gammainc(0.5,xmax)/np.sqrt(np.pi)
+            # those reside in the exponential part of Eq. (14)
+            Phi      = self.Ffunc_Yang(delcM,delca,sM,sa)/normB*np.heaviside(mmax-ma,0)
+        elif Na_model==1:
+            delca    = self.deltac_func(zacc_2d)
+            sM       = self.s_func(M200)
+            sa       = self.s_func(ma)
+            xmin     = self.s_func(mmax)-self.s_func(M200)
+            normB    = 1./np.sqrt(2*np.pi)*delca*2./xmin**0.5*special.hyp2f1(0.5,0.,1.5,-sM/xmin)
+            Phi      = self.Ffunc(delca,sM,sa)/normB*np.heaviside(mmax-ma,0)
+        elif Na_model==2:
+            delca    = self.deltac_func(zacc_2d)
+            sM       = self.s_func(M200)
+            sa       = self.s_func(ma)
+            xmin     = self.s_func(mmax)-self.s_func(M200)
+            normB    = 1./np.sqrt(2.*np.pi)*delca*0.57 \
+                           *(delca/np.sqrt(sM))**-0.01*(2./(1.-0.38))*sM**(-0.38/2.) \
+                           *xmin**(0.5*(0.38-1.)) \
+                           *special.hyp2f1(0.5*(1-0.38),-0.38/2.,0.5*(3.-0.38),-sM/xmin)
+            Phi      = self.Ffunc(delca,sM,sa)*self.Gfunc(delca,sM,sa)/normB \
+                           *np.heaviside(mmax-ma,0)
+        # calculate Na
+        if N_herm==1:
+            F2t = np.nan_to_num(Phi)
+>           F2  =F2t.reshape((len(zacc_2d),len(ma)))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           ValueError: cannot reshape array of size 15 into shape (3,3)
+
+sashimi_si.py:1244: ValueError
+________________ test_eps_redshift_mass_shape_and_support[1-3] _________________
+
+prescription = 3, order = 1
+
+    @pytest.mark.parametrize("prescription", [1, 2, 3])
+    @pytest.mark.parametrize("order", [1, 4, 64, 200])
+    def test_eps_redshift_mass_shape_and_support(prescription, order):
+        model = si.subhalo_properties()
+        z = np.array([.25, .5, 1.])
+        ma = model.Mvir_from_M200_fit(np.logspace(7, 11, 5)[None, :]*model.Msun,
+                                     z[:, None])
+        with np.errstate(divide="raise", invalid="raise", over="raise"):
+>           rate = model.Na_calc(ma, z, 1e12*model.Msun, N_herm=order,
+                                 Na_model=prescription)
+
+test_minor_updates.py:50: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sashimi_si.subhalo_properties object at 0x7b15227f6d10>
+ma = array([[1.08573719e+07, 1.08995189e+08, 1.09530603e+09, 1.10214847e+10,
+        1.11091904e+11],
+       [1.06723011e+0...     1.08801891e+11],
+       [1.04848971e+07, 1.05140584e+08, 1.05492728e+09, 1.05916978e+10,
+        1.06425045e+11]])
+zacc = array([0.25, 0.5 , 1.  ]), Mhost = 1000000000000.0, z0 = 0.0, N_herm = 1
+Nrand = 1000, Na_model = 3
+
+    def Na_calc(self, ma, zacc, Mhost, z0=0., N_herm=200, Nrand=1000, Na_model=3):
+        """ Returns Na, Eq. (3) of Yang et al. (2011)
+    
+        Parameters
+        ---
+        ma : float
+            The mass of the subhalo.
+        zacc : float
+            The accretion redshift of the subhalo.
+        Mhost : float
+            The mass of the host halo.
+        z0 : float
+            The redshift.
+        N_herm : int
+            The number of Hermite-Gauss quadrature points.
+        Nrand : int
+            The number of random numbers.
+        Na_model : int
+            The model to calculate Na. Default is 3.
+    
+        Returns
+        ---
+        Na : float
+            The value of Na.
+    
+        References
+        ---
+            - Yang et al. (2011), https://arxiv.org/abs/1104.1757
+        """
+        zacc_2d   = zacc.reshape(-1,1)
+        M200_0    = self.Mzzi(Mhost,zacc_2d,z0)
+        logM200_0 = np.log10(M200_0)
+    
+        xxi,wwi = hermgauss(N_herm)
+        xxi = xxi.reshape(-1,1,1)
+        wwi = wwi.reshape(-1,1,1)
+        # Eq. (21) in Yang et al. (2011)
+        sigmalogM200 = 0.12-0.15*np.log10(M200_0/Mhost)
+        logM200 = np.sqrt(2.)*sigmalogM200*xxi+logM200_0
+        M200 = 10.**logM200
+    
+        mmax = np.minimum(M200,Mhost/2.)
+        Mmax = np.minimum(M200_0+mmax,Mhost)
+    
+        if Na_model==3:
+            zlist    = zacc_2d*np.linspace(1,0,Nrand)
+            iMmax    = np.argmin(np.abs(self.Mzzi(Mhost,zlist,z0)-Mmax),axis=-1)
+            z_Max    = zlist[np.arange(len(zlist)),iMmax]
+            z_Max_3d = z_Max.reshape(N_herm,len(zlist),1)
+            delcM    = self.deltac_func(z_Max_3d)
+            delca    = self.deltac_func(zacc_2d)
+            sM       = self.s_func(Mmax)
+            sa       = self.s_func(ma)
+            xmax     = (delca-delcM)**2/(2.*(self.s_func(mmax)-sM))
+            normB    = special.gamma(0.5)*special.gammainc(0.5,xmax)/np.sqrt(np.pi)
+            # those reside in the exponential part of Eq. (14)
+            Phi      = self.Ffunc_Yang(delcM,delca,sM,sa)/normB*np.heaviside(mmax-ma,0)
+        elif Na_model==1:
+            delca    = self.deltac_func(zacc_2d)
+            sM       = self.s_func(M200)
+            sa       = self.s_func(ma)
+            xmin     = self.s_func(mmax)-self.s_func(M200)
+            normB    = 1./np.sqrt(2*np.pi)*delca*2./xmin**0.5*special.hyp2f1(0.5,0.,1.5,-sM/xmin)
+            Phi      = self.Ffunc(delca,sM,sa)/normB*np.heaviside(mmax-ma,0)
+        elif Na_model==2:
+            delca    = self.deltac_func(zacc_2d)
+            sM       = self.s_func(M200)
+            sa       = self.s_func(ma)
+            xmin     = self.s_func(mmax)-self.s_func(M200)
+            normB    = 1./np.sqrt(2.*np.pi)*delca*0.57 \
+                           *(delca/np.sqrt(sM))**-0.01*(2./(1.-0.38))*sM**(-0.38/2.) \
+                           *xmin**(0.5*(0.38-1.)) \
+                           *special.hyp2f1(0.5*(1-0.38),-0.38/2.,0.5*(3.-0.38),-sM/xmin)
+            Phi      = self.Ffunc(delca,sM,sa)*self.Gfunc(delca,sM,sa)/normB \
+                           *np.heaviside(mmax-ma,0)
+        # calculate Na
+        if N_herm==1:
+            F2t = np.nan_to_num(Phi)
+>           F2  =F2t.reshape((len(zacc_2d),len(ma)))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           ValueError: cannot reshape array of size 15 into shape (3,3)
+
+sashimi_si.py:1244: ValueError
+________________ test_eps_redshift_mass_shape_and_support[4-1] _________________
+
+prescription = 1, order = 4
+
+    @pytest.mark.parametrize("prescription", [1, 2, 3])
+    @pytest.mark.parametrize("order", [1, 4, 64, 200])
+    def test_eps_redshift_mass_shape_and_support(prescription, order):
+        model = si.subhalo_properties()
+        z = np.array([.25, .5, 1.])
+        ma = model.Mvir_from_M200_fit(np.logspace(7, 11, 5)[None, :]*model.Msun,
+                                     z[:, None])
+        with np.errstate(divide="raise", invalid="raise", over="raise"):
+>           rate = model.Na_calc(ma, z, 1e12*model.Msun, N_herm=order,
+                                 Na_model=prescription)
+
+test_minor_updates.py:50: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sashimi_si.subhalo_properties object at 0x7b15271ade90>
+ma = array([[1.08573719e+07, 1.08995189e+08, 1.09530603e+09, 1.10214847e+10,
+        1.11091904e+11],
+       [1.06723011e+0...     1.08801891e+11],
+       [1.04848971e+07, 1.05140584e+08, 1.05492728e+09, 1.05916978e+10,
+        1.06425045e+11]])
+zacc = array([0.25, 0.5 , 1.  ]), Mhost = 1000000000000.0, z0 = 0.0, N_herm = 4
+Nrand = 1000, Na_model = 1
+
+    def Na_calc(self, ma, zacc, Mhost, z0=0., N_herm=200, Nrand=1000, Na_model=3):
+        """ Returns Na, Eq. (3) of Yang et al. (2011)
+    
+        Parameters
+        ---
+        ma : float
+            The mass of the subhalo.
+        zacc : float
+            The accretion redshift of the subhalo.
+        Mhost : float
+            The mass of the host halo.
+        z0 : float
+            The redshift.
+        N_herm : int
+            The number of Hermite-Gauss quadrature points.
+        Nrand : int
+            The number of random numbers.
+        Na_model : int
+            The model to calculate Na. Default is 3.
+    
+        Returns
+        ---
+        Na : float
+            The value of Na.
+    
+        References
+        ---
+            - Yang et al. (2011), https://arxiv.org/abs/1104.1757
+        """
+        zacc_2d   = zacc.reshape(-1,1)
+        M200_0    = self.Mzzi(Mhost,zacc_2d,z0)
+        logM200_0 = np.log10(M200_0)
+    
+        xxi,wwi = hermgauss(N_herm)
+        xxi = xxi.reshape(-1,1,1)
+        wwi = wwi.reshape(-1,1,1)
+        # Eq. (21) in Yang et al. (2011)
+        sigmalogM200 = 0.12-0.15*np.log10(M200_0/Mhost)
+        logM200 = np.sqrt(2.)*sigmalogM200*xxi+logM200_0
+        M200 = 10.**logM200
+    
+        mmax = np.minimum(M200,Mhost/2.)
+        Mmax = np.minimum(M200_0+mmax,Mhost)
+    
+        if Na_model==3:
+            zlist    = zacc_2d*np.linspace(1,0,Nrand)
+            iMmax    = np.argmin(np.abs(self.Mzzi(Mhost,zlist,z0)-Mmax),axis=-1)
+            z_Max    = zlist[np.arange(len(zlist)),iMmax]
+            z_Max_3d = z_Max.reshape(N_herm,len(zlist),1)
+            delcM    = self.deltac_func(z_Max_3d)
+            delca    = self.deltac_func(zacc_2d)
+            sM       = self.s_func(Mmax)
+            sa       = self.s_func(ma)
+            xmax     = (delca-delcM)**2/(2.*(self.s_func(mmax)-sM))
+            normB    = special.gamma(0.5)*special.gammainc(0.5,xmax)/np.sqrt(np.pi)
+            # those reside in the exponential part of Eq. (14)
+            Phi      = self.Ffunc_Yang(delcM,delca,sM,sa)/normB*np.heaviside(mmax-ma,0)
+        elif Na_model==1:
+            delca    = self.deltac_func(zacc_2d)
+            sM       = self.s_func(M200)
+            sa       = self.s_func(ma)
+            xmin     = self.s_func(mmax)-self.s_func(M200)
+>           normB    = 1./np.sqrt(2*np.pi)*delca*2./xmin**0.5*special.hyp2f1(0.5,0.,1.5,-sM/xmin)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           FloatingPointError: divide by zero encountered in divide
+
+sashimi_si.py:1228: FloatingPointError
+________________ test_eps_redshift_mass_shape_and_support[4-2] _________________
+
+prescription = 2, order = 4
+
+    @pytest.mark.parametrize("prescription", [1, 2, 3])
+    @pytest.mark.parametrize("order", [1, 4, 64, 200])
+    def test_eps_redshift_mass_shape_and_support(prescription, order):
+        model = si.subhalo_properties()
+        z = np.array([.25, .5, 1.])
+        ma = model.Mvir_from_M200_fit(np.logspace(7, 11, 5)[None, :]*model.Msun,
+                                     z[:, None])
+        with np.errstate(divide="raise", invalid="raise", over="raise"):
+>           rate = model.Na_calc(ma, z, 1e12*model.Msun, N_herm=order,
+                                 Na_model=prescription)
+
+test_minor_updates.py:50: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sashimi_si.subhalo_properties object at 0x7b1522758a10>
+ma = array([[1.08573719e+07, 1.08995189e+08, 1.09530603e+09, 1.10214847e+10,
+        1.11091904e+11],
+       [1.06723011e+0...     1.08801891e+11],
+       [1.04848971e+07, 1.05140584e+08, 1.05492728e+09, 1.05916978e+10,
+        1.06425045e+11]])
+zacc = array([0.25, 0.5 , 1.  ]), Mhost = 1000000000000.0, z0 = 0.0, N_herm = 4
+Nrand = 1000, Na_model = 2
+
+    def Na_calc(self, ma, zacc, Mhost, z0=0., N_herm=200, Nrand=1000, Na_model=3):
+        """ Returns Na, Eq. (3) of Yang et al. (2011)
+    
+        Parameters
+        ---
+        ma : float
+            The mass of the subhalo.
+        zacc : float
+            The accretion redshift of the subhalo.
+        Mhost : float
+            The mass of the host halo.
+        z0 : float
+            The redshift.
+        N_herm : int
+            The number of Hermite-Gauss quadrature points.
+        Nrand : int
+            The number of random numbers.
+        Na_model : int
+            The model to calculate Na. Default is 3.
+    
+        Returns
+        ---
+        Na : float
+            The value of Na.
+    
+        References
+        ---
+            - Yang et al. (2011), https://arxiv.org/abs/1104.1757
+        """
+        zacc_2d   = zacc.reshape(-1,1)
+        M200_0    = self.Mzzi(Mhost,zacc_2d,z0)
+        logM200_0 = np.log10(M200_0)
+    
+        xxi,wwi = hermgauss(N_herm)
+        xxi = xxi.reshape(-1,1,1)
+        wwi = wwi.reshape(-1,1,1)
+        # Eq. (21) in Yang et al. (2011)
+        sigmalogM200 = 0.12-0.15*np.log10(M200_0/Mhost)
+        logM200 = np.sqrt(2.)*sigmalogM200*xxi+logM200_0
+        M200 = 10.**logM200
+    
+        mmax = np.minimum(M200,Mhost/2.)
+        Mmax = np.minimum(M200_0+mmax,Mhost)
+    
+        if Na_model==3:
+            zlist    = zacc_2d*np.linspace(1,0,Nrand)
+            iMmax    = np.argmin(np.abs(self.Mzzi(Mhost,zlist,z0)-Mmax),axis=-1)
+            z_Max    = zlist[np.arange(len(zlist)),iMmax]
+            z_Max_3d = z_Max.reshape(N_herm,len(zlist),1)
+            delcM    = self.deltac_func(z_Max_3d)
+            delca    = self.deltac_func(zacc_2d)
+            sM       = self.s_func(Mmax)
+            sa       = self.s_func(ma)
+            xmax     = (delca-delcM)**2/(2.*(self.s_func(mmax)-sM))
+            normB    = special.gamma(0.5)*special.gammainc(0.5,xmax)/np.sqrt(np.pi)
+            # those reside in the exponential part of Eq. (14)
+            Phi      = self.Ffunc_Yang(delcM,delca,sM,sa)/normB*np.heaviside(mmax-ma,0)
+        elif Na_model==1:
+            delca    = self.deltac_func(zacc_2d)
+            sM       = self.s_func(M200)
+            sa       = self.s_func(ma)
+            xmin     = self.s_func(mmax)-self.s_func(M200)
+            normB    = 1./np.sqrt(2*np.pi)*delca*2./xmin**0.5*special.hyp2f1(0.5,0.,1.5,-sM/xmin)
+            Phi      = self.Ffunc(delca,sM,sa)/normB*np.heaviside(mmax-ma,0)
+        elif Na_model==2:
+            delca    = self.deltac_func(zacc_2d)
+            sM       = self.s_func(M200)
+            sa       = self.s_func(ma)
+            xmin     = self.s_func(mmax)-self.s_func(M200)
+            normB    = 1./np.sqrt(2.*np.pi)*delca*0.57 \
+                           *(delca/np.sqrt(sM))**-0.01*(2./(1.-0.38))*sM**(-0.38/2.) \
+>                          *xmin**(0.5*(0.38-1.)) \
+                            ^^^^^^^^^^^^^^^^^^^^^
+                           *special.hyp2f1(0.5*(1-0.38),-0.38/2.,0.5*(3.-0.38),-sM/xmin)
+E           FloatingPointError: divide by zero encountered in power
+
+sashimi_si.py:1237: FloatingPointError
+________________ test_eps_redshift_mass_shape_and_support[64-1] ________________
+
+prescription = 1, order = 64
+
+    @pytest.mark.parametrize("prescription", [1, 2, 3])
+    @pytest.mark.parametrize("order", [1, 4, 64, 200])
+    def test_eps_redshift_mass_shape_and_support(prescription, order):
+        model = si.subhalo_properties()
+        z = np.array([.25, .5, 1.])
+        ma = model.Mvir_from_M200_fit(np.logspace(7, 11, 5)[None, :]*model.Msun,
+                                     z[:, None])
+        with np.errstate(divide="raise", invalid="raise", over="raise"):
+>           rate = model.Na_calc(ma, z, 1e12*model.Msun, N_herm=order,
+                                 Na_model=prescription)
+
+test_minor_updates.py:50: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sashimi_si.subhalo_properties object at 0x7b1539fe7f10>
+ma = array([[1.08573719e+07, 1.08995189e+08, 1.09530603e+09, 1.10214847e+10,
+        1.11091904e+11],
+       [1.06723011e+0...     1.08801891e+11],
+       [1.04848971e+07, 1.05140584e+08, 1.05492728e+09, 1.05916978e+10,
+        1.06425045e+11]])
+zacc = array([0.25, 0.5 , 1.  ]), Mhost = 1000000000000.0, z0 = 0.0, N_herm = 64
+Nrand = 1000, Na_model = 1
+
+    def Na_calc(self, ma, zacc, Mhost, z0=0., N_herm=200, Nrand=1000, Na_model=3):
+        """ Returns Na, Eq. (3) of Yang et al. (2011)
+    
+        Parameters
+        ---
+        ma : float
+            The mass of the subhalo.
+        zacc : float
+            The accretion redshift of the subhalo.
+        Mhost : float
+            The mass of the host halo.
+        z0 : float
+            The redshift.
+        N_herm : int
+            The number of Hermite-Gauss quadrature points.
+        Nrand : int
+            The number of random numbers.
+        Na_model : int
+            The model to calculate Na. Default is 3.
+    
+        Returns
+        ---
+        Na : float
+            The value of Na.
+    
+        References
+        ---
+            - Yang et al. (2011), https://arxiv.org/abs/1104.1757
+        """
+        zacc_2d   = zacc.reshape(-1,1)
+        M200_0    = self.Mzzi(Mhost,zacc_2d,z0)
+        logM200_0 = np.log10(M200_0)
+    
+        xxi,wwi = hermgauss(N_herm)
+        xxi = xxi.reshape(-1,1,1)
+        wwi = wwi.reshape(-1,1,1)
+        # Eq. (21) in Yang et al. (2011)
+        sigmalogM200 = 0.12-0.15*np.log10(M200_0/Mhost)
+        logM200 = np.sqrt(2.)*sigmalogM200*xxi+logM200_0
+        M200 = 10.**logM200
+    
+        mmax = np.minimum(M200,Mhost/2.)
+        Mmax = np.minimum(M200_0+mmax,Mhost)
+    
+        if Na_model==3:
+            zlist    = zacc_2d*np.linspace(1,0,Nrand)
+            iMmax    = np.argmin(np.abs(self.Mzzi(Mhost,zlist,z0)-Mmax),axis=-1)
+            z_Max    = zlist[np.arange(len(zlist)),iMmax]
+            z_Max_3d = z_Max.reshape(N_herm,len(zlist),1)
+            delcM    = self.deltac_func(z_Max_3d)
+            delca    = self.deltac_func(zacc_2d)
+            sM       = self.s_func(Mmax)
+            sa       = self.s_func(ma)
+            xmax     = (delca-delcM)**2/(2.*(self.s_func(mmax)-sM))
+            normB    = special.gamma(0.5)*special.gammainc(0.5,xmax)/np.sqrt(np.pi)
+            # those reside in the exponential part of Eq. (14)
+            Phi      = self.Ffunc_Yang(delcM,delca,sM,sa)/normB*np.heaviside(mmax-ma,0)
+        elif Na_model==1:
+            delca    = self.deltac_func(zacc_2d)
+            sM       = self.s_func(M200)
+            sa       = self.s_func(ma)
+            xmin     = self.s_func(mmax)-self.s_func(M200)
+>           normB    = 1./np.sqrt(2*np.pi)*delca*2./xmin**0.5*special.hyp2f1(0.5,0.,1.5,-sM/xmin)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           FloatingPointError: divide by zero encountered in divide
+
+sashimi_si.py:1228: FloatingPointError
+________________ test_eps_redshift_mass_shape_and_support[64-2] ________________
+
+prescription = 2, order = 64
+
+    @pytest.mark.parametrize("prescription", [1, 2, 3])
+    @pytest.mark.parametrize("order", [1, 4, 64, 200])
+    def test_eps_redshift_mass_shape_and_support(prescription, order):
+        model = si.subhalo_properties()
+        z = np.array([.25, .5, 1.])
+        ma = model.Mvir_from_M200_fit(np.logspace(7, 11, 5)[None, :]*model.Msun,
+                                     z[:, None])
+        with np.errstate(divide="raise", invalid="raise", over="raise"):
+>           rate = model.Na_calc(ma, z, 1e12*model.Msun, N_herm=order,
+                                 Na_model=prescription)
+
+test_minor_updates.py:50: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sashimi_si.subhalo_properties object at 0x7b152716b190>
+ma = array([[1.08573719e+07, 1.08995189e+08, 1.09530603e+09, 1.10214847e+10,
+        1.11091904e+11],
+       [1.06723011e+0...     1.08801891e+11],
+       [1.04848971e+07, 1.05140584e+08, 1.05492728e+09, 1.05916978e+10,
+        1.06425045e+11]])
+zacc = array([0.25, 0.5 , 1.  ]), Mhost = 1000000000000.0, z0 = 0.0, N_herm = 64
+Nrand = 1000, Na_model = 2
+
+    def Na_calc(self, ma, zacc, Mhost, z0=0., N_herm=200, Nrand=1000, Na_model=3):
+        """ Returns Na, Eq. (3) of Yang et al. (2011)
+    
+        Parameters
+        ---
+        ma : float
+            The mass of the subhalo.
+        zacc : float
+            The accretion redshift of the subhalo.
+        Mhost : float
+            The mass of the host halo.
+        z0 : float
+            The redshift.
+        N_herm : int
+            The number of Hermite-Gauss quadrature points.
+        Nrand : int
+            The number of random numbers.
+        Na_model : int
+            The model to calculate Na. Default is 3.
+    
+        Returns
+        ---
+        Na : float
+            The value of Na.
+    
+        References
+        ---
+            - Yang et al. (2011), https://arxiv.org/abs/1104.1757
+        """
+        zacc_2d   = zacc.reshape(-1,1)
+        M200_0    = self.Mzzi(Mhost,zacc_2d,z0)
+        logM200_0 = np.log10(M200_0)
+    
+        xxi,wwi = hermgauss(N_herm)
+        xxi = xxi.reshape(-1,1,1)
+        wwi = wwi.reshape(-1,1,1)
+        # Eq. (21) in Yang et al. (2011)
+        sigmalogM200 = 0.12-0.15*np.log10(M200_0/Mhost)
+        logM200 = np.sqrt(2.)*sigmalogM200*xxi+logM200_0
+        M200 = 10.**logM200
+    
+        mmax = np.minimum(M200,Mhost/2.)
+        Mmax = np.minimum(M200_0+mmax,Mhost)
+    
+        if Na_model==3:
+            zlist    = zacc_2d*np.linspace(1,0,Nrand)
+            iMmax    = np.argmin(np.abs(self.Mzzi(Mhost,zlist,z0)-Mmax),axis=-1)
+            z_Max    = zlist[np.arange(len(zlist)),iMmax]
+            z_Max_3d = z_Max.reshape(N_herm,len(zlist),1)
+            delcM    = self.deltac_func(z_Max_3d)
+            delca    = self.deltac_func(zacc_2d)
+            sM       = self.s_func(Mmax)
+            sa       = self.s_func(ma)
+            xmax     = (delca-delcM)**2/(2.*(self.s_func(mmax)-sM))
+            normB    = special.gamma(0.5)*special.gammainc(0.5,xmax)/np.sqrt(np.pi)
+            # those reside in the exponential part of Eq. (14)
+            Phi      = self.Ffunc_Yang(delcM,delca,sM,sa)/normB*np.heaviside(mmax-ma,0)
+        elif Na_model==1:
+            delca    = self.deltac_func(zacc_2d)
+            sM       = self.s_func(M200)
+            sa       = self.s_func(ma)
+            xmin     = self.s_func(mmax)-self.s_func(M200)
+            normB    = 1./np.sqrt(2*np.pi)*delca*2./xmin**0.5*special.hyp2f1(0.5,0.,1.5,-sM/xmin)
+            Phi      = self.Ffunc(delca,sM,sa)/normB*np.heaviside(mmax-ma,0)
+        elif Na_model==2:
+            delca    = self.deltac_func(zacc_2d)
+            sM       = self.s_func(M200)
+            sa       = self.s_func(ma)
+            xmin     = self.s_func(mmax)-self.s_func(M200)
+            normB    = 1./np.sqrt(2.*np.pi)*delca*0.57 \
+                           *(delca/np.sqrt(sM))**-0.01*(2./(1.-0.38))*sM**(-0.38/2.) \
+>                          *xmin**(0.5*(0.38-1.)) \
+                            ^^^^^^^^^^^^^^^^^^^^^
+                           *special.hyp2f1(0.5*(1-0.38),-0.38/2.,0.5*(3.-0.38),-sM/xmin)
+E           FloatingPointError: divide by zero encountered in power
+
+sashimi_si.py:1237: FloatingPointError
+_______________ test_eps_redshift_mass_shape_and_support[200-1] ________________
+
+prescription = 1, order = 200
+
+    @pytest.mark.parametrize("prescription", [1, 2, 3])
+    @pytest.mark.parametrize("order", [1, 4, 64, 200])
+    def test_eps_redshift_mass_shape_and_support(prescription, order):
+        model = si.subhalo_properties()
+        z = np.array([.25, .5, 1.])
+        ma = model.Mvir_from_M200_fit(np.logspace(7, 11, 5)[None, :]*model.Msun,
+                                     z[:, None])
+        with np.errstate(divide="raise", invalid="raise", over="raise"):
+>           rate = model.Na_calc(ma, z, 1e12*model.Msun, N_herm=order,
+                                 Na_model=prescription)
+
+test_minor_updates.py:50: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sashimi_si.subhalo_properties object at 0x7b151fd68d90>
+ma = array([[1.08573719e+07, 1.08995189e+08, 1.09530603e+09, 1.10214847e+10,
+        1.11091904e+11],
+       [1.06723011e+0...     1.08801891e+11],
+       [1.04848971e+07, 1.05140584e+08, 1.05492728e+09, 1.05916978e+10,
+        1.06425045e+11]])
+zacc = array([0.25, 0.5 , 1.  ]), Mhost = 1000000000000.0, z0 = 0.0
+N_herm = 200, Nrand = 1000, Na_model = 1
+
+    def Na_calc(self, ma, zacc, Mhost, z0=0., N_herm=200, Nrand=1000, Na_model=3):
+        """ Returns Na, Eq. (3) of Yang et al. (2011)
+    
+        Parameters
+        ---
+        ma : float
+            The mass of the subhalo.
+        zacc : float
+            The accretion redshift of the subhalo.
+        Mhost : float
+            The mass of the host halo.
+        z0 : float
+            The redshift.
+        N_herm : int
+            The number of Hermite-Gauss quadrature points.
+        Nrand : int
+            The number of random numbers.
+        Na_model : int
+            The model to calculate Na. Default is 3.
+    
+        Returns
+        ---
+        Na : float
+            The value of Na.
+    
+        References
+        ---
+            - Yang et al. (2011), https://arxiv.org/abs/1104.1757
+        """
+        zacc_2d   = zacc.reshape(-1,1)
+        M200_0    = self.Mzzi(Mhost,zacc_2d,z0)
+        logM200_0 = np.log10(M200_0)
+    
+        xxi,wwi = hermgauss(N_herm)
+        xxi = xxi.reshape(-1,1,1)
+        wwi = wwi.reshape(-1,1,1)
+        # Eq. (21) in Yang et al. (2011)
+        sigmalogM200 = 0.12-0.15*np.log10(M200_0/Mhost)
+        logM200 = np.sqrt(2.)*sigmalogM200*xxi+logM200_0
+        M200 = 10.**logM200
+    
+        mmax = np.minimum(M200,Mhost/2.)
+        Mmax = np.minimum(M200_0+mmax,Mhost)
+    
+        if Na_model==3:
+            zlist    = zacc_2d*np.linspace(1,0,Nrand)
+            iMmax    = np.argmin(np.abs(self.Mzzi(Mhost,zlist,z0)-Mmax),axis=-1)
+            z_Max    = zlist[np.arange(len(zlist)),iMmax]
+            z_Max_3d = z_Max.reshape(N_herm,len(zlist),1)
+            delcM    = self.deltac_func(z_Max_3d)
+            delca    = self.deltac_func(zacc_2d)
+            sM       = self.s_func(Mmax)
+            sa       = self.s_func(ma)
+            xmax     = (delca-delcM)**2/(2.*(self.s_func(mmax)-sM))
+            normB    = special.gamma(0.5)*special.gammainc(0.5,xmax)/np.sqrt(np.pi)
+            # those reside in the exponential part of Eq. (14)
+            Phi      = self.Ffunc_Yang(delcM,delca,sM,sa)/normB*np.heaviside(mmax-ma,0)
+        elif Na_model==1:
+            delca    = self.deltac_func(zacc_2d)
+            sM       = self.s_func(M200)
+            sa       = self.s_func(ma)
+            xmin     = self.s_func(mmax)-self.s_func(M200)
+>           normB    = 1./np.sqrt(2*np.pi)*delca*2./xmin**0.5*special.hyp2f1(0.5,0.,1.5,-sM/xmin)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           FloatingPointError: divide by zero encountered in divide
+
+sashimi_si.py:1228: FloatingPointError
+_______________ test_eps_redshift_mass_shape_and_support[200-2] ________________
+
+prescription = 2, order = 200
+
+    @pytest.mark.parametrize("prescription", [1, 2, 3])
+    @pytest.mark.parametrize("order", [1, 4, 64, 200])
+    def test_eps_redshift_mass_shape_and_support(prescription, order):
+        model = si.subhalo_properties()
+        z = np.array([.25, .5, 1.])
+        ma = model.Mvir_from_M200_fit(np.logspace(7, 11, 5)[None, :]*model.Msun,
+                                     z[:, None])
+        with np.errstate(divide="raise", invalid="raise", over="raise"):
+>           rate = model.Na_calc(ma, z, 1e12*model.Msun, N_herm=order,
+                                 Na_model=prescription)
+
+test_minor_updates.py:50: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sashimi_si.subhalo_properties object at 0x7b151fd990d0>
+ma = array([[1.08573719e+07, 1.08995189e+08, 1.09530603e+09, 1.10214847e+10,
+        1.11091904e+11],
+       [1.06723011e+0...     1.08801891e+11],
+       [1.04848971e+07, 1.05140584e+08, 1.05492728e+09, 1.05916978e+10,
+        1.06425045e+11]])
+zacc = array([0.25, 0.5 , 1.  ]), Mhost = 1000000000000.0, z0 = 0.0
+N_herm = 200, Nrand = 1000, Na_model = 2
+
+    def Na_calc(self, ma, zacc, Mhost, z0=0., N_herm=200, Nrand=1000, Na_model=3):
+        """ Returns Na, Eq. (3) of Yang et al. (2011)
+    
+        Parameters
+        ---
+        ma : float
+            The mass of the subhalo.
+        zacc : float
+            The accretion redshift of the subhalo.
+        Mhost : float
+            The mass of the host halo.
+        z0 : float
+            The redshift.
+        N_herm : int
+            The number of Hermite-Gauss quadrature points.
+        Nrand : int
+            The number of random numbers.
+        Na_model : int
+            The model to calculate Na. Default is 3.
+    
+        Returns
+        ---
+        Na : float
+            The value of Na.
+    
+        References
+        ---
+            - Yang et al. (2011), https://arxiv.org/abs/1104.1757
+        """
+        zacc_2d   = zacc.reshape(-1,1)
+        M200_0    = self.Mzzi(Mhost,zacc_2d,z0)
+        logM200_0 = np.log10(M200_0)
+    
+        xxi,wwi = hermgauss(N_herm)
+        xxi = xxi.reshape(-1,1,1)
+        wwi = wwi.reshape(-1,1,1)
+        # Eq. (21) in Yang et al. (2011)
+        sigmalogM200 = 0.12-0.15*np.log10(M200_0/Mhost)
+        logM200 = np.sqrt(2.)*sigmalogM200*xxi+logM200_0
+        M200 = 10.**logM200
+    
+        mmax = np.minimum(M200,Mhost/2.)
+        Mmax = np.minimum(M200_0+mmax,Mhost)
+    
+        if Na_model==3:
+            zlist    = zacc_2d*np.linspace(1,0,Nrand)
+            iMmax    = np.argmin(np.abs(self.Mzzi(Mhost,zlist,z0)-Mmax),axis=-1)
+            z_Max    = zlist[np.arange(len(zlist)),iMmax]
+            z_Max_3d = z_Max.reshape(N_herm,len(zlist),1)
+            delcM    = self.deltac_func(z_Max_3d)
+            delca    = self.deltac_func(zacc_2d)
+            sM       = self.s_func(Mmax)
+            sa       = self.s_func(ma)
+            xmax     = (delca-delcM)**2/(2.*(self.s_func(mmax)-sM))
+            normB    = special.gamma(0.5)*special.gammainc(0.5,xmax)/np.sqrt(np.pi)
+            # those reside in the exponential part of Eq. (14)
+            Phi      = self.Ffunc_Yang(delcM,delca,sM,sa)/normB*np.heaviside(mmax-ma,0)
+        elif Na_model==1:
+            delca    = self.deltac_func(zacc_2d)
+            sM       = self.s_func(M200)
+            sa       = self.s_func(ma)
+            xmin     = self.s_func(mmax)-self.s_func(M200)
+            normB    = 1./np.sqrt(2*np.pi)*delca*2./xmin**0.5*special.hyp2f1(0.5,0.,1.5,-sM/xmin)
+            Phi      = self.Ffunc(delca,sM,sa)/normB*np.heaviside(mmax-ma,0)
+        elif Na_model==2:
+            delca    = self.deltac_func(zacc_2d)
+            sM       = self.s_func(M200)
+            sa       = self.s_func(ma)
+            xmin     = self.s_func(mmax)-self.s_func(M200)
+            normB    = 1./np.sqrt(2.*np.pi)*delca*0.57 \
+                           *(delca/np.sqrt(sM))**-0.01*(2./(1.-0.38))*sM**(-0.38/2.) \
+>                          *xmin**(0.5*(0.38-1.)) \
+                            ^^^^^^^^^^^^^^^^^^^^^
+                           *special.hyp2f1(0.5*(1-0.38),-0.38/2.,0.5*(3.-0.38),-sM/xmin)
+E           FloatingPointError: divide by zero encountered in power
+
+sashimi_si.py:1237: FloatingPointError
+_______________ test_eps_redshift_mass_shape_and_support[200-3] ________________
+
+prescription = 3, order = 200
+
+    @pytest.mark.parametrize("prescription", [1, 2, 3])
+    @pytest.mark.parametrize("order", [1, 4, 64, 200])
+    def test_eps_redshift_mass_shape_and_support(prescription, order):
+        model = si.subhalo_properties()
+        z = np.array([.25, .5, 1.])
+        ma = model.Mvir_from_M200_fit(np.logspace(7, 11, 5)[None, :]*model.Msun,
+                                     z[:, None])
+        with np.errstate(divide="raise", invalid="raise", over="raise"):
+>           rate = model.Na_calc(ma, z, 1e12*model.Msun, N_herm=order,
+                                 Na_model=prescription)
+
+test_minor_updates.py:50: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sashimi_si.subhalo_properties object at 0x7b15271a8590>
+ma = array([[1.08573719e+07, 1.08995189e+08, 1.09530603e+09, 1.10214847e+10,
+        1.11091904e+11],
+       [1.06723011e+0...     1.08801891e+11],
+       [1.04848971e+07, 1.05140584e+08, 1.05492728e+09, 1.05916978e+10,
+        1.06425045e+11]])
+zacc = array([0.25, 0.5 , 1.  ]), Mhost = 1000000000000.0, z0 = 0.0
+N_herm = 200, Nrand = 1000, Na_model = 3
+
+    def Na_calc(self, ma, zacc, Mhost, z0=0., N_herm=200, Nrand=1000, Na_model=3):
+        """ Returns Na, Eq. (3) of Yang et al. (2011)
+    
+        Parameters
+        ---
+        ma : float
+            The mass of the subhalo.
+        zacc : float
+            The accretion redshift of the subhalo.
+        Mhost : float
+            The mass of the host halo.
+        z0 : float
+            The redshift.
+        N_herm : int
+            The number of Hermite-Gauss quadrature points.
+        Nrand : int
+            The number of random numbers.
+        Na_model : int
+            The model to calculate Na. Default is 3.
+    
+        Returns
+        ---
+        Na : float
+            The value of Na.
+    
+        References
+        ---
+            - Yang et al. (2011), https://arxiv.org/abs/1104.1757
+        """
+        zacc_2d   = zacc.reshape(-1,1)
+        M200_0    = self.Mzzi(Mhost,zacc_2d,z0)
+        logM200_0 = np.log10(M200_0)
+    
+        xxi,wwi = hermgauss(N_herm)
+        xxi = xxi.reshape(-1,1,1)
+        wwi = wwi.reshape(-1,1,1)
+        # Eq. (21) in Yang et al. (2011)
+        sigmalogM200 = 0.12-0.15*np.log10(M200_0/Mhost)
+        logM200 = np.sqrt(2.)*sigmalogM200*xxi+logM200_0
+        M200 = 10.**logM200
+    
+        mmax = np.minimum(M200,Mhost/2.)
+        Mmax = np.minimum(M200_0+mmax,Mhost)
+    
+        if Na_model==3:
+            zlist    = zacc_2d*np.linspace(1,0,Nrand)
+            iMmax    = np.argmin(np.abs(self.Mzzi(Mhost,zlist,z0)-Mmax),axis=-1)
+            z_Max    = zlist[np.arange(len(zlist)),iMmax]
+            z_Max_3d = z_Max.reshape(N_herm,len(zlist),1)
+            delcM    = self.deltac_func(z_Max_3d)
+            delca    = self.deltac_func(zacc_2d)
+            sM       = self.s_func(Mmax)
+            sa       = self.s_func(ma)
+            xmax     = (delca-delcM)**2/(2.*(self.s_func(mmax)-sM))
+            normB    = special.gamma(0.5)*special.gammainc(0.5,xmax)/np.sqrt(np.pi)
+            # those reside in the exponential part of Eq. (14)
+>           Phi      = self.Ffunc_Yang(delcM,delca,sM,sa)/normB*np.heaviside(mmax-ma,0)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           FloatingPointError: invalid value encountered in divide
+
+sashimi_si.py:1222: FloatingPointError
+_____________ test_zero_barrier_gap_keeps_finite_normalized_kernel _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b15271e2310>
+
+    def test_zero_barrier_gap_keeps_finite_normalized_kernel(monkeypatch):
+        model = si.subhalo_properties()
+        monkeypatch.setattr(model, "deltac_func", lambda z: np.ones_like(z)*1.686)
+        z = np.array([.5, 1.])
+        # At zero barrier gap the normalized kernel remains positive, rather than
+        # being silently replaced by zero via nan_to_num.
+        rate = model.Na_calc(np.array([1e7, 1e8])*model.Msun, z,
+                             1e12*model.Msun, N_herm=4, Na_model=3)
+>       assert np.all(np.isfinite(rate)) and np.all(rate > 0)
+E       AssertionError: assert (True and False)
+E        +  where True = <function all at 0x7b15551fcff0>(array([[ True,  True],\n       [ True,  True]]))
+E        +    where <function all at 0x7b15551fcff0> = np.all
+E        +    and   array([[ True,  True],\n       [ True,  True]]) = <ufunc 'isfinite'>(array([[0., 0.],\n       [0., 0.]]))
+E        +      where <ufunc 'isfinite'> = np.isfinite
+E        +  and   False = <function all at 0x7b15551fcff0>(array([[0., 0.],\n       [0., 0.]]) > 0)
+E        +    where <function all at 0x7b15551fcff0> = np.all
+
+test_minor_updates.py:64: AssertionError
+_________________ test_nfw_inverse_resolves_survival_boundary __________________
+
+    def test_nfw_inverse_resolves_survival_boundary():
+        model = si.subhalo_properties()
+        radii = np.array([.77-1e-8, .77+1e-8, 1e-5, 500.])
+        with mp.workdps(65):
+            mass = np.array([float(mp.log1p(mp.mpf(float(x)))-mp.mpf(float(x))/(1+mp.mpf(float(x)))) for x in radii])
+        actual = model.ct_func(mass)
+>       np.testing.assert_allclose(actual, radii, rtol=1e-11)
+
+test_minor_updates.py:73: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (<function assert_allclose.<locals>.compare at 0x7b151fd97060>, array([7.69804106e-01, 7.69804126e-01, 1.13507007e-09, 2.62481393e+02]), array([7.6999999e-01, 7.7000001e-01, 1.0000000e-05, 5.0000000e+02]))
+kwds = {'err_msg': '', 'verbose': True, 'header': 'Not equal to tolerance rtol=1e-11, atol=0', 'equal_nan': True}
+
+    @wraps(func)
+    def inner(*args, **kwds):
+        with self._recreate_cm():
+>           return func(*args, **kwds)
+                   ^^^^^^^^^^^^^^^^^^^
+E           AssertionError: 
+E           Not equal to tolerance rtol=1e-11, atol=0
+E           
+E           Mismatched elements: 4 / 4 (100%)
+E           Max absolute difference: 237.51860663
+E           Max relative difference: 0.99988649
+E            x: array([7.698041e-01, 7.698041e-01, 1.135070e-09, 2.624814e+02])
+E            y: array([7.7e-01, 7.7e-01, 1.0e-05, 5.0e+02])
+
+/home/gomesu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/contextlib.py:81: AssertionError
+________________ test_unformed_nodes_are_not_evolved_backwards _________________
+
+    def test_unformed_nodes_are_not_evolved_backwards():
+        model = si.subhalo_properties()
+        with warnings.catch_warnings(record=True) as observed:
+            warnings.simplefilter("always", RuntimeWarning)
+            arrays = model.subhalo_properties_calc(
+                M0=1e12, dz=.2, zmax=2, N_ma=12, N_herm=2,
+                logmamin=9., N_hermNa=4, method="pert2_shanks")
+>       assert not [w for w in observed if issubclass(w.category, RuntimeWarning)]
+E       assert not [<warnings.WarningMessage object at 0x7b1552fb92d0>, <warnings.WarningMessage object at 0x7b1556581050>, <warnings.War...1d31df10>, <warnings.WarningMessage object at 0x7b151d31e3d0>, <warnings.WarningMessage object at 0x7b151d31f110>, ...]
+
+test_minor_updates.py:85: AssertionError
+----------------------------- Captured stderr call -----------------------------
+Calculating subhalo properties:   0%|          | 0/7 [00:00<?, ?it/s]Calculating subhalo properties: 100%|██████████| 7/7 [00:00<00:00, 352.97it/s]
+=============================== warnings summary ===============================
+sashimi_si.py:228
+  /tmp/sashimi-minor-updates-20260911/sashimi-si/sashimi_si.py:228: DeprecationWarning: invalid escape sequence '\s'
+    """ Returns Eq. (1.2) of Yang et al. (2023) divided by m.
+
+sashimi_si.py:297
+  /tmp/sashimi-minor-updates-20260911/sashimi-si/sashimi_si.py:297: DeprecationWarning: invalid escape sequence '\s'
+    """ Returns the interpolation function of the effective cross section of SIDM divided by m.
+
+test_minor_updates.py: 17 warnings
+  /tmp/sashimi-minor-updates-20260911/sashimi-si/sashimi_si.py:377: RuntimeWarning: overflow encountered in exp
+    expr = - sigma0_m * a**2 * ( np.exp(a) * (1 + a) * special.expi(-a) + 1 )
+
+test_minor_updates.py: 17 warnings
+  /tmp/sashimi-minor-updates-20260911/sashimi-si/sashimi_si.py:377: RuntimeWarning: invalid value encountered in multiply
+    expr = - sigma0_m * a**2 * ( np.exp(a) * (1 + a) * special.expi(-a) + 1 )
+
+test_minor_updates.py::test_zero_barrier_gap_keeps_finite_normalized_kernel
+  /tmp/sashimi-minor-updates-20260911/sashimi-si/sashimi_si.py:1222: RuntimeWarning: invalid value encountered in divide
+    Phi      = self.Ffunc_Yang(delcM,delca,sM,sa)/normB*np.heaviside(mmax-ma,0)
+
+test_minor_updates.py::test_total_correction_does_not_enter_catalog
+  /tmp/sashimi-minor-updates-20260911/sashimi-si/sashimi_si.py:995: RuntimeWarning: invalid value encountered in divide
+    eps_shanks = - eps_2**2 / eps_2m1
+
+test_minor_updates.py::test_total_correction_does_not_enter_catalog
+  /tmp/sashimi-minor-updates-20260911/sashimi-si/sashimi_si.py:998: RuntimeWarning: invalid value encountered in divide
+    eps_shanks = np.where(np.abs((eps_1+eps_2)/eps_0) < 0.02, 0, eps_shanks)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED test_minor_updates.py::test_total_is_angular_integral[0.1] - Assertion...
+FAILED test_minor_updates.py::test_total_is_angular_integral[1.0] - Assertion...
+FAILED test_minor_updates.py::test_total_is_angular_integral[3.0] - Assertion...
+FAILED test_minor_updates.py::test_total_is_angular_integral[10.0] - Assertio...
+FAILED test_minor_updates.py::test_total_is_angular_integral[30.0] - Assertio...
+FAILED test_minor_updates.py::test_total_is_angular_integral[100.0] - Asserti...
+FAILED test_minor_updates.py::test_effective_cross_section_has_no_discarded_overflow
+FAILED test_minor_updates.py::test_effective_cross_section_cancellation_against_65_digits
+FAILED test_minor_updates.py::test_eps_redshift_mass_shape_and_support[1-1]
+FAILED test_minor_updates.py::test_eps_redshift_mass_shape_and_support[1-2]
+FAILED test_minor_updates.py::test_eps_redshift_mass_shape_and_support[1-3]
+FAILED test_minor_updates.py::test_eps_redshift_mass_shape_and_support[4-1]
+FAILED test_minor_updates.py::test_eps_redshift_mass_shape_and_support[4-2]
+FAILED test_minor_updates.py::test_eps_redshift_mass_shape_and_support[64-1]
+FAILED test_minor_updates.py::test_eps_redshift_mass_shape_and_support[64-2]
+FAILED test_minor_updates.py::test_eps_redshift_mass_shape_and_support[200-1]
+FAILED test_minor_updates.py::test_eps_redshift_mass_shape_and_support[200-2]
+FAILED test_minor_updates.py::test_eps_redshift_mass_shape_and_support[200-3]
+FAILED test_minor_updates.py::test_zero_barrier_gap_keeps_finite_normalized_kernel
+FAILED test_minor_updates.py::test_nfw_inverse_resolves_survival_boundary - A...
+FAILED test_minor_updates.py::test_unformed_nodes_are_not_evolved_backwards
+21 failed, 4 passed, 39 warnings in 1.50s

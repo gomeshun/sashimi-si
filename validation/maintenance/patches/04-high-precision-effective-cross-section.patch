@@ -1,0 +1,20 @@
+--- a/sashimi_si.py
++++ b/sashimi_si.py
+@@ -381,10 +381,14 @@
+         coeff = [(-1)**k * special.factorial(k+1)*(k + 1) for k in range(degree + 1)]
+         sigma_eff_asymp = sigma0_m * np.polynomial.Polynomial(coeff)(1/a)  # Evaluate the polynomial at 1/a
+         sigma_eff = np.array(sigma_eff_asymp, copy=True)
++        # Validation-only evaluation of the same defining expression, 65 digits.
++        import mpmath as mp
++        def exact_ratio(value):
++            with mp.workdps(65):
++                aa = mp.mpf(float(value))
++                return float(-aa**2 * (mp.exp(aa)*(1+aa)*mp.ei(-aa)+1))
+         analytic = a <= a_threshold
+-        sigma_eff[analytic] = -sigma0_m * a[analytic]**2 * (
+-            np.exp(a[analytic]) * (1 + a[analytic]) * special.expi(-a[analytic]) + 1
+-        )
++        sigma_eff[analytic] = sigma0_m * np.vectorize(exact_ratio, otypes=[float])(a[analytic])
+         # Interpolate the result to create a function that can be evaluated at any Vmax
+         f_int = interp1d(Vmax, sigma_eff)
+         return f_int
