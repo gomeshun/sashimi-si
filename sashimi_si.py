@@ -689,8 +689,8 @@ class SIDM_parametric_model(SIDM_cross_section):
             # A catalog already needs this same array for its collapse
             # diagnostic. Reuse it without changing the SIDM time integral.
             t_c = np.asarray(collapse_time)
-            if t_c.shape != Vmax_CDM.shape or np.any(~np.isfinite(t_c)) or np.any(t_c<=0):
-                raise ValueError("collapse_time must match the history and be finite and positive.")
+            if t_c.shape != Vmax_CDM.shape or np.any(np.isnan(t_c)) or np.any(t_c<=0):
+                raise ValueError("collapse_time must match the history and be positive (infinity denotes zero scattering).")
         if collapse_time is not None:
             # Broadcasting keeps one copy of the common time grid. Simpson's
             # formula and endpoints are identical to the expanded legacy grid.
@@ -1064,7 +1064,7 @@ class TidalStrippingSolver(halo_model):
         return ma * np.exp(eps)
     
     
-    def subhalo_mass_stripped(self,ma,za,z,method="pert2_shanks",**kwargs):
+    def subhalo_mass_stripped(self,ma,za,z,method="picard",**kwargs):
         """ A wrapper function to calculate subhalo mass stripping.
         
         Parameters
@@ -1076,7 +1076,9 @@ class TidalStrippingSolver(halo_model):
         z : float
             final redshift.
         method : str, optional
-            method to calculate the subhalo mass stripping.
+            Method to calculate the subhalo mass stripping.
+            - "picard" (default): native Picard full mass history.
+            - "dop853": direct integration of log mass.
             - "odeint" : use odeint to solve the differential equation.
             - "pert0" : use perturbative method with zeroth-order correction.
             - "pert1" : use perturbative method with first-order correction.
@@ -1084,7 +1086,7 @@ class TidalStrippingSolver(halo_model):
             - "pert2_shanks" : use perturbative method with second-order correction and Shanks transformation.
             - "pert3" : use perturbative method with third-order correction.
         kwargs : dict, optional
-            additional arguments for the odeint function.
+            Options for the selected solver; unknown options raise TypeError.
 
         Returns
         -------
@@ -1367,7 +1369,7 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
     def subhalo_properties_calc(self, M0, redshift=0.0, dz=0.01, zmax=5.0, N_ma=500, sigmalogc=0.128,
                                 N_herm=20, logmamin=6, logmamax=None, N_hermNa=200, Na_model=3, 
                                 ct_th=0., M0_at_redshift=False,
-                                method="pert2_shanks", **kwargs):
+                                method="picard", **kwargs):
         """
         This is the main function of SASHIMI-C, which makes a semi-analytical subhalo catalog.
         
@@ -1398,8 +1400,8 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
         (Optional) ct_th:          Threshold value for c_t(=r_t/r_s) parameter, below which a subhalo is assumed to
                                    be completely desrupted. Suggested values: 0.77 or 0 (no desruption; default).
         (Optional) M0_at_redshift: If True, M0 is regarded as the mass at a given redshift, instead of z=0.
-        (Optional) method:         Method to calculate the subhalo mass stripping. (default: "pert2_shanks")
-        (Optional) kwargs:         Additional arguments for the odeint function.
+        (Optional) method:         Method to calculate the subhalo mass stripping. (default: "picard")
+        (Optional) kwargs:         Options for the selected solver; unknown options raise TypeError.
         
         ------
         Output
