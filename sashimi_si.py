@@ -1005,10 +1005,14 @@ class TidalStrippingSolver(halo_model):
         eps_1 = eps_10 + ln_ma * eps_11
         eps_2 = eps_20 + ln_ma * eps_21 + ln_ma**2 * eps_22
         eps_2m1 = (eps_20 - eps_10) + ln_ma * (eps_21 - eps_11) + ln_ma**2 * eps_22
-        eps_shanks = - eps_2**2 / eps_2m1
-        eps_shanks = np.where(np.isnan(eps_shanks), 0, eps_shanks)
+        eps_shanks = np.divide(-eps_2**2, eps_2m1,
+                               out=np.zeros_like(eps_2), where=eps_2m1 != 0)
+        if np.any((eps_2m1 == 0) & (eps_2 != 0)):
+            raise ValueError("Singular Shanks correction; select the direct ODE solver.")
         # When the correction is too small, the Shanks transformation may not be stable.
-        eps_shanks = np.where(np.abs((eps_1+eps_2)/eps_0) < 0.02, 0, eps_shanks)
+        relative_correction = np.divide(eps_1+eps_2, eps_0,
+            out=np.zeros_like(eps_2), where=eps_0 != 0)
+        eps_shanks = np.where(np.abs(relative_correction) < 0.02, 0, eps_shanks)
         eps = eps_0 + eps_1 + eps_2 + eps_shanks
         # import pandas as pd
         # df = pd.DataFrame({'z': _z, 'eps_0': eps_0, 'eps_1': eps_1, 'eps_2': eps_2, 'eps_shanks': eps_shanks, 'eps': eps})
@@ -1522,7 +1526,7 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
         w1           = w1.reshape(-1,1,1)
         for iz, za in tqdm.tqdm(enumerate(zdist_accreted),total=len(zdist_accreted),desc='Calculating subhalo properties'):
             # Before accretion (ba) onto the host
-            z_ba    = np.linspace(z_f,za,100)
+            z_ba    = np.linspace(np.maximum(z_f, za), za, 100)
             m200_ba = self.Mzi(ma200_0,z_ba)  # This is valid for redshift = 0. case for now
             # NOTE: m200_ba.shape = (len(z_ba),len(ma200_z0)) = (100,N_ma) = (100,500) (for default values)
             ma               = ma_matrix_accreted[iz]  # shape = (N_ma,)
@@ -1574,22 +1578,29 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
             # NOTE: shape = (len(z_ba)+len(zcalc)-1,len(ma200_z0)) = (199,N_ma) = (199,500) (for default values)
             Vmax_CDM         = np.concatenate((Vmax_ba,Vmax_aa[:,1:]),axis=1)
             rmax_CDM         = np.concatenate((rmax_ba,rmax_aa[:,1:]),axis=1)
-            t_c              = self.t_collapse(self.sigma_eff_m(Vmax_CDM),rmax_CDM,Vmax_CDM)
+            # Unformed nodes already have zero final weight. Do not evolve
+            # their SIDM histories backwards or return NaN placeholder profiles.
+            valid = z_f > za
+            if np.any(valid):
+                t_c = self.t_collapse(self.sigma_eff_m(Vmax_CDM[..., valid]),
+                                      rmax_CDM[..., valid], Vmax_CDM[..., valid])
+                tt_ratio[iz, :, valid] = (((self.t_U-t_f[valid])/t_c)[:, -1]).T
+                evolved = self.param_model.master_function(
+                    Vmax_CDM[..., valid], rmax_CDM[..., valid], t[..., valid], t_f[valid])
+                t2 = self.t_U-self.lookback_time(z_ba[..., valid])
+                accreted = self.param_model.master_function(
+                    Vmax_ba[..., valid], rmax_ba[..., valid], t2, t_f[valid])
+                for destination, value in zip(
+                    (VmaxSIDM_z0, rmaxSIDM_z0, rhosSIDM_z0, rsSIDM_z0, rcSIDM_z0), evolved):
+                    destination[iz][:, valid] = value
+                for destination, value in zip(
+                    (VmaxSIDM_acc, rmaxSIDM_acc, rhosSIDM_acc, rsSIDM_acc, rcSIDM_acc), accreted):
+                    destination[iz][:, valid] = value
+            surviveSIDM[iz] = np.broadcast_to(valid, (N_herm, N_ma)).copy()
+            for field in (VmaxSIDM_z0, rmaxSIDM_z0, VmaxSIDM_acc,
+                          rmaxSIDM_acc, rcSIDM_z0, rcSIDM_acc):
+                surviveSIDM[iz] *= field[iz] >= 0
 
-            tt_ratio[iz]     = ((self.t_U-t_f)/t_c)[:,-1]
-
-            VmaxSIDM_z0[iz], rmaxSIDM_z0[iz], rhosSIDM_z0[iz], rsSIDM_z0[iz], rcSIDM_z0[iz] \
-                = self.param_model.master_function(Vmax_CDM,rmax_CDM,t,t_f)
-
-            t2               = self.t_U-self.lookback_time(z_ba)
-
-            VmaxSIDM_acc[iz], rmaxSIDM_acc[iz], rhosSIDM_acc[iz], rsSIDM_acc[iz], rcSIDM_acc[iz] \
-                = self.param_model.master_function(Vmax_ba,rmax_ba,t2,t_f)
-
-
-            surviveSIDM[iz]  = np.where(((VmaxSIDM_z0[iz]<0.)+(rmaxSIDM_z0[iz]<0.)\
-                                          +(VmaxSIDM_acc[iz]<0.)+(rmaxSIDM_acc[iz]<0.)\
-                                          +(rcSIDM_z0[iz]<0.)+(rcSIDM_acc[iz]<0.))==1,False,True)
 
 
         Na           = self.Na_calc(ma_matrix,zdist,M0,z0=0.,N_herm=N_hermNa,Nrand=1000,
