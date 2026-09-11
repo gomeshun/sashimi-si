@@ -1,0 +1,21 @@
+--- a/sashimi_si.py
++++ b/sashimi_si.py
+@@ -1122,8 +1122,16 @@
+ 
+         self.beta          = beta
+ 
+-        ctemp              = np.linspace(0,100,1000)
+-        self.ct_func       = interp1d(self.fc(ctemp),ctemp,fill_value='extrapolate')
++        import mpmath as mp
++        def reference_inverse(values):
++            def scalar(value):
++                if value == 0:
++                    return 0.0
++                with mp.workdps(50):
++                    y = mp.mpf(float(value))
++                    return float(-1 / mp.lambertw(-mp.exp(-1-y), 0) - 1)
++            return np.vectorize(scalar, otypes=[float])(np.asarray(values))
++        self.ct_func = reference_inverse
+ 
+ 
+ 

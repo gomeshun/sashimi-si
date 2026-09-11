@@ -1,0 +1,356 @@
+{
+  "schema": "sashimi-family:independent-reference:v1",
+  "role": "A",
+  "repository": "gomeshun/sashimi-si",
+  "source_revision": "e17d3664dac677b604fd4ff02fb2af105a6937fa",
+  "module_sha256": "adaef86a5679c349f7066fbbd819991c296dd212441ef9fbcc857c8b263b9f04",
+  "input_files": [],
+  "patches": [],
+  "calculation": {
+    "role": "A",
+    "constructor": {},
+    "method": "subhalo_properties_calc",
+    "repository": "gomeshun/sashimi-si",
+    "source_revision": "e17d3664dac677b604fd4ff02fb2af105a6937fa",
+    "module": "sashimi_si",
+    "class": "subhalo_properties",
+    "parameters": {
+      "M0": 10000000000.0,
+      "redshift": 0.0,
+      "dz": 0.5,
+      "zmax": 1.0,
+      "N_ma": 4,
+      "sigmalogc": 0.128,
+      "N_herm": 2,
+      "logmamin": 5.0,
+      "logmamax": 7.0,
+      "N_hermNa": 2,
+      "Na_model": 3,
+      "ct_th": 0.0,
+      "method": "pert2_shanks"
+    },
+    "input_files": [],
+    "probes": [
+      {
+        "name": "growth",
+        "method": "growthD",
+        "args": [
+          [
+            0.0,
+            0.5,
+            1.0,
+            2.0,
+            5.0
+          ]
+        ]
+      },
+      {
+        "name": "growth_derivative",
+        "method": "dDdz",
+        "args": [
+          [
+            0.0,
+            0.5,
+            1.0,
+            2.0,
+            5.0
+          ]
+        ]
+      },
+      {
+        "name": "variance",
+        "method": "sigmaMz",
+        "args": [
+          [
+            10000000.0,
+            100000000.0,
+            1000000000.0
+          ],
+          1.0
+        ]
+      },
+      {
+        "name": "variance_derivative",
+        "method": "dsdm",
+        "args": [
+          [
+            10000000.0,
+            100000000.0,
+            1000000000.0
+          ],
+          1.0
+        ]
+      }
+    ],
+    "environment": {
+      "python": "3.11.15",
+      "dependencies": {
+        "colossus": "1.4.0",
+        "contourpy": "1.3.3",
+        "cycler": "0.12.1",
+        "fonttools": "4.64.0",
+        "kiwisolver": "1.5.1",
+        "matplotlib": "3.8.4",
+        "numexpr": "2.14.2",
+        "numpy": "1.26.4",
+        "packaging": "26.3",
+        "pillow": "12.3.0",
+        "pyparsing": "3.3.2",
+        "python-dateutil": "2.9.0.post0",
+        "scipy": "1.13.1",
+        "six": "1.17.0",
+        "tqdm": "4.70.0"
+      }
+    }
+  },
+  "python": "3.11.15 (main, Mar  3 2026, 14:59:53) [Clang 21.1.4 ]",
+  "platform": "linux",
+  "dependencies": {
+    "colossus": "1.4.0",
+    "contourpy": "1.3.3",
+    "cycler": "0.12.1",
+    "fonttools": "4.64.0",
+    "kiwisolver": "1.5.1",
+    "matplotlib": "3.8.4",
+    "numexpr": "2.14.2",
+    "numpy": "1.26.4",
+    "packaging": "26.3",
+    "pillow": "12.3.0",
+    "pyparsing": "3.3.2",
+    "python-dateutil": "2.9.0.post0",
+    "scipy": "1.13.1",
+    "six": "1.17.0",
+    "tqdm": "4.70.0"
+  },
+  "worker_sha256": "f7f33a77b19117f17a5a6ca606c8507d8552e515cb325429c3961c235739798b",
+  "wall_seconds": 0.2440098599763587,
+  "warnings": [
+    "invalid value encountered in divide",
+    "invalid value encountered in multiply",
+    "overflow encountered in exp"
+  ],
+  "arrays": {
+    "tuple_0": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_1": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_2": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_3": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_4": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_5": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_6": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_7": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_8": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_9": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_10": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_11": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_12": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_13": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_14": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_15": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_16": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_17": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_18": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_19": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_20": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_21": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_22": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_23": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_24": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_25": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_26": {
+      "shape": [
+        16
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "probe_growth": {
+      "shape": [
+        5
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "probe_growth_derivative": {
+      "shape": [
+        5
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "probe_variance": {
+      "shape": [
+        3
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "probe_variance_derivative": {
+      "shape": [
+        3
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    }
+  },
+  "artifact_sha256": "00706c8f5ebb6d0b7c7bd8e34d4513151a6add5b15fb5bed3b2fa9b20b62215c",
+  "source_export_sha256": "f5dc86efcefa57b729e46316b653a3b2c9e78ea4126ce7763c63488221033083",
+  "config_sha256": "f42ddbab5bccbfb51ea0393a685469aae9357790bf8faf81237a35fe76e22708",
+  "controller_sha256": "bb22d3196573c224f1cb811f211fbf81844737c3b625812addf90ede96b34b85",
+  "independent_process": true
+}

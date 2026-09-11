@@ -1,0 +1,22 @@
+--- a/sashimi_si.py
++++ b/sashimi_si.py
+@@ -374,14 +374,17 @@
+         # Compute the expression based on the analytic result:
+         # sigma_eff = -sigma0_m * a^2 * [ exp(a)*(1+a)*Ei(-a) + 1 ]
+         # special.expi(-a) returns Ei(-a)
+-        expr = - sigma0_m * a**2 * ( np.exp(a) * (1 + a) * special.expi(-a) + 1 )
+         # For a > a_threshold, return sigma0_m (i.e., effective cross section converges to sigma0_m)
+         # sigma_eff_asymp = sigma0_m * (1 - 4/a + 18/a**2 - 96/a**3 + 600/a**4 - 4320/a**5)  # + (-1)^k(k+1)!(k+1)/a^k + ...
+         # sigma_eff_asymp = sigma0_m  # Asymptotic behavior for large a
+         # NOTE: instead, we use Polynomial expansion for large a
+         coeff = [(-1)**k * special.factorial(k+1)*(k + 1) for k in range(degree + 1)]
+         sigma_eff_asymp = sigma0_m * np.polynomial.Polynomial(coeff)(1/a)  # Evaluate the polynomial at 1/a
+-        sigma_eff = np.where(a > a_threshold, sigma_eff_asymp, expr)
++        sigma_eff = np.array(sigma_eff_asymp, copy=True)
++        analytic = a <= a_threshold
++        sigma_eff[analytic] = -sigma0_m * a[analytic]**2 * (
++            np.exp(a[analytic]) * (1 + a[analytic]) * special.expi(-a[analytic]) + 1
++        )
+         # Interpolate the result to create a function that can be evaluated at any Vmax
+         f_int = interp1d(Vmax, sigma_eff)
+         return f_int
