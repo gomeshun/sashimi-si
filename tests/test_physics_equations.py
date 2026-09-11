@@ -7,7 +7,7 @@ constants). They deliberately do NOT compare against the output of an older comm
 physics fix is *supposed* to change the numbers, so an equivalence-with-the-past test
 can only ever stand in the way of correcting the code.
 
-Run with:  pytest test_sashimi.py
+Run with:  pytest tests/test_physics_equations.py
 """
 import numpy as np
 import pytest

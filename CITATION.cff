@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "Please cite this software and the model papers for the physical prescriptions used."
+type: software
+title: "SASHIMI-SI"
+version: "0.2.0rc1"
+repository-code: "https://github.com/gomeshun/sashimi-si"
+license: MIT
+authors:
+  - family-names: "Ando"
+    given-names: "Shin'ichiro"
+  - family-names: "Horigome"
+    given-names: "Shunichi"
+  - family-names: "Nadler"
+    given-names: "Ethan"
+  - family-names: "Yang"
+    given-names: "Daneng"
+  - family-names: "Yu"
+    given-names: "Hai-Bo"

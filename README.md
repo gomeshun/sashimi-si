@@ -2,6 +2,10 @@
   <img src="assets/logo.svg" alt="SASHIMI-SIDM logo" width="440">
 </p>
 
+## Hands-on usage walkthrough
+
+Start with [the physical usage walkthrough](notebooks/usage_walkthrough.ipynb): a Milky Way scale population, subhalo mass functions, weighted Vmax–rmax distributions and a numerical refinement comparison. The **Usage walkthrough** CI executes every cell from an installed package and uploads the result. See [package layout and setup](docs/package-layout.md) for the `src/` structure and preserved historical examples.
+
 # Semi-Analytical SubHalo Inference ModelIng for Self-Interacting Dark Matter (SASHIMI-SIDM)
 [![arXiv](https://img.shields.io/badge/arXiv-2403.16633%20-green.svg)](https://arxiv.org/abs/2403.16633)
 
@@ -15,7 +19,7 @@ The codes allow to calculate various subhalo properties efficiently using semi-a
 - Daneng Yang
 - Hai-Bo Yu
 
-Please send enquiries to Shin'ichiro Ando (s.ando@uva.nl). We have checked that the codes work with python 3.10 but cannot guarantee for other versions of python. In any case, we cannot help with any technical issues not directly related to the content of SASHIMI (such as installation, sub-packages required, etc.)
+Please send enquiries to Shin'ichiro Ando (s.ando@uva.nl). The migration target supports Python 3.11–3.13. In any case, we cannot help with any technical issues not directly related to the content of SASHIMI (such as installation, sub-packages required, etc.)
 
 ## What can we do with SASHIMI-SIDM?
 
@@ -36,10 +40,61 @@ When you use the outcome of this package for your scientific output, please cite
 
 Note this is one of the variants of SASHIMI, which is based on its original version for CDM [https://github.com/shinichiroando/sashimi-c]
 
+## Standard API and independent validation
+
+Python 3.11–3.13 is the supported migration/release target. Install the candidate
+`sashimi-itamae` artifact first, followed by the SI artifact; public-index release
+is a later, separately approved step. Development uses the exact committed
+`uv` source pin.
+
+```python
+from sashimi_si import SubhaloProperties
+
+model = SubhaloProperties(sigma0_m=147.1, w=24.33)
+catalogs = model.subhalo_catalogs_calc(
+    M0=1e10, dz=0.5, zmax=1.0, N_ma=4, N_herm=2, N_hermNa=2,
+    logmamin=5., logmamax=7.,
+)
+sidm = catalogs["sidm"]
+cdm = catalogs["cdm_reference"]
+```
+
+The standard import uses the shared ITAMAE executor. The old `physics_mode`
+argument has been removed; requesting it raises `TypeError`. Compatibility
+import modules are aliases to the same classes. The historical 27-field tuple
+is a format conversion from the newly generated catalogs, and does not execute
+an old calculation path.
+
+Both states retain aligned initial nodes, independent base/concentration
+weights, and explicit survival. `valid_accretion` flags whether formation precedes
+accretion. SIDM values for unformed nodes are uncomputed zero placeholders and
+have zero final weight. Both states apply the common formation and truncation
+gates; SIDM adds its profile validity rule. Catalogs use `Msun`, `Mpc`, `km/s`,
+and `Msun/Mpc^3`. The tuple adapter alone retains its historical Mpc/s velocities.
+
+[Usage walkthrough](notebooks/usage_walkthrough.ipynb) teaches the API.
+[Scientific comparison](notebooks/scientific_validation.ipynb) uses independently
+executed, immutable reference B arrays and checks full catalogs and observables.
+The corrected upstream `e17d366` remains reference A. A known-bad earlier SI
+prescription is not restored. See [the formation-boundary evidence](docs/formation-validity.md)
+and [the API transition](docs/standard-api-migration.md).
+
+SIDM cross sections and calibrated gravothermal/profile maps are in
+`src/sashimi_si/_physics.py`. ITAMAE supplies the numerical executor, common background,
+NFW inverse, quadrature and catalog/provenance contracts. Metadata records the
+calculation specification, interaction parameters, grids, solver, cosmology,
+units and source revisions. The SI calibration retains its published rounded
+G convention; changing it requires a controlled physical comparison.
+
+```bash
+uv run --extra test python -m pytest tests
+uv run --extra demo jupyter nbconvert --to notebook --execute \
+  --output-dir artifacts notebooks/usage_walkthrough.ipynb
+```
 
 ## Examples
 
-The file 'sashimi_si.py' contains all the variables and functions that are used to compute various subhalo properties. Please read 'sample.ipynb' for more extensive examples.
+The `sashimi_si` package provides the variables and functions used to compute subhalo properties. See [the physical walkthrough](notebooks/usage_walkthrough.ipynb) for current examples; the original sample is retained in `notebooks/archive/`.
 
 Here, as a minimal example, is how you generate a semi-analytical catalog of subhalos:
 
@@ -116,3 +171,18 @@ weightSIDM:   Effective number of subhalos for SIDM that are characterized by th
 surviveCDM:   If that subhalo survive against tidal disruption or not for CDM.
 surviveSIDM:  If that subhalo survive against tidal disruption or not for SIDM.
 ```
+
+## Review candidate
+
+The prepared version is `0.2.0rc1`, with a versioned `sashimi-itamae` dependency.
+See [release preparation](docs/release-preparation.md), [changelog](CHANGELOG.md)
+and [citation metadata](CITATION.cff). The full artifact matrix is recorded in the
+family review handoff after verification; no public upload is implied.
+
+## Measured numerical sensitivity
+
+[Resolution and state validation](docs/resolution-and-states.md) records the
+full saved-grid evidence, solver differences, finite EPS limits and remaining
+use limitations. The last dz refinement (.01 to .005) changes bound mass
+fractions by about 0.774% at fixed reduced settings. These are measured
+sensitivities, not universal error guarantees or a change of physical defaults.

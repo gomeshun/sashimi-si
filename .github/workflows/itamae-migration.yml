@@ -1,0 +1,93 @@
+name: itamae-migration
+
+on:
+  push:
+    branches: [itamae-migration]
+  pull_request:
+    branches: [main, itamae-migration]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression-and-package:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check out pinned public ITAMAE
+        uses: actions/checkout@v4
+        with:
+          repository: gomeshun/itamae
+          ref: 23d01e8758a88b061b87de9e488c38ec89fd8e4f
+          path: .itamae
+      - name: Export migration provenance revisions
+        run: |
+          echo "ITAMAE_SOURCE_REVISION=$(git -C .itamae rev-parse HEAD)" >> "$GITHUB_ENV"
+          echo "SASHIMI_SI_SOURCE_REVISION=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+      - name: Create test environment
+        run: uv venv --python "${{ matrix.python-version }}"
+      - name: Install pinned ITAMAE and test tools
+        run: uv pip install ./.itamae pytest numexpr tqdm ruff setuptools
+      - name: Lint migration code
+        run: >-
+          uv run --no-sync ruff check
+          src/sashimi_si/__init__.py
+          src/sashimi_si/_physics.py
+          src/sashimi_si/_itamae.py
+          src/sashimi_si/_itamae_migration.py
+          src/sashimi_si/_itamae_components.py
+          src/sashimi_si/_itamae_variance.py
+          tests
+      - name: Build distribution artifacts
+        run: SASHIMI_SI_SOURCE_REVISION="$(git rev-parse HEAD)" uv build
+      - name: Install the built wheel
+        run: uv pip install --no-deps --reinstall dist/*.whl
+      - name: Verify durable embedded source revisions
+        run: |
+          itamae_ref="$(git -C .itamae rev-parse HEAD)"
+          sashimi_ref="$(git rev-parse HEAD)"
+          mkdir -p "${RUNNER_TEMP}/sashimi-si-provenance-repository"
+          cd "${RUNNER_TEMP}/sashimi-si-provenance-repository"
+          ITAMAE_SOURCE_REVISION=0000000000000000000000000000000000000000 \
+            SASHIMI_SI_SOURCE_REVISION=1111111111111111111111111111111111111111 \
+            EXPECTED_ITAMAE_REVISION="$itamae_ref" \
+            EXPECTED_SASHIMI_REVISION="$sashimi_ref" \
+            "${GITHUB_WORKSPACE}/.venv/bin/python" - <<'PY'
+          import os
+
+          from itamae.provenance import source_revision
+
+          assert source_revision("itamae") == os.environ["EXPECTED_ITAMAE_REVISION"]
+          assert source_revision("sashimi-si") == os.environ["EXPECTED_SASHIMI_REVISION"]
+          PY
+      - name: Verify installed-package import outside the checkout
+        run: |
+          cd "${RUNNER_TEMP}"
+          "${GITHUB_WORKSPACE}/.venv/bin/python" -c \
+            "import sashimi_si, sashimi_si_itamae; print(sashimi_si_itamae.create_itamae_model)"
+      - name: Stage tests outside the source checkout
+        run: |
+          mkdir -p "${RUNNER_TEMP}/sashimi-si-tests"
+          cp setup.py "${RUNNER_TEMP}/sashimi-si-tests/"
+          cp -R tests "${RUNNER_TEMP}/sashimi-si-tests/"
+      - name: Run installed-package physics and migration regressions
+        run: |
+          cd "${RUNNER_TEMP}/sashimi-si-tests"
+          "${GITHUB_WORKSPACE}/.venv/bin/python" -m pytest -q \
+            --junitxml="${GITHUB_WORKSPACE}/test-results.xml" tests
+      - name: Upload migration test diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: migration-test-results-python-${{ matrix.python-version }}
+          path: test-results.xml

@@ -1,0 +1,96 @@
+{
+  "fixture_schema": "sashimi-family:golden-provenance:v1",
+  "fixture_category": "full_small_catalog_golden",
+  "fixture_format": "sidecar-for-inline-regression",
+  "fixture_purpose": "Compact full 27-array SI migration regression and legacy parity.",
+  "variant": "sashimi-si",
+  "generated_repository_revision": "179d52dcb149db268031ab0aed516ceb224cd033",
+  "itamae_source_revision": "a557a0d975b284c9fc3fe9697746e4847783653b",
+  "physics_modes": ["consistent", "legacy"],
+  "mode_policy": {
+    "legacy": "strict legacy tuple reproduction",
+    "consistent": "reviewed equivalent SI equations; no SI-specific correction"
+  },
+  "constructor_parameters": {
+    "physics_mode": ["consistent", "legacy"],
+    "backend_config": {
+      "cosmology_backend": {
+        "identifier": "native-flatlcdm:Om=0.315:h=0.674",
+        "parameters": {
+          "omega_m0": 0.315,
+          "h": 0.674,
+          "omega_lambda0": 0.685
+        }
+      },
+      "units": "native-units:1.0",
+      "array": "numpy"
+    }
+  },
+  "cosmology": {
+    "backend_identifier": "array=numpy;cosmology=native-flatlcdm:Om=0.315:h=0.674;units=native-units:1.0",
+    "parameters": {
+      "omega_m0": 0.315,
+      "h": 0.674,
+      "omega_lambda0": 0.685
+    }
+  },
+  "parameters": {
+    "M0": 10000000000.0,
+    "redshift": 0.0,
+    "dz": 0.5,
+    "zmax": 1.0,
+    "N_ma": 4,
+    "sigmalogc": 0.128,
+    "N_herm": 2,
+    "logmamin": 5.0,
+    "logmamax": 7.0,
+    "N_hermNa": 2,
+    "Na_model": 3,
+    "ct_th": 0.0,
+    "method": "pert2_shanks"
+  },
+  "units": {
+    "input_mass": "legacy SASHIMI-SI mass unit",
+    "catalog_mass": "Msun",
+    "catalog_length": "Mpc",
+    "catalog_velocity": "km / s",
+    "catalog_density": "Msun / Mpc3"
+  },
+  "comparison": {
+    "sum_rtol": 5e-11,
+    "default_rtol": 5e-12,
+    "default_atol": 1e-300,
+    "array_index_21_rtol": 3e-5,
+    "array_index_21_atol": 0.0002,
+    "rationale": "Double-precision legacy parity; array 21 retains its documented interpolation-scale tolerance."
+  },
+  "golden_sums": [
+    40649575.730516836,
+    12.0,
+    0.002108927609907079,
+    6.697411930147994e17,
+    0.004560766849185049,
+    1.2150085855607123e-18,
+    0.0017334409013415137,
+    1.2080086585330422e18,
+    0.0008402593998967302,
+    0.004511023230841443,
+    1.2323740742189587e-18,
+    1.1523467608557079e7,
+    0.0010621956283726915,
+    1.7168240770127242e18,
+    0.002297104265918782,
+    9.602949288122435e-19,
+    0.0007154873599267463,
+    8.557771877413161e18,
+    0.0003784206525067025,
+    0.0018857344992248613,
+    1.0555009737428389e-18,
+    171.40338095626925,
+    9.678584903377276,
+    289.7645066121662,
+    289.7645066121662,
+    16.0,
+    16.0
+  ]
+}

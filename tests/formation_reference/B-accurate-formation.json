@@ -1,0 +1,408 @@
+{
+  "schema": "sashimi-family:independent-reference:v1",
+  "role": "B",
+  "repository": "gomeshun/sashimi-si",
+  "source_revision": "e17d3664dac677b604fd4ff02fb2af105a6937fa",
+  "module_sha256": "d38c5c923d200e01f4e33c61930ad2464cf28e3a0c62e6f986c5c06e8f94417d",
+  "input_files": [],
+  "patches": [
+    {
+      "id": "01-nfw-analytic-inverse",
+      "path": "patches/01-nfw-analytic-inverse.patch",
+      "sha256": "8b988a95fd58e206d95e4b4418715ae5584672bae49738a505fcde1f5452a518",
+      "reason": "50-digit principal Lambert-W analytic inverse of f(c), independent of the product log-radius root solver."
+    },
+    {
+      "id": "02-stable-branch-evaluation",
+      "path": "patches/02-stable-branch-evaluation.patch",
+      "sha256": "820286539c689abc548a296a8505163ea0f4e4e377a70c7a8716185bb585bb56",
+      "reason": "Evaluate the exponential only on the analytic branch; preserve the original asymptotic branch and all returned values."
+    },
+    {
+      "id": "03-active-eps-domain",
+      "path": "patches/03-active-eps-domain.patch",
+      "sha256": "650af085cd3009ba474b6a5d466be9ff8f9e5b63310a89e5031a6cbdf19d4d1c",
+      "reason": "Evaluate the Yang kernel only on m_acc < m_max, the existing Heaviside support; reject nonfinite active values instead of discarding them."
+    },
+    {
+      "id": "04-high-precision-effective-cross-section",
+      "path": "patches/04-high-precision-effective-cross-section.patch",
+      "sha256": "944e5758780c8b2f7deb5829a0a8700d10d75b82595d6d153b5a755635cac8b9",
+      "reason": "Evaluate the unchanged effective-cross-section expression at 65 decimal digits, independently of the product positive-integral quadrature; retain the existing asymptotic branch."
+    }
+  ],
+  "calculation": {
+    "role": "B",
+    "constructor": {},
+    "method": "subhalo_properties_calc",
+    "repository": "gomeshun/sashimi-si",
+    "source_revision": "e17d3664dac677b604fd4ff02fb2af105a6937fa",
+    "module": "sashimi_si",
+    "class": "subhalo_properties",
+    "parameters": {
+      "M0": 1000000000000.0,
+      "redshift": 0.0,
+      "dz": 0.2,
+      "zmax": 2.0,
+      "N_ma": 12,
+      "sigmalogc": 0.128,
+      "N_herm": 2,
+      "logmamin": 9.0,
+      "logmamax": null,
+      "N_hermNa": 4,
+      "Na_model": 3,
+      "ct_th": 0.0,
+      "method": "pert2_shanks"
+    },
+    "input_files": [],
+    "probes": [
+      {
+        "name": "growth",
+        "method": "growthD",
+        "args": [
+          [
+            0.0,
+            0.5,
+            1.0,
+            2.0,
+            5.0
+          ]
+        ]
+      },
+      {
+        "name": "growth_derivative",
+        "method": "dDdz",
+        "args": [
+          [
+            0.0,
+            0.5,
+            1.0,
+            2.0,
+            5.0
+          ]
+        ]
+      },
+      {
+        "name": "variance",
+        "method": "sigmaMz",
+        "args": [
+          [
+            10000000.0,
+            100000000.0,
+            1000000000.0
+          ],
+          1.0
+        ]
+      },
+      {
+        "name": "variance_derivative",
+        "method": "dsdm",
+        "args": [
+          [
+            10000000.0,
+            100000000.0,
+            1000000000.0
+          ],
+          1.0
+        ]
+      }
+    ],
+    "environment": {
+      "python": "3.11.15",
+      "dependencies": {
+        "colossus": "1.4.0",
+        "contourpy": "1.3.3",
+        "cycler": "0.12.1",
+        "fonttools": "4.64.0",
+        "kiwisolver": "1.5.1",
+        "matplotlib": "3.8.4",
+        "numexpr": "2.14.2",
+        "numpy": "1.26.4",
+        "packaging": "26.3",
+        "pillow": "12.3.0",
+        "pyparsing": "3.3.2",
+        "python-dateutil": "2.9.0.post0",
+        "scipy": "1.13.1",
+        "six": "1.17.0",
+        "tqdm": "4.70.0",
+        "mpmath": "1.3.0"
+      }
+    },
+    "patches": [
+      {
+        "id": "01-nfw-analytic-inverse",
+        "path": "patches/01-nfw-analytic-inverse.patch",
+        "sha256": "8b988a95fd58e206d95e4b4418715ae5584672bae49738a505fcde1f5452a518",
+        "reason": "50-digit principal Lambert-W analytic inverse of f(c), independent of the product log-radius root solver."
+      },
+      {
+        "id": "02-stable-branch-evaluation",
+        "path": "patches/02-stable-branch-evaluation.patch",
+        "sha256": "820286539c689abc548a296a8505163ea0f4e4e377a70c7a8716185bb585bb56",
+        "reason": "Evaluate the exponential only on the analytic branch; preserve the original asymptotic branch and all returned values."
+      },
+      {
+        "id": "03-active-eps-domain",
+        "path": "patches/03-active-eps-domain.patch",
+        "sha256": "650af085cd3009ba474b6a5d466be9ff8f9e5b63310a89e5031a6cbdf19d4d1c",
+        "reason": "Evaluate the Yang kernel only on m_acc < m_max, the existing Heaviside support; reject nonfinite active values instead of discarding them."
+      },
+      {
+        "id": "04-high-precision-effective-cross-section",
+        "path": "patches/04-high-precision-effective-cross-section.patch",
+        "sha256": "944e5758780c8b2f7deb5829a0a8700d10d75b82595d6d153b5a755635cac8b9",
+        "reason": "Evaluate the unchanged effective-cross-section expression at 65 decimal digits, independently of the product positive-integral quadrature; retain the existing asymptotic branch."
+      }
+    ]
+  },
+  "python": "3.11.15 (main, Mar  3 2026, 14:59:53) [Clang 21.1.4 ]",
+  "platform": "linux",
+  "dependencies": {
+    "colossus": "1.4.0",
+    "contourpy": "1.3.3",
+    "cycler": "0.12.1",
+    "fonttools": "4.64.0",
+    "kiwisolver": "1.5.1",
+    "matplotlib": "3.8.4",
+    "mpmath": "1.3.0",
+    "numexpr": "2.14.2",
+    "numpy": "1.26.4",
+    "packaging": "26.3",
+    "pillow": "12.3.0",
+    "pyparsing": "3.3.2",
+    "python-dateutil": "2.9.0.post0",
+    "scipy": "1.13.1",
+    "six": "1.17.0",
+    "tqdm": "4.70.0"
+  },
+  "worker_sha256": "f7f33a77b19117f17a5a6ca606c8507d8552e515cb325429c3961c235739798b",
+  "wall_seconds": 0.9441822789376602,
+  "warnings": [
+    "invalid value encountered in divide",
+    "invalid value encountered in sqrt"
+  ],
+  "arrays": {
+    "tuple_0": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_1": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_2": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_3": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_4": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_5": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_6": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_7": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_8": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 4
+    },
+    "tuple_9": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_10": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_11": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_12": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_13": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_14": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_15": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_16": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_17": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_18": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_19": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_20": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_21": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_22": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_23": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_24": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_25": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "tuple_26": {
+      "shape": [
+        168
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "probe_growth": {
+      "shape": [
+        5
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "probe_growth_derivative": {
+      "shape": [
+        5
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "probe_variance": {
+      "shape": [
+        3
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    },
+    "probe_variance_derivative": {
+      "shape": [
+        3
+      ],
+      "dtype": "float64",
+      "nonfinite": 0
+    }
+  },
+  "artifact_sha256": "ec174a0b4627ea8267eca4b9bd155ed728c706e32851de1d8d678ac6f7f0f951",
+  "source_export_sha256": "f5dc86efcefa57b729e46316b653a3b2c9e78ea4126ce7763c63488221033083",
+  "config_sha256": "44ab7964c5f219ccd9330f1a9804ea1b44cf6cb2c151960374afcd29a36eecf0",
+  "controller_sha256": "bb22d3196573c224f1cb811f211fbf81844737c3b625812addf90ede96b34b85",
+  "independent_process": true
+}
