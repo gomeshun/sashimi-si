@@ -225,7 +225,7 @@ class SIDM_cross_section(units_and_constants):
 
 
     def dsigmadcostheta(self, sigma0_m, w, v, costheta):
-        """ Returns Eq. (1.2) of Yang et al. (2023) divided by m.
+        r""" Returns Eq. (1.3) of Yang et al. (2023) divided by m.
         Eq. (1.2) is given by
 
         $$
@@ -267,7 +267,7 @@ class SIDM_cross_section(units_and_constants):
         sigma_total_m : float
             The value of the total cross section of SIDM divided by m.
         """
-        return sigma0_m/(1.+v**2/w**2)**2
+        return sigma0_m/(1.+v**2/w**2)
     
     
     def sigma_viscosity(self, sigma0_m, w, v):
@@ -294,7 +294,7 @@ class SIDM_cross_section(units_and_constants):
 
     
     def sigma_eff_m_interpolate(self, sigma0_m, w):
-        """ Returns the interpolation function of the effective cross section of SIDM divided by m.
+        r""" Returns the interpolation function of the effective cross section of SIDM divided by m.
         The effective cross section is defined by Eq. (1.1) of Yang et al. (2023) [arXiv:2305.16176]:
 
         $$
@@ -331,24 +331,22 @@ class SIDM_cross_section(units_and_constants):
         return f_int
     
 
-    def sigma_eff_m_interpolate_analytical(self,sigma0_m, w,
-                             a_threshold=703.,
-                             degree=6):
+    def sigma_eff_m_interpolate_analytical(self, sigma0_m, w, a_threshold=703.0, degree=6):
         """
         Returns the analytic evaluation of the effective cross section of SIDM divided by m,
         simplified via the substitution
             a = w^2/(4*nu_eff^2)   with   nu_eff = 0.64 * Vmax.
-        
+
         The expression is:
-        
+
             sigma_eff = -sigma0_m * a^2 * [ exp(a) * (1+a) * Ei(-a) + 1 ]
-        
+
         where Ei(-a) is the exponential integral function.
-        
-        For large a (i.e. when a > a_threshold), the asymptotic behavior gives
-            sigma_eff -> sigma0_m.
-        In that case, the function returns sigma0_m.
-        
+
+        For a > a_threshold, a degree-limited asymptotic expansion approaches
+        sigma0_m. For 20 <= a <= a_threshold, a positive integral evaluates the
+        same expression without subtractive cancellation.
+
         Parameters
         ----------
         sigma0_m : float
@@ -356,7 +354,7 @@ class SIDM_cross_section(units_and_constants):
         w : float
             The value of w (in the same units as used in the numerical methods).
         a_threshold : float, optional
-            The threshold for a above which sigma_eff is set to sigma0_m.
+            The threshold for switching to the degree-limited asymptotic expansion.
             (Default is 703., based on that Ei(-a) returns NaN for such large a.)
         degree : int, optional
             The degree of the polynomial expansion used for large a.
@@ -367,21 +365,35 @@ class SIDM_cross_section(units_and_constants):
             The effective cross section of SIDM divided by m.
         """
         # dummy Vmax for the interpolation
-        Vmax = np.logspace(-5.,3.,1000)*self.km/self.s
+        Vmax = np.logspace(-5.0, 3.0, 1000) * self.km / self.s
         # Compute the effective velocity dispersion
         nu_eff = 0.64 * Vmax
         a = w**2 / (4 * nu_eff**2)
-        # Compute the expression based on the analytic result:
-        # sigma_eff = -sigma0_m * a^2 * [ exp(a)*(1+a)*Ei(-a) + 1 ]
-        # special.expi(-a) returns Ei(-a)
-        expr = - sigma0_m * a**2 * ( np.exp(a) * (1 + a) * special.expi(-a) + 1 )
         # For a > a_threshold, return sigma0_m (i.e., effective cross section converges to sigma0_m)
         # sigma_eff_asymp = sigma0_m * (1 - 4/a + 18/a**2 - 96/a**3 + 600/a**4 - 4320/a**5)  # + (-1)^k(k+1)!(k+1)/a^k + ...
         # sigma_eff_asymp = sigma0_m  # Asymptotic behavior for large a
         # NOTE: instead, we use Polynomial expansion for large a
-        coeff = [(-1)**k * special.factorial(k+1)*(k + 1) for k in range(degree + 1)]
-        sigma_eff_asymp = sigma0_m * np.polynomial.Polynomial(coeff)(1/a)  # Evaluate the polynomial at 1/a
-        sigma_eff = np.where(a > a_threshold, sigma_eff_asymp, expr)
+        coeff = [(-1) ** k * special.factorial(k + 1) * (k + 1) for k in range(degree + 1)]
+        sigma_eff_asymp = sigma0_m * np.polynomial.Polynomial(coeff)(
+            1 / a
+        )  # Evaluate the polynomial at 1/a
+        sigma_eff = np.array(sigma_eff_asymp, copy=True)
+        # At large a the direct expression subtracts nearly equal numbers.
+        # Its positive integral representation avoids that cancellation:
+        # ratio = integral_0^inf u*exp(-u)/(1+u/a)^2 du.
+        direct = (a <= a_threshold) & (a < 20.0)
+        sigma_eff[direct] = (
+            -sigma0_m
+            * a[direct] ** 2
+            * (np.exp(a[direct]) * (1 + a[direct]) * special.expi(-a[direct]) + 1)
+        )
+        stable = (a <= a_threshold) & ~direct
+        if np.any(stable):
+            nodes, weights = special.roots_genlaguerre(64, 1.0)
+            sigma_eff[stable] = sigma0_m * np.sum(
+                weights / (1.0 + nodes / a[stable, None]) ** 2,
+                axis=-1,
+            )
         # Interpolate the result to create a function that can be evaluated at any Vmax
         f_int = interp1d(Vmax, sigma_eff)
         return f_int
