@@ -1,0 +1,34 @@
+{
+  "variant": "si",
+  "config": {
+    "M0": 1000000000000.0,
+    "dz": 0.1,
+    "zmax": 7.0,
+    "N_ma": 128,
+    "N_herm": 5,
+    "N_hermNa": 64,
+    "logmamin": 6.0
+  },
+  "constructor": {},
+  "picard_options": {},
+  "module_sha256": "2e4482df4e0196d09887529fdb21b6601203be04517524dcde39d49c4e40141f",
+  "gates": "standalone-picard-gates-2026-09-11-v1",
+  "runs": {},
+  "failures": [
+    {
+      "mode": "legacy",
+      "error": "AttributeError(\"'subhalo_properties' object has no attribute 'tt_th'\")",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/sashimi-minor-updates-20260911/sashimi-si/validation/maintenance/tools/catalog_pilot.py\", line 133, in main\n    'metrics':metrics(args.variant,module,model,arrays,config)}\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/sashimi-minor-updates-20260911/sashimi-si/validation/maintenance/tools/catalog_pilot.py\", line 61, in metrics\n    output['collapse_weight_fraction']=float(np.sum(w[arrays[22]>=model.tt_th])/total) if total else 0.\n                                                                  ^^^^^^^^^^^\nAttributeError: 'subhalo_properties' object has no attribute 'tt_th'\n"
+    },
+    {
+      "mode": "picard",
+      "error": "AttributeError(\"'subhalo_properties' object has no attribute 'tt_th'\")",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/sashimi-minor-updates-20260911/sashimi-si/validation/maintenance/tools/catalog_pilot.py\", line 133, in main\n    'metrics':metrics(args.variant,module,model,arrays,config)}\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/sashimi-minor-updates-20260911/sashimi-si/validation/maintenance/tools/catalog_pilot.py\", line 61, in metrics\n    output['collapse_weight_fraction']=float(np.sum(w[arrays[22]>=model.tt_th])/total) if total else 0.\n                                                                  ^^^^^^^^^^^\nAttributeError: 'subhalo_properties' object has no attribute 'tt_th'\n"
+    },
+    {
+      "mode": "reference",
+      "error": "AttributeError(\"'subhalo_properties' object has no attribute 'tt_th'\")",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/sashimi-minor-updates-20260911/sashimi-si/validation/maintenance/tools/catalog_pilot.py\", line 133, in main\n    'metrics':metrics(args.variant,module,model,arrays,config)}\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/sashimi-minor-updates-20260911/sashimi-si/validation/maintenance/tools/catalog_pilot.py\", line 61, in metrics\n    output['collapse_weight_fraction']=float(np.sum(w[arrays[22]>=model.tt_th])/total) if total else 0.\n                                                                  ^^^^^^^^^^^\nAttributeError: 'subhalo_properties' object has no attribute 'tt_th'\n"
+    }
+  ]
+}

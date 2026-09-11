@@ -116,3 +116,6 @@ weightSIDM:   Effective number of subhalos for SIDM that are characterized by th
 surviveCDM:   If that subhalo survive against tidal disruption or not for CDM.
 surviveSIDM:  If that subhalo survive against tidal disruption or not for SIDM.
 ```
+
+
+[Standalone maintenance and Picard validation](docs/standalone-maintenance.md) describes the `minor-updates` corrections, solver choices and numerical evidence.

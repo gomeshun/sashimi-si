@@ -1,0 +1,85 @@
+{
+  "variant": "si",
+  "python": "3.11.15 (main, Mar  3 2026, 14:59:53) [Clang 21.1.4 ]",
+  "numpy": "1.26.4",
+  "scipy": "1.13.1",
+  "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.39",
+  "repetitions": 3,
+  "runs": {
+    "legacy": [
+      {
+        "whole_catalog_seconds": 0.531399110914208,
+        "peak_rss_kib": 165868,
+        "catalog_table_build_seconds": 0,
+        "catalog_table_count": 0,
+        "catalog_fallback_events": [],
+        "stderr": "\nCalculating subhalo properties:   0%|          | 0/17 [00:00<?, ?it/s]\nCalculating subhalo properties:  29%|\u2588\u2588\u2589       | 5/17 [00:00<00:00, 45.05it/s]\nCalculating subhalo properties:  59%|\u2588\u2588\u2588\u2588\u2588\u2589    | 10/17 [00:00<00:00, 47.78it/s]\nCalculating subhalo properties:  94%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258d| 16/17 [00:00<00:00, 50.55it/s]\nCalculating subhalo properties: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 17/17 [00:00<00:00, 50.73it/s]\n"
+      },
+      {
+        "whole_catalog_seconds": 0.5339131199289113,
+        "peak_rss_kib": 166344,
+        "catalog_table_build_seconds": 0,
+        "catalog_table_count": 0,
+        "catalog_fallback_events": [],
+        "stderr": "\nCalculating subhalo properties:   0%|          | 0/17 [00:00<?, ?it/s]\nCalculating subhalo properties:  29%|\u2588\u2588\u2589       | 5/17 [00:00<00:00, 44.21it/s]\nCalculating subhalo properties:  59%|\u2588\u2588\u2588\u2588\u2588\u2589    | 10/17 [00:00<00:00, 47.18it/s]\nCalculating subhalo properties:  94%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258d| 16/17 [00:00<00:00, 50.13it/s]\nCalculating subhalo properties: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 17/17 [00:00<00:00, 50.22it/s]\n"
+      },
+      {
+        "whole_catalog_seconds": 0.5294982690829784,
+        "peak_rss_kib": 166340,
+        "catalog_table_build_seconds": 0,
+        "catalog_table_count": 0,
+        "catalog_fallback_events": [],
+        "stderr": "\nCalculating subhalo properties:   0%|          | 0/17 [00:00<?, ?it/s]\nCalculating subhalo properties:  29%|\u2588\u2588\u2589       | 5/17 [00:00<00:00, 44.99it/s]\nCalculating subhalo properties:  59%|\u2588\u2588\u2588\u2588\u2588\u2589    | 10/17 [00:00<00:00, 47.64it/s]\nCalculating subhalo properties:  94%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258d| 16/17 [00:00<00:00, 50.40it/s]\nCalculating subhalo properties: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 17/17 [00:00<00:00, 50.58it/s]\n"
+      }
+    ],
+    "picard": [
+      {
+        "whole_catalog_seconds": 0.4668261999031529,
+        "peak_rss_kib": 167660,
+        "catalog_table_build_seconds": 0,
+        "catalog_table_count": 0,
+        "catalog_fallback_events": [],
+        "first_solver_seconds": 0.0011805909452959895,
+        "reused_solver_seconds": 0.0006128179375082254,
+        "solver_table_build_seconds": 0,
+        "solver_fallback_events": [],
+        "stderr": "\nCalculating subhalo properties:   0%|          | 0/17 [00:00<?, ?it/s]\nCalculating subhalo properties:  35%|\u2588\u2588\u2588\u258c      | 6/17 [00:00<00:00, 56.80it/s]\nCalculating subhalo properties:  76%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258b  | 13/17 [00:00<00:00, 60.44it/s]\nCalculating subhalo properties: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 17/17 [00:00<00:00, 62.58it/s]\n"
+      },
+      {
+        "whole_catalog_seconds": 0.47314045892562717,
+        "peak_rss_kib": 167260,
+        "catalog_table_build_seconds": 0,
+        "catalog_table_count": 0,
+        "catalog_fallback_events": [],
+        "first_solver_seconds": 0.0011757609900087118,
+        "reused_solver_seconds": 0.0006147909443825483,
+        "solver_table_build_seconds": 0,
+        "solver_fallback_events": [],
+        "stderr": "\nCalculating subhalo properties:   0%|          | 0/17 [00:00<?, ?it/s]\nCalculating subhalo properties:  35%|\u2588\u2588\u2588\u258c      | 6/17 [00:00<00:00, 53.52it/s]\nCalculating subhalo properties:  76%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258b  | 13/17 [00:00<00:00, 58.54it/s]\nCalculating subhalo properties: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 17/17 [00:00<00:00, 60.65it/s]\n"
+      },
+      {
+        "whole_catalog_seconds": 0.46531970298383385,
+        "peak_rss_kib": 166344,
+        "catalog_table_build_seconds": 0,
+        "catalog_table_count": 0,
+        "catalog_fallback_events": [],
+        "first_solver_seconds": 0.0011895380448549986,
+        "reused_solver_seconds": 0.0006175868911668658,
+        "solver_table_build_seconds": 0,
+        "solver_fallback_events": [],
+        "stderr": "\nCalculating subhalo properties:   0%|          | 0/17 [00:00<?, ?it/s]\nCalculating subhalo properties:  35%|\u2588\u2588\u2588\u258c      | 6/17 [00:00<00:00, 56.35it/s]\nCalculating subhalo properties:  76%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258b  | 13/17 [00:00<00:00, 60.32it/s]\nCalculating subhalo properties: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 17/17 [00:00<00:00, 62.45it/s]\n"
+      }
+    ]
+  },
+  "source_sha256": {
+    "sashimi_si_numerics.py": "a2b58bf8329fb6cf97a2bffe1ea41b20f45ba7ac5f033e4de2010f0627b661de",
+    "picard_tidal_stripping.py": "a861df71091c2b0b51374cc27851485b05bdfdf1ed4767d0acc6d7c264a99d87",
+    "sashimi_si.py": "6e28ee05921bd058880994003b88f4593778f9ff82983fb098f7c677d4b7ebad"
+  },
+  "measurement": "Each mode and repetition is a fresh process; whole catalog includes constructor and table build. Peak RSS is sampled before solver microbenchmark. No competing validation jobs.",
+  "median_seconds": {
+    "legacy": 0.531399110914208,
+    "picard": 0.4668261999031529
+  },
+  "whole_catalog_speedup": 1.1383232368372882
+}
