@@ -1,4 +1,5 @@
 import numpy as np
+from picard_tidal_stripping import endpoint_mass, history_mass, direct_log_mass, cached_host_mass, cached_scalar_variance
 from sashimi_si_numerics import invert_nfw_mass_function
 from scipy import integrate
 from scipy import interpolate
@@ -652,7 +653,7 @@ class SIDM_parametric_model(SIDM_cross_section):
         return rc
     
 
-    def master_function(self, Vmax_CDM, rmax_CDM, t, t_f):
+    def master_function(self, Vmax_CDM, rmax_CDM, t, t_f, *, collapse_time=None):
         """ Calculate the properties of a SIDM halo at a given time t according to the integral approach proposed by Yang et al. (2023) [arXiv:2305.16176].
 
         Parameters
@@ -682,13 +683,30 @@ class SIDM_parametric_model(SIDM_cross_section):
         # NOTE: In the equation just below Eq. (3.3) of Yang et al. (2023), dVmax_{Model}/dtt and
         # drmax_{Model}/dtt are normalized by Vmax_{CDM}(t) and rmax_{CDM}(t) evaluated at the running
         # time t of the integral, not by their values at the accretion time t_f.
-        t_c         = self.t_collapse(self.sigma_eff_m(Vmax_CDM),rmax_CDM,Vmax_CDM)
-        integrand   = self.dVmaxSIDMdtt_numexpr_optimized((t-t_f)/t_c,Vmax_CDM)/t_c
-        VmaxSIDM_z0 = Vmax_CDM[:,-1]+integrate.simpson(integrand,x=t*np.ones((len(Vmax_CDM),1,1)),axis=1)
-        integrand   = self.drmaxSIDMdtt_numexpr_optimized((t-t_f)/t_c,rmax_CDM)/t_c
-        rmaxSIDM_z0 = rmax_CDM[:,-1]+integrate.simpson(integrand,x=t*np.ones((len(rmax_CDM),1,1)),axis=1)
-        
-        tt             = np.minimum(((t-t_f)/t_c)[:,-1],self.tt_th)
+        if collapse_time is None:
+            t_c = self.t_collapse(self.sigma_eff_m(Vmax_CDM),rmax_CDM,Vmax_CDM)
+        else:
+            # A catalog already needs this same array for its collapse
+            # diagnostic. Reuse it without changing the SIDM time integral.
+            t_c = np.asarray(collapse_time)
+            if t_c.shape != Vmax_CDM.shape or np.any(~np.isfinite(t_c)) or np.any(t_c<=0):
+                raise ValueError("collapse_time must match the history and be finite and positive.")
+        if collapse_time is not None:
+            # Broadcasting keeps one copy of the common time grid. Simpson's
+            # formula and endpoints are identical to the expanded legacy grid.
+            scaled_time = (t-t_f)/t_c
+            time_grid = t[None, ...]
+            integrand = self.dVmaxSIDMdtt_numexpr_optimized(scaled_time,Vmax_CDM)/t_c
+            VmaxSIDM_z0 = Vmax_CDM[:,-1]+integrate.simpson(integrand,x=time_grid,axis=1)
+            integrand = self.drmaxSIDMdtt_numexpr_optimized(scaled_time,rmax_CDM)/t_c
+            rmaxSIDM_z0 = rmax_CDM[:,-1]+integrate.simpson(integrand,x=time_grid,axis=1)
+            tt = np.minimum(scaled_time[:,-1],self.tt_th)
+        else:
+            integrand = self.dVmaxSIDMdtt_numexpr_optimized((t-t_f)/t_c,Vmax_CDM)/t_c
+            VmaxSIDM_z0 = Vmax_CDM[:,-1]+integrate.simpson(integrand,x=t*np.ones((len(Vmax_CDM),1,1)),axis=1)
+            integrand = self.drmaxSIDMdtt_numexpr_optimized((t-t_f)/t_c,rmax_CDM)/t_c
+            rmaxSIDM_z0 = rmax_CDM[:,-1]+integrate.simpson(integrand,x=t*np.ones((len(rmax_CDM),1,1)),axis=1)
+            tt = np.minimum(((t-t_f)/t_c)[:,-1],self.tt_th)
         Vmax0_CDM_fict = self.get_Vmax0(VmaxSIDM_z0,tt)
         rmax0_CDM_fict = self.get_rmax0(rmaxSIDM_z0,tt)
         rs0_CDM_fict   = rmax0_CDM_fict/2.1626
@@ -733,6 +751,8 @@ class TidalStrippingSolver(halo_model):
     @M0.setter
     def M0(self, value):
         self._M0 = value
+        self._picard_tables = {}
+        self._picard_coefficients = {}
         self.reset_interpolation(
             z_max=self.z_max, 
             z_min=self.z_min,
@@ -783,7 +803,11 @@ class TidalStrippingSolver(halo_model):
         self.eps_33 = lambda _za, _z: self._eps_33_interp(_z) - self._eps_33_interp(_za)
 
 
-    def Mzvir(self,z):
+    def Mzvir(self, z):
+        return cached_host_mass(self, z)
+
+
+    def _Mzvir_uncached(self, z):
         Mz200 = self.Mzzi(self.M0,z,0.)
         Mvir = self.Mvir_from_M200_fit(Mz200,z)
         return Mvir
@@ -1083,6 +1107,12 @@ class TidalStrippingSolver(halo_model):
         #         return self.subhalo_mass_stripped_pert3(ma,za,z)
         #     case _:
         #         raise ValueError(f"Invalid method: {method}")
+        if method == "picard":
+            return history_mass(self,ma,za,z,**kwargs)
+        if method == "dop853":
+            return direct_log_mass(self,ma,za,z,**kwargs)
+        if kwargs and method != "odeint":
+            raise TypeError(f"Solver options are not accepted by {method}: {sorted(kwargs)}")
         if method == "odeint":
             # NOTE: odeint returns (len(z),len(ma)) array for array input.
             return self.subhalo_mass_stripped_odeint(ma,za,z,**kwargs)
@@ -1510,6 +1540,7 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
             z_max=zmax,
             n_z_interp=64
         )
+        self.stripping_solver = solver
         
         # def t_collapse(sigma_eff_m, rmax, Vmax):
         #     """ Returns the collapse time of a subhalo according to Eq. (2.2) of Yang et al. (2023)
@@ -1586,10 +1617,12 @@ class subhalo_properties(halo_model, SIDM_parametric_model, SIDM_cross_section):
                                       rmax_CDM[..., valid], Vmax_CDM[..., valid])
                 tt_ratio[iz, :, valid] = (((self.t_U-t_f[valid])/t_c)[:, -1]).T
                 evolved = self.param_model.master_function(
-                    Vmax_CDM[..., valid], rmax_CDM[..., valid], t[..., valid], t_f[valid])
-                t2 = self.t_U-self.lookback_time(z_ba[..., valid])
+                    Vmax_CDM[..., valid], rmax_CDM[..., valid], t[..., valid], t_f[valid],
+                    collapse_time=t_c if method=="picard" else None)
+                t2 = t[:len(z_ba), valid] if method=="picard" else self.t_U-self.lookback_time(z_ba[..., valid])
                 accreted = self.param_model.master_function(
-                    Vmax_ba[..., valid], rmax_ba[..., valid], t2, t_f[valid])
+                    Vmax_ba[..., valid], rmax_ba[..., valid], t2, t_f[valid],
+                    collapse_time=t_c[:, :len(z_ba)] if method=="picard" else None)
                 for destination, value in zip(
                     (VmaxSIDM_z0, rmaxSIDM_z0, rhosSIDM_z0, rsSIDM_z0, rcSIDM_z0), evolved):
                     destination[iz][:, valid] = value
