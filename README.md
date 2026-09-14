@@ -116,3 +116,7 @@ weightSIDM:   Effective number of subhalos for SIDM that are characterized by th
 surviveCDM:   If that subhalo survive against tidal disruption or not for CDM.
 surviveSIDM:  If that subhalo survive against tidal disruption or not for SIDM.
 ```
+
+
+[Numerical notes](docs/numerical-notes.md) describe solver choices, corrections that affect results, and known limitations.
+[Tests](tests/README.md) explain how to check an installation and maintain regression fixtures.
