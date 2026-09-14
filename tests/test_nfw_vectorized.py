@@ -6,7 +6,7 @@ import numpy as np
 
 
 def test_vectorized_inverse_spans_radii_and_the_disruption_threshold():
-    variant=next(v for v in ('c','si','w','f') if Path(__file__).with_name('sashimi_'+v+'.py').exists())
+    variant=next(v for v in ('c','si','w','f') if (Path(__file__).resolve().parents[1]/('sashimi_'+v+'.py')).exists())
     numerics=importlib.import_module('sashimi_'+variant+'_numerics')
     radii=np.r_[np.logspace(-100,100,61),.77-1e-10,.77+1e-10,0.]
     with mp.workdps(250):

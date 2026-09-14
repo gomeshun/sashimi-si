@@ -118,4 +118,5 @@ surviveSIDM:  If that subhalo survive against tidal disruption or not for SIDM.
 ```
 
 
-[Standalone maintenance and Picard validation](docs/standalone-maintenance.md) describes the `minor-updates` corrections, solver choices and numerical evidence.
+[Numerical notes](docs/numerical-notes.md) describe solver choices, corrections that affect results, and known limitations.
+[Tests](tests/README.md) explain how to check an installation and maintain regression fixtures.

@@ -1,4 +1,4 @@
-"""Independent regression checks for the standalone main maintenance branch."""
+"""Independent numerical and catalog regressions for SASHIMI-SI."""
 import json
 from pathlib import Path
 import warnings
@@ -98,16 +98,16 @@ def test_total_correction_does_not_enter_catalog(monkeypatch):
     def forbidden(*args, **kwargs):
         raise AssertionError("total cross section is not the effective cross section")
     monkeypatch.setattr(si.SIDM_cross_section, "sigma_total", forbidden)
-    config = json.loads((Path(__file__).parent/'validation/maintenance/A-config.json').read_text())
-    arrays = model.subhalo_properties_calc(**config['parameters'])
+    config = json.loads((Path(__file__).parent/'data/catalogs.json').read_text())
+    arrays = model.subhalo_properties_calc(**config['smoke_parameters'])
     assert all(np.all(np.isfinite(x)) for x in arrays)
 
 
 @pytest.mark.parametrize("name", ["B-accurate", "B-accurate-formation"])
 def test_full_catalog_against_independently_patched_main(name):
-    directory = Path(__file__).parent/'validation/maintenance'
-    config = json.loads((directory/f'{name}.json').read_text())
-    reference = np.load(directory/f'{name}-reference.npz')
+    directory = Path(__file__).parent/'data'
+    config = json.loads((directory/'catalogs.json').read_text())['cases'][name]
+    reference = np.load(directory/config['file'])
     actual = si.subhalo_properties().subhalo_properties_calc(**config['parameters'])
     formed = reference['tuple_23'] > 0
     sidm_fields = {6, 7, 8, 9, 10, 16, 17, 18, 19, 20, 22, 26}
