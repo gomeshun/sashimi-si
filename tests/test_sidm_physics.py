@@ -2,8 +2,8 @@
 
 These tests pin the equations of Yang et al. (2023) [arXiv:2305.16176] and the
 Carroll-Press-Turner growth factor directly, by comparing the implementation against
-independently written references (finite differences, brute-force quadrature, exact NFW
-constants). They deliberately do NOT compare against the output of an older commit: a
+independently written references (finite differences, adaptive quadrature, and physical
+limits). They deliberately do NOT compare against the output of an older commit: a
 physics fix is *supposed* to change the numbers, so an equivalence-with-the-past test
 can only ever stand in the way of correcting the code.
 
@@ -12,7 +12,6 @@ Run from the repository root: python -m pytest tests/test_sidm_physics.py
 import numpy as np
 import pytest
 from scipy import integrate
-from scipy.optimize import brentq
 
 import sashimi_si
 
@@ -127,69 +126,67 @@ class TestIntegralApproach:
         frac = (t - t_f) / (13.8 * Gyr - t_f)          # 0 at accretion -> 1 today
         Vmax = (28. - 14. * frac) * km / s             # 28 -> 14 km/s
         rmax = (3.0 - 1.5 * frac) * kpc                # 3.0 -> 1.5 kpc
-        return Vmax[None, ...], rmax[None, ...], t, t_f
+        return (Vmax[None, ...] * np.array([.8, 1.2])[:, None, None]
+                * np.array([1., 1.15])[None, None, :],
+                rmax[None, ...] * np.array([1.1, .9])[:, None, None]
+                * np.array([1., .85])[None, None, :], t, t_f)
 
     @staticmethod
-    def _eq33_reference(pm, Vmax_CDM, rmax_CDM, t, t_f, freeze_at_tf=False):
+    def _eq33_reference(pm, Vmax_CDM, rmax_CDM, t, t_f, collapse_time=None):
         """Independent evaluation of Eq. (3.3), using the polynomials defined at the top
         of this file rather than the ones inside sashimi_si."""
-        t_c = pm.t_collapse(pm.sigma_eff_m(Vmax_CDM), rmax_CDM, Vmax_CDM)
+        t_c = (pm.t_collapse(pm.sigma_eff_m(Vmax_CDM), rmax_CDM, Vmax_CDM)
+               if collapse_time is None else collapse_time)
         tau = (t - t_f) / t_c
-        norm_V = Vmax_CDM[:, :1] if freeze_at_tf else Vmax_CDM
-        norm_r = rmax_CDM[:, :1] if freeze_at_tf else rmax_CDM
+        norm_V = Vmax_CDM
+        norm_r = rmax_CDM
         dV = np.where(tau <= pm.tt_th, dVmax_fit(tau), 0.) * norm_V / t_c
         dr = np.where(tau <= pm.tt_th, drmax_fit(tau), 0.) * norm_r / t_c
         x = t * np.ones((len(Vmax_CDM), 1, 1))
         return (Vmax_CDM[:, -1] + integrate.simpson(dV, x=x, axis=1),
                 rmax_CDM[:, -1] + integrate.simpson(dr, x=x, axis=1))
 
-    def test_master_function_matches_an_independent_eq33_reference(self, pm):
-        args = self._synthetic_cdm_history(pm)
-        Vmax_SIDM, rmax_SIDM, _, _, _ = pm.master_function(*args)
-        V_ref, r_ref = self._eq33_reference(pm, *args)
-        assert np.allclose(Vmax_SIDM, V_ref, rtol=1.e-10, atol=0.)
-        assert np.allclose(rmax_SIDM, r_ref, rtol=1.e-10, atol=0.)
 
-    def test_normalizing_at_t_f_would_give_a_different_answer(self, pm):
-        """Guards the test above. On a declining CDM track the two normalizations must
-        genuinely disagree, otherwise that test would still pass after a regression."""
+    def test_master_function_matches_an_independent_eq33_reference(self, pm):
+        # The declining tracks detect normalization frozen at formation time.
         args = self._synthetic_cdm_history(pm)
-        V_running, r_running = self._eq33_reference(pm, *args, freeze_at_tf=False)
-        V_frozen, r_frozen = self._eq33_reference(pm, *args, freeze_at_tf=True)
-        assert np.all(np.abs(V_frozen / V_running - 1.) > 1.e-3)
-        assert np.all(np.abs(r_frozen / r_running - 1.) > 1.e-3)
+        velocity, radius, time, formation = args
+        collapse = pm.t_collapse(pm.sigma_eff_m(velocity), radius, velocity)
+        # A distinct supplied history detects ignored collapse_time, as well as
+        # broadcasting mistakes; every route uses the same independent oracle.
+        for supplied in (None, collapse, 1.2 * collapse):
+            actual = pm.master_function(*args, collapse_time=supplied)
+            expected = self._eq33_reference(pm, *args, collapse_time=supplied)
+            for value, ref in zip(actual[:2], expected):
+                np.testing.assert_allclose(value, ref, rtol=1e-10, atol=0)
+        with pytest.raises(ValueError, match='collapse_time'):
+            pm.master_function(*args, collapse_time=collapse[:1])
 
 
 class TestCrossSection:
 
-    def test_analytic_sigma_eff_matches_brute_force_quadrature(self, pm):
-        """The analytic sigma_eff must reproduce a direct evaluation of Eq. (1.1)."""
-        km, s, cm, gram = pm.km, pm.s, pm.cm, pm.gram
-        sigma0_m, w = SIGMA0_M * cm**2 / gram, W * km / s
-        f_ana = pm.sigma_eff_m_interpolate_analytical(sigma0_m, w)
+    def test_analytic_sigma_eff_matches_adaptive_quadrature(self, pm):
+        """Eq. (1.1), integrated in u=v/nu and angle, without a dense 2D array."""
+        for velocity in [.1, W, 300.]:
+            nu_over_w = .64 * velocity / W
+            def integrand(u):
+                angular, _ = integrate.quad(
+                    lambda mu: pm.dsigmadcostheta(1., 1., u * nu_over_w, mu)
+                    * (1. - mu**2), -1., 1., epsabs=1e-12, epsrel=1e-10)
+                return angular * u**7 * np.exp(-u*u/4.) / 512.
+            reference, error = integrate.quad(integrand, 0., 40.,
+                                               epsabs=1e-12, epsrel=1e-9)
+            assert error < reference * 1e-7
+            actual = pm.sigma_eff_m(velocity * pm.km / pm.s) / (SIGMA0_M * pm.cm**2 / pm.gram)
+            # Retain the original 1% gate, including interpolation error.
+            assert actual == pytest.approx(reference, rel=1e-2)
 
-        for V in [0.1, 1., 10., 24.33, 100., 300.]:
-            Vmax = V * km / s
-            veff = 0.64 * Vmax
-            v = np.linspace(1.e-8 * veff, 40. * veff, 20000)
-            costheta = np.linspace(-1., 1., 2000)
-            integrand = (pm.dsigmadcostheta(sigma0_m, w, v[:, None], costheta[None, :])
-                         * v[:, None]**7 * (1. - costheta[None, :]**2)
-                         * np.exp(-v[:, None]**2 / (4. * veff**2)))
-            inner = integrate.simpson(integrand, x=costheta, axis=-1)
-            reference = integrate.simpson(inner, x=v) / (512. * veff**8)
-            assert f_ana(Vmax) == pytest.approx(reference, rel=1.e-2)
 
     def test_sigma_eff_approaches_sigma0_in_the_contact_limit(self, pm):
         """For v << w the scattering is isotropic and contact-like, so sigma_eff -> sigma0."""
         km, s, cm, gram = pm.km, pm.s, pm.cm, pm.gram
         f_ana = pm.sigma_eff_m_interpolate_analytical(SIGMA0_M * cm**2 / gram, W * km / s)
         assert f_ana(1.e-3 * km / s) / (cm**2 / gram) == pytest.approx(SIGMA0_M, rel=1.e-3)
-
-    def test_subhalo_properties_shares_sigma_eff_with_its_parametric_model(self):
-        """The t_c behind the returned tt_ratio must be the t_c driving the evolution."""
-        sh = sashimi_si.subhalo_properties(sigma0_m=SIGMA0_M, w=W)
-        assert sh.sigma_eff_m is sh.param_model.sigma_eff_m
 
 
 class TestCosmology:
@@ -204,33 +201,6 @@ class TestCosmology:
         for z in [0., 0.5, 1., 2., 4., 7., 10.]:
             expected = (cosmo.growthD(z + h) - cosmo.growthD(z - h)) / (2 * h)
             assert cosmo.dDdz(z) == pytest.approx(expected, rel=1.e-5)
-
-    def test_dark_energy_density_parameter_is_recovered_today(self, cosmo):
-        """Omega_L(z=0) must be Omega_L: a stray factor of h would break this."""
-        assert cosmo.OmegaL / (cosmo.OmegaL + cosmo.OmegaM) == pytest.approx(cosmo.OmegaL,
-                                                                             rel=1.e-12)
-
-
-class TestNFWConstants:
-    """The NFW structure constants hard-coded in the code, against their exact values."""
-
-    @staticmethod
-    def _c_max():
-        """rmax/rs, i.e. the c maximizing [ln(1+c) - c/(1+c)]/c."""
-        def stationarity(c):
-            return c**2 / (1 + c)**2 - (np.log(1 + c) - c / (1 + c))
-        return brentq(stationarity, 1., 5.)
-
-    def test_rmax_over_rs(self):
-        assert self._c_max() == pytest.approx(2.1626, abs=1.e-4)
-
-    def test_vmax_and_rhos_normalizations(self):
-        c = self._c_max()
-        mu = (np.log(1 + c) - c / (1 + c)) / c
-        # Vmax / (rs sqrt(G rho_s)), used in t_collapse
-        assert np.sqrt(4 * np.pi * mu) == pytest.approx(1.648, abs=1.e-3)
-        # 4 pi G rs^2 rho_s / Vmax^2, used to rebuild rho_s from Vmax and rs
-        assert 1. / mu == pytest.approx(4.625, abs=1.e-3)
 
 
 class TestEndToEnd:

@@ -23,6 +23,16 @@ Keep reference values and tolerances fixed when moving files. A scientific
 change requires an independently justified reference update, not automatic
 replacement with current outputs.
 
+
+The default catalog path is checked against an independent reference; wrapper
+forwarding is checked on returned catalogs without repeating the same expensive
+calculation. Analytic mass histories, explicit legacy solvers, physical limits,
+and the existing frozen reference values remain separate checks.
+The effective-cross-section definition is checked by dimensionless adaptive
+angular/velocity quadrature. Supplied and computed collapse times are checked
+against one independent time-integral reference with distinct mass and
+concentration tracks.
+
 ## Repository contents
 
 Keep maintained tests, small required fixtures and user-facing numerical notes
@@ -33,3 +43,13 @@ The old generated `/validation/maintenance/` location is also ignored.
 
 The [development evidence](https://github.com/gomeshun/sashimi-si/tree/fecbd2c33c63d79124bde22bcd0172a434f4e0e6/validation/maintenance) remains available
 at the fixed pre-cleanup commit.
+
+The historical boundary-audit script compared concentration fields instead of
+survival flags; its boundary report is not a current acceptance check. The
+maintained default-catalog test now compares CDM/SIDM flags (tuple fields 25/26)
+and collapse state (field 22) with independent ODE histories, and checks the
+SIDM weight relation using field 24. Historical source hashes must not be
+substituted for the source under test.
+
+To reproduce the old frozen-reference environment, include `mpmath==1.3.0`
+from the reference configuration; the old requirements list omitted that pin.
