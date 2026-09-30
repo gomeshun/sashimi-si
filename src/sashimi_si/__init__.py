@@ -16,6 +16,7 @@ from itamae.halo import invert_nfw_mass_function
 from itamae.provenance import build_calculation_metadata
 from itamae.types import WeightedSubhaloCatalog
 from itamae.units import NativeUnits
+from ._native import SIDM
 from ._physics import (
     SIHaloKernels,
     SIUnits,
@@ -327,6 +328,32 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         method="pert2_shanks",
         **kwargs: Any,
     ):
+        """Calculate the historical paired catalogs with unchanged defaults."""
+        return self._calculate_population(
+            M0, redshift, dz, zmax, N_ma, sigmalogc, N_herm, logmamin,
+            logmamax, N_hermNa, Na_model, ct_th, M0_at_redshift, method, **kwargs,
+        )
+
+    def _calculate_population(
+        self,
+        M0,
+        redshift=0.0,
+        dz=0.01,
+        zmax=5.0,
+        N_ma=500,
+        sigmalogc=0.128,
+        N_herm=20,
+        logmamin=6,
+        logmamax=None,
+        N_hermNa=200,
+        Na_model=3,
+        ct_th=0.0,
+        M0_at_redshift=False,
+        method="pert2_shanks",
+        *,
+        preparation=None,
+        **kwargs: Any,
+    ):
         """Run SIDM physical stages through the shared population executor."""
         self.calculation_parameters = {
             "M0": M0,
@@ -367,7 +394,8 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
             x=z_dummy,
         )
 
-        zdist = np.arange(redshift + dz, zmax + dz, dz)
+        zdist = (np.arange(redshift + dz, zmax + dz, dz)
+                 if preparation is None else preparation.redshift_nodes)
         if logmamax is None:
             logmamax = np.log10(0.1 * M0 / self.Msun)
         ma200_z0 = np.logspace(logmamin, logmamax, N_ma) * self.Msun
@@ -401,13 +429,21 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         zdist_accreted = zdist[active]
         ma200_matrix_accreted = ma200_matrix[active]
         ma_matrix_accreted = ma_matrix[active]
+        execution_metadata = {} if preparation is None else {
+            **preparation.metadata,
+            "accretion_executed_redshift_nodes": zdist_accreted.tolist(),
+            "accretion_executed_redshift_support": (
+                [float(zdist_accreted[0]), float(zdist_accreted[-1])] if zdist_accreted.size else None
+            ),
+            "formation_row_selection": "retain candidate row iff any mass node has z_formation > z_acc",
+        }
 
         solver = TidalStrippingSolver(
             backend_config=self.itamae_backend,
             M0=M0,
             z_min=redshift,
             z_max=zmax,
-            n_z_interp=64,
+            n_z_interp=64 if preparation is None else preparation.interpolation_nodes,
         )
 
         Na = self.Na_calc(
@@ -472,7 +508,8 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
                     variant="sashimi-si",
                     distribution_name="sashimi-si",
                     module_file=__file__,
-                    model_identifier=f"sashimi-si:{state}:v2",
+                    model_identifier=(f"sashimi-si:{state}:v2" if preparation is None
+                                      else f"{preparation.metadata['native_configuration_identifier']}:{state}"),
                     backend_identifier=self.itamae_backend.identifier,
                     source_identifier="sashimi-si:upstream-physics:e17d3664dac677b604fd4ff02fb2af105a6937fa",
                     calculation_specification=CALCULATION_SPECIFICATION,
@@ -481,6 +518,7 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
                     solver_identifier=f"sashimi-si:gravothermal-tidal-stripping:{method}:v2",
                     extra={
                         "state": state,
+                        **execution_metadata,
                         "physical_parameters": self.physical_parameters,
                         "calculation_parameters": self.calculation_parameters,
                         "cosmology_parameters": {
@@ -571,6 +609,7 @@ halo_model = HaloModel
 subhalo_properties = SubhaloProperties
 create_itamae_model = SubhaloProperties
 __all__ = [
+    "SIDM",
     "units_and_constants",
     "cosmology",
     "HaloModel",

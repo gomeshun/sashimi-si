@@ -186,3 +186,9 @@ full saved-grid evidence, solver differences, finite EPS limits and remaining
 use limitations. The last dz refinement (.01 to .005) changes bound mass
 fractions by about 0.774% at fixed reduced settings. These are measured
 sensitivities, not universal error guarantees or a change of physical defaults.
+
+## Native SIDM API
+
+See the [native API guide](docs/native-api.md) for immutable process settings,
+explicit physical inputs and variant-specific supported boundaries. Historical
+entry points and the existing weighted catalog remain available.
