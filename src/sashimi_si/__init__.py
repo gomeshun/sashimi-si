@@ -420,8 +420,6 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
             + 0.0237 * np.log10(ma_0 / self.Msun)
             + 1.8837
         )
-        t_f = self.t_U - self.lookback_time(z_f)
-
         ma200_matrix = self.Mzi(ma200_0, zdist[:, np.newaxis])
         ma_matrix = self.Mvir_from_M200_fit(ma200_matrix, zdist[:, np.newaxis])
         accretion = z_f > zdist[:, np.newaxis]
@@ -433,6 +431,11 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
                 "Choose a lower accretion redshift range or a reference mass "
                 "range with formed halos."
             )
+        # Unformed mass nodes keep zero-weight placeholders. Their formation
+        # epochs may fall below the lookback table's output-redshift boundary.
+        formed = accretion.any(axis=0)
+        t_f = np.zeros_like(z_f)
+        t_f[formed] = self.t_U - self.lookback_time(z_f[formed])
         zdist_accreted = zdist[active]
         ma200_matrix_accreted = ma200_matrix[active]
         ma_matrix_accreted = ma_matrix[active]

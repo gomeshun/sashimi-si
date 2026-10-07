@@ -257,7 +257,8 @@ def test_upper_reference_bound_still_uses_host_zero_mass():
 
 
 @pytest.mark.parametrize("state", ["paired", "cdm_reference", "sidm"])
-def test_empty_formation_support_rejected_before_solver_setup(monkeypatch, state):
+@pytest.mark.parametrize("target", [0.0, 2.0])
+def test_empty_formation_support_rejected_before_solver_setup(monkeypatch, state, target):
     model, request, _ = configured()
 
     def cannot_prepare_solver(*args, **kwargs):
@@ -266,8 +267,41 @@ def test_empty_formation_support_rejected_before_solver_setup(monkeypatch, state
     monkeypatch.setattr("sashimi_si.TidalStrippingSolver", cannot_prepare_solver)
     with pytest.raises(ValueError, match="No accretion redshift nodes.*formation"):
         model.population(
-            **{**request, "accretion_redshift_range": (2.0, 3.0), "state": state}
+            **{
+                **request,
+                "redshift": target,
+                "reference_mass_redshift": target,
+                "accretion_redshift_range": (2.0, 3.0),
+                "state": state,
+            }
         )
+
+
+def test_mixed_formation_support_skips_out_of_domain_lookback_histories():
+    model = SIDM().configure(
+        accretion={"mass_nodes": 5, "host_history_nodes": 3, "redshift_step": 0.1},
+        concentration={"quadrature_nodes": 2},
+    )
+    catalogs = model.population(
+        host_mass_msun=1e12,
+        redshift=1.6,
+        reference_mass_range_msun=(1e5, 1e10),
+        accretion_redshift_range=(1.6, 1.9),
+    )
+    # At z=1.7 the two lightest nodes are formed; at z=1.8 only the lightest is.
+    expected = np.broadcast_to(
+        np.array([[True, True, False, False, False], [True, False, False, False, False]])[:, None, :],
+        (2, 2, 5),
+    ).reshape(-1)
+    for catalog in catalogs.values():
+        np.testing.assert_allclose(np.unique(catalog.columns["z_acc"]), [1.7, 1.8])
+        np.testing.assert_array_equal(catalog.columns["valid_accretion"], expected)
+        assert np.any(catalog.weights["weight_survival"][expected] > 0)
+        assert np.all(catalog.weights["weight_survival"][~expected] == 0)
+        for name, values in catalog.columns.items():
+            assert np.all(np.isfinite(values)), name
+            if "sidm" in name or name == "collapse_time_ratio":
+                assert np.all(values[~expected] == 0), name
 
 
 def test_formation_filter_distinguishes_candidate_and_executed_rows():

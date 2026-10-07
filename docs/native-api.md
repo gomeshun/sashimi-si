@@ -95,7 +95,10 @@ At least one candidate redshift node must retain a mass node satisfying
 `ValueError` before solver setup or population execution, for paired and
 single-state requests alike. Choose a lower accretion-redshift range or a
 reference-mass range with formed halos. This condition is rejected explicitly;
-the API does not return empty catalogs for it.
+the API does not return empty catalogs for it. For mixed grids, formation-invalid
+nodes retain zero survival weights and zero uncomputed SIDM values. Lookback
+times are evaluated only for formed histories, so excluded formation epochs
+below the output redshift never enter the bounded time interpolator.
 
 Metadata stores canonical effective settings and their stable configuration
 hash, reference and host epochs, mass definitions/ranges, fixed history controls,
