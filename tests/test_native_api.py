@@ -256,6 +256,20 @@ def test_upper_reference_bound_still_uses_host_zero_mass():
     assert meta["reference_mass_redshift"] == request["redshift"]
 
 
+@pytest.mark.parametrize("state", ["paired", "cdm_reference", "sidm"])
+def test_empty_formation_support_rejected_before_solver_setup(monkeypatch, state):
+    model, request, _ = configured()
+
+    def cannot_prepare_solver(*args, **kwargs):
+        raise AssertionError("Empty formation support must fail before solver setup.")
+
+    monkeypatch.setattr("sashimi_si.TidalStrippingSolver", cannot_prepare_solver)
+    with pytest.raises(ValueError, match="No accretion redshift nodes.*formation"):
+        model.population(
+            **{**request, "accretion_redshift_range": (2.0, 3.0), "state": state}
+        )
+
+
 def test_formation_filter_distinguishes_candidate_and_executed_rows():
     model, request, _ = configured()
     result = model.population(**{**request, "accretion_redshift_range": (0.0, 3.0)})["sidm"]

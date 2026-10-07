@@ -145,6 +145,8 @@ class SIDM:
         backward through host-history relations and formation gates. The
         optional upper reference bound remains 0.1*host_mass_at_z0, preserving
         the legacy convention despite the reference grid's nonzero epoch.
+        If formation selection removes every candidate redshift node, raise
+        ValueError before solver setup rather than return empty catalogs.
         """
         choice(state, "state", ("paired", "cdm_reference", "sidm"))
         choice(host_mass_definition, "host_mass_definition", ("200c",))

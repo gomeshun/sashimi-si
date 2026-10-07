@@ -90,6 +90,13 @@ separate, and requested bounds, candidate nodes, formation-selected executed
 nodes/support and support policy are recorded separately.
 At least two mass nodes and positive quadrature orders are required.
 
+At least one candidate redshift node must retain a mass node satisfying
+`z_formation > z_acc`. If formation selection removes every row, the API raises
+`ValueError` before solver setup or population execution, for paired and
+single-state requests alike. Choose a lower accretion-redshift range or a
+reference-mass range with formed halos. This condition is rejected explicitly;
+the API does not return empty catalogs for it.
+
 Metadata stores canonical effective settings and their stable configuration
 hash, reference and host epochs, mass definitions/ranges, fixed history controls,
 solver options, state identity and unit contracts. It remains JSON serializable.

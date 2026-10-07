@@ -426,15 +426,22 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         ma_matrix = self.Mvir_from_M200_fit(ma200_matrix, zdist[:, np.newaxis])
         accretion = z_f > zdist[:, np.newaxis]
         active = accretion.any(axis=1)
+        if not np.any(active):
+            raise ValueError(
+                "No accretion redshift nodes satisfy the formation condition "
+                "z_formation > z_acc for the requested reference mass grid. "
+                "Choose a lower accretion redshift range or a reference mass "
+                "range with formed halos."
+            )
         zdist_accreted = zdist[active]
         ma200_matrix_accreted = ma200_matrix[active]
         ma_matrix_accreted = ma_matrix[active]
         execution_metadata = {} if preparation is None else {
             **preparation.metadata,
             "accretion_executed_redshift_nodes": zdist_accreted.tolist(),
-            "accretion_executed_redshift_support": (
-                [float(zdist_accreted[0]), float(zdist_accreted[-1])] if zdist_accreted.size else None
-            ),
+            "accretion_executed_redshift_support": [
+                float(zdist_accreted[0]), float(zdist_accreted[-1])
+            ],
             "formation_row_selection": "retain candidate row iff any mass node has z_formation > z_acc",
         }
 
