@@ -108,7 +108,7 @@ Independent small pre-edit outputs were built from SI
 `ce5a3c11518a609ac056bb136653268b05b1ecd7` and core
 `23d01e8758a88b061b87de9e488c38ec89fd8e4f`. They cover paired states, nonzero
 redshift, host-reference conversion, changed interaction/cap and explicit ODE.
-Stored references are compared at the existing rtol5e-12 policy; old/new paths
+Stored references are compared with `rtol=5e-12` and `atol=1e-300`; old/new paths
 in one runtime must agree exactly. Original equation/formation/velocity and
 frozen reference tests remain in the suite. The reference-grid semantics are
 SI-owned, not a generic alias for another variant's accretion coordinate.

@@ -8,5 +8,5 @@ where the model returns paired catalogs). They are not raw production run
 archives or independent new physical calibration.
 
 Tests compare the new and old paths exactly within one runtime. Comparisons
-against saved float arrays use rtol5e-12 with only a subnormal absolute tolerance;
+against saved float arrays use `rtol=5e-12` and `atol=1e-300`;
 boolean masks are exact. Original independent scientific references are retained.
