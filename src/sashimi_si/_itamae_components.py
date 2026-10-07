@@ -142,7 +142,6 @@ class SIDMProfileEvolution:
             ),
             axis=0,
         )
-        t = self.model.t_U - self.model.lookback_time(z)
         Vmax_CDM = np.concatenate(
             (context["Vmax_ba"], Vmax_aa[:, 1:]),
             axis=1,
@@ -159,6 +158,7 @@ class SIDMProfileEvolution:
         acc_outputs = [np.zeros(shape) for _ in range(5)]
         tt_ratio = np.zeros(shape)
         if np.any(valid):
+            t = self.model.t_U - self.model.lookback_time(z[..., valid])
             t_c = self.model.t_collapse(
                 self.model.sigma_eff_m(Vmax_CDM[..., valid]),
                 rmax_CDM[..., valid],
@@ -168,7 +168,7 @@ class SIDMProfileEvolution:
             evolved_valid = self.model.param_model.master_function(
                 Vmax_CDM[..., valid],
                 rmax_CDM[..., valid],
-                t[..., valid],
+                t,
                 context["t_f"][valid],
             )
             t2 = self.model.t_U - self.model.lookback_time(context["z_ba"][..., valid])

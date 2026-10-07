@@ -41,7 +41,7 @@ jobs:
       - name: Lint migration code
         run: >-
           uv run --no-sync ruff check
-          src/sashimi_si/__init__.py
+          src/sashimi_si/__init__.py src/sashimi_si/_native.py src/sashimi_si/_native_support.py
           src/sashimi_si/_physics.py
           src/sashimi_si/_itamae.py
           src/sashimi_si/_itamae_migration.py
