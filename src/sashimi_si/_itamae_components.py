@@ -97,7 +97,7 @@ class SIDMAccretionSlices:
         .. [cite-nfw] Navarro, Frenk & White (1997), A Universal Density Profile from Hierarchical Clustering.
             https://arxiv.org/abs/astro-ph/9611107
 
-        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).
+        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (4)-(9), (28), (34).
             https://arxiv.org/abs/1803.07691
         """
         za = self.zdist_accreted[index]
@@ -197,7 +197,7 @@ class SIDMInitialStructure:
         .. [cite-nfw] Navarro, Frenk & White (1997), A Universal Density Profile from Hierarchical Clustering.
             https://arxiv.org/abs/astro-ph/9611107
 
-        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).
+        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (4)-(9), (28), (34).
             https://arxiv.org/abs/1803.07691
         """
         return {
@@ -303,7 +303,7 @@ class SIDMProfileEvolution:
         .. [cite-tracks] Penarrubia et al. (2010), The impact of dark matter cusps and cores on the satellite galaxy population around spiral galaxies, Eq. (8), Fig. 6.
             https://arxiv.org/abs/1002.3376
 
-        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).
+        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (4)-(9), (28), (34).
             https://arxiv.org/abs/1803.07691
 
         .. [cite-nfw] Navarro, Frenk & White (1997), A Universal Density Profile from Hierarchical Clustering.
@@ -432,10 +432,10 @@ class SIDMSurvival:
     References
     ----------
 
-    .. [cite-survival] Hayashi et al. (2003), The Structural Evolution of Substructure.
+    .. [cite-survival] Hayashi et al. (2003), The Structural Evolution of Substructure, Section 2.1.
         https://arxiv.org/abs/astro-ph/0203004
 
-    .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).
+    .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (4)-(9), (28), (34).
         https://arxiv.org/abs/1803.07691
     """
 
@@ -480,10 +480,10 @@ class SIDMSurvival:
         References
         ----------
 
-        .. [cite-survival] Hayashi et al. (2003), The Structural Evolution of Substructure.
+        .. [cite-survival] Hayashi et al. (2003), The Structural Evolution of Substructure, Section 2.1.
             https://arxiv.org/abs/astro-ph/0203004
 
-        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).
+        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (4)-(9), (28), (34).
             https://arxiv.org/abs/1803.07691
         """
         formed = evolved["valid_accretion"]

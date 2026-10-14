@@ -181,8 +181,9 @@ class HaloModel(SIHaloKernels):
         References
         ----------
 
-        .. [cite-growth] Carroll, Press & Turner (1992), The Cosmological Constant, Section 3.5.
+        .. [cite-growth] Carroll, Press & Turner (1992), The Cosmological Constant, Section 3.5, Eq. (29).
             https://doi.org/10.1146/annurev.aa.30.090192.002435
+            Full text: https://ned.ipac.caltech.edu/level5/Carroll/Carroll3_5.html
         """
         return np.asarray(self.itamae_cosmology.growth_factor(z))
 
@@ -412,7 +413,7 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         ----------
         - Yang et al. (2011), https://arxiv.org/abs/1104.1757
 
-        .. [cite-yang] Yang et al. (2011), An Analytical Model for the Accretion of Dark Matter Subhalos, Eqs. (12)-(14), (21).
+        .. [cite-yang] Yang et al. (2011), An Analytical Model for the Accretion of Dark Matter Subhalos, Eqs. (7)-(16), (21).
             https://arxiv.org/abs/1104.1757
         """
         return 1 / np.sqrt(2.0 * np.pi) * dela / (s2 - s1) ** 1.5
@@ -454,7 +455,7 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         .. [cite-parkinson] Parkinson, Cole & Helly (2008), Generating Dark Matter Halo Merger Trees, Section 3.1.
             https://arxiv.org/abs/0708.1382
 
-        .. [cite-yang] Yang et al. (2011), An Analytical Model for the Accretion of Dark Matter Subhalos, Eqs. (12)-(14), (21).
+        .. [cite-yang] Yang et al. (2011), An Analytical Model for the Accretion of Dark Matter Subhalos, Eqs. (7)-(16), (21).
             https://arxiv.org/abs/1104.1757
         """
         G0 = 0.57
@@ -502,7 +503,7 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         ----------
         - Yang et al. (2011), https://arxiv.org/abs/1104.1757
 
-        .. [cite-yang] Yang et al. (2011), An Analytical Model for the Accretion of Dark Matter Subhalos, Eqs. (12)-(14), (21).
+        .. [cite-yang] Yang et al. (2011), An Analytical Model for the Accretion of Dark Matter Subhalos, Eqs. (7)-(16), (21).
             https://arxiv.org/abs/1104.1757
         """
         return (
@@ -555,10 +556,14 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
         CDM tidal-truncation selection.
 
+        Yang et al. Eqs. (8)-(9) specify support normalization, and Eqs. (12)-(14) give the
+        kernels. The incomplete-gamma evaluation and continuous zero-barrier-gap limit used
+        here are derived evaluations, not additional closed formulas printed in that paper.
+
         References
         ----------
 
-        .. [cite-yang] Yang et al. (2011), An Analytical Model for the Accretion of Dark Matter Subhalos, Eqs. (12)-(14), (21).
+        .. [cite-yang] Yang et al. (2011), An Analytical Model for the Accretion of Dark Matter Subhalos, Eqs. (7)-(16), (21).
             https://arxiv.org/abs/1104.1757
         """
         d1, d2, a, b, minimum = np.broadcast_arrays(delc1, delc2, s1, s2, smin)
@@ -631,7 +636,7 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         ----------
         - Yang et al. (2011), https://arxiv.org/abs/1104.1757
 
-        .. [cite-yang] Yang et al. (2011), An Analytical Model for the Accretion of Dark Matter Subhalos, Eqs. (12)-(14), (21).
+        .. [cite-yang] Yang et al. (2011), An Analytical Model for the Accretion of Dark Matter Subhalos, Eqs. (7)-(16), (21).
             https://arxiv.org/abs/1104.1757
         """
         zacc_2d = zacc.reshape(-1, 1)
@@ -830,10 +835,10 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         .. [cite-scatter] Ishiyama et al. (2013), The Cosmogrid Simulation: Statistical Properties of Small Dark Matter Halos, Eq. (7), Fig. 10.
             https://arxiv.org/abs/1101.2020
 
-        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).
+        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (4)-(9), (28), (34).
             https://arxiv.org/abs/1803.07691
 
-        .. [cite-survival] Hayashi et al. (2003), The Structural Evolution of Substructure.
+        .. [cite-survival] Hayashi et al. (2003), The Structural Evolution of Substructure, Section 2.1.
             https://arxiv.org/abs/astro-ph/0203004
         """
         if method not in {
@@ -1069,10 +1074,10 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         .. [cite-scatter] Ishiyama et al. (2013), The Cosmogrid Simulation: Statistical Properties of Small Dark Matter Halos, Eq. (7), Fig. 10.
             https://arxiv.org/abs/1101.2020
 
-        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).
+        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (4)-(9), (28), (34).
             https://arxiv.org/abs/1803.07691
 
-        .. [cite-survival] Hayashi et al. (2003), The Structural Evolution of Substructure.
+        .. [cite-survival] Hayashi et al. (2003), The Structural Evolution of Substructure, Section 2.1.
             https://arxiv.org/abs/astro-ph/0203004
         """
         if state == "cdm":
@@ -1126,10 +1131,10 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         .. [cite-scatter] Ishiyama et al. (2013), The Cosmogrid Simulation: Statistical Properties of Small Dark Matter Halos, Eq. (7), Fig. 10.
             https://arxiv.org/abs/1101.2020
 
-        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).
+        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (4)-(9), (28), (34).
             https://arxiv.org/abs/1803.07691
 
-        .. [cite-survival] Hayashi et al. (2003), The Structural Evolution of Substructure.
+        .. [cite-survival] Hayashi et al. (2003), The Structural Evolution of Substructure, Section 2.1.
             https://arxiv.org/abs/astro-ph/0203004
         """
         catalogs = self.subhalo_catalogs_calc(*args, **kwargs)

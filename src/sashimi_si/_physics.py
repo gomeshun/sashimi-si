@@ -217,8 +217,9 @@ class SIBackgroundKernels(SIUnits):
         References
         ----------
 
-        .. [cite-growth] Carroll, Press & Turner (1992), The Cosmological Constant, Section 3.5.
+        .. [cite-growth] Carroll, Press & Turner (1992), The Cosmological Constant, Section 3.5, Eq. (29).
             https://doi.org/10.1146/annurev.aa.30.090192.002435
+            Full text: https://ned.ipac.caltech.edu/level5/Carroll/Carroll3_5.html
         """
         Omega_Lz = self.OmegaL / (self.OmegaL + self.OmegaM * (1.0 + z) ** 3)
         Omega_Mz = 1 - Omega_Lz
@@ -258,8 +259,9 @@ class SIBackgroundKernels(SIUnits):
         References
         ----------
 
-        .. [cite-growth] Carroll, Press & Turner (1992), The Cosmological Constant, Section 3.5.
+        .. [cite-growth] Carroll, Press & Turner (1992), The Cosmological Constant, Section 3.5, Eq. (29).
             https://doi.org/10.1146/annurev.aa.30.090192.002435
+            Full text: https://ned.ipac.caltech.edu/level5/Carroll/Carroll3_5.html
         """
 
         def dOdz(z):
@@ -362,7 +364,7 @@ class SIHaloKernels(SIBackgroundKernels):
         References
         ----------
 
-        .. [cite-ludlow] Ludlow et al. (2016), The mass-concentration-redshift relation of cold and warm dark matter haloes, Appendix C.
+        .. [cite-ludlow] Ludlow et al. (2016), The mass-concentration-redshift relation of cold and warm dark matter haloes, Eq. (3) and Appendix C, Eqs. (C8)-(C12).
             https://arxiv.org/abs/1601.02624
         """
         return (M / ((1.0e10 * self.Msun) / self.h)) ** -1
@@ -398,7 +400,7 @@ class SIHaloKernels(SIBackgroundKernels):
         References
         ----------
 
-        .. [cite-ludlow] Ludlow et al. (2016), The mass-concentration-redshift relation of cold and warm dark matter haloes, Appendix C.
+        .. [cite-ludlow] Ludlow et al. (2016), The mass-concentration-redshift relation of cold and warm dark matter haloes, Eq. (3) and Appendix C, Eqs. (C8)-(C12).
             https://arxiv.org/abs/1601.02624
         """
         return (
@@ -436,7 +438,7 @@ class SIHaloKernels(SIBackgroundKernels):
         References
         ----------
 
-        .. [cite-ludlow] Ludlow et al. (2016), The mass-concentration-redshift relation of cold and warm dark matter haloes, Appendix C.
+        .. [cite-ludlow] Ludlow et al. (2016), The mass-concentration-redshift relation of cold and warm dark matter haloes, Eq. (3) and Appendix C, Eqs. (C8)-(C12).
             https://arxiv.org/abs/1601.02624
         """
         return 1.686 / self.growthD(z)
@@ -773,7 +775,7 @@ class SIHaloKernels(SIBackgroundKernels):
         .. [cite-correa] Correa et al. (2015), The accretion history of dark matter haloes - III. A physical model for the concentration-mass relation, Section 3 and Appendix B.
             https://arxiv.org/abs/1502.00391
 
-        .. [cite-ludlow] Ludlow et al. (2016), The mass-concentration-redshift relation of cold and warm dark matter haloes, Appendix C.
+        .. [cite-ludlow] Ludlow et al. (2016), The mass-concentration-redshift relation of cold and warm dark matter haloes, Eq. (3) and Appendix C, Eqs. (C8)-(C12).
             https://arxiv.org/abs/1601.02624
         """
         a = 1.686 * np.sqrt(2.0 / np.pi) * self.dDdz(0) + 1.0
@@ -819,7 +821,7 @@ class SIHaloKernels(SIBackgroundKernels):
         .. [cite-correa] Correa et al. (2015), The accretion history of dark matter haloes - III. A physical model for the concentration-mass relation, Section 3 and Appendix B.
             https://arxiv.org/abs/1502.00391
 
-        .. [cite-ludlow] Ludlow et al. (2016), The mass-concentration-redshift relation of cold and warm dark matter haloes, Appendix C.
+        .. [cite-ludlow] Ludlow et al. (2016), The mass-concentration-redshift relation of cold and warm dark matter haloes, Eq. (3) and Appendix C, Eqs. (C8)-(C12).
             https://arxiv.org/abs/1601.02624
         """
         Mzi0 = self.Mzi(M0, zi)
@@ -868,7 +870,7 @@ class SIHaloKernels(SIBackgroundKernels):
         .. [cite-correa] Correa et al. (2015), The accretion history of dark matter haloes - III. A physical model for the concentration-mass relation, Section 3 and Appendix B.
             https://arxiv.org/abs/1502.00391
 
-        .. [cite-ludlow] Ludlow et al. (2016), The mass-concentration-redshift relation of cold and warm dark matter haloes, Appendix C.
+        .. [cite-ludlow] Ludlow et al. (2016), The mass-concentration-redshift relation of cold and warm dark matter haloes, Eq. (3) and Appendix C, Eqs. (C8)-(C12).
             https://arxiv.org/abs/1601.02624
         """
         Mzi0 = self.Mzi(M0, zi)
@@ -912,7 +914,7 @@ class SIHaloKernels(SIBackgroundKernels):
         References
         ----------
 
-        .. [cite-ludlow] Ludlow et al. (2016), The mass-concentration-redshift relation of cold and warm dark matter haloes, Appendix C.
+        .. [cite-ludlow] Ludlow et al. (2016), The mass-concentration-redshift relation of cold and warm dark matter haloes, Eq. (3) and Appendix C, Eqs. (C8)-(C12).
             https://arxiv.org/abs/1601.02624
         """
         dsdsigma = 2.0 * self.sigmaMz(M, z)
@@ -955,7 +957,7 @@ class SIHaloKernels(SIBackgroundKernels):
         References
         ----------
 
-        .. [cite-ludlow] Ludlow et al. (2016), The mass-concentration-redshift relation of cold and warm dark matter haloes, Appendix C.
+        .. [cite-ludlow] Ludlow et al. (2016), The mass-concentration-redshift relation of cold and warm dark matter haloes, Eq. (3) and Appendix C, Eqs. (C8)-(C12).
             https://arxiv.org/abs/1601.02624
         """
         s = self.sigmaMz(M, z) ** 2
@@ -1238,6 +1240,12 @@ class SIDM_cross_section(SIUnits):
         Yang et al., PDF Eq. (1.1). Finite velocity grids, the low-speed floor and asymptotic
         switching thresholds are implementation controls.
 
+        The exponential-integral closed form is derived by integrating the Rutherford cross
+        section in Yang et al. Eq. (1.1); the paper prints the defining integral, not this
+        closed form. With a=w**2/(4*nu_eff**2), the ratio is a**2*((1+a)*exp(a)*E1(a)-1). Its
+        positive-integral and asymptotic evaluations are numerical implementations of the same
+        derived expression.
+
         References
         ----------
 
@@ -1385,7 +1393,7 @@ class SIDM_parametric_model(SIDM_cross_section):
         .. [cite-nfw] Navarro, Frenk & White (1997), A Universal Density Profile from Hierarchical Clustering.
             https://arxiv.org/abs/astro-ph/9611107
 
-        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).
+        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (4)-(9), (28), (34).
             https://arxiv.org/abs/1803.07691
 
         .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
@@ -1400,7 +1408,7 @@ class SIDM_parametric_model(SIDM_cross_section):
         return t_c
 
     def dVmaxSIDMdtt(self, tt, Vmax_CDM):
-        r"""Returns differential of Vmax obtained by the equation just below Eq. (3.3) of Yang et al. (2023)
+        r"""Differentiate the maximum circular speed polynomial in Yang et al. Eq. (2.4).
 
         Parameters
         ----------
@@ -1428,7 +1436,21 @@ class SIDM_parametric_model(SIDM_cross_section):
         is not automatically covered by the published calibration.
 
         - In the integral approach, dVmax_{Model}/dtt is normalized by Vmax_{CDM}(t), i.e. the CDM value
-          at the running time t of the integral, not the one at the accretion time t_f.
+          at the running time t of the integral, not the one at the formation-time lower endpoint t_f.
+
+        The polynomial is differentiated from the displayed coefficients of Yang et al. Eq.
+        (2.4). For example its velocity derivative has 66.64*tau**3, whereas the separate
+        derivative list below Eq. (3.3) prints 66.62*tau**3. The radius derivative likewise
+        uses -0.55*tau**3, rather than the printed -0.5502*tau**3. These are distinct
+        coefficient lists; agreement with an exact derivative test does not verify the
+        separately printed list.
+
+        This implementation combines the running CDM normalization in Yang et al. Eq. (3.3)
+        with elapsed time (t-t_f)/t_c(t) and the 1.1 cutoff of Ando et al. Eqs. (2.12)-(2.15).
+        As printed, Yang uses tau'=t'/t_c(t'), whereas Ando writes the normalization at t_f.
+        The implemented combination is therefore not a literal transcription of either
+        displayed integral prescription. Here t_f is the formation-time integration origin,
+        which need not equal the accretion time.
 
         References
         ----------
@@ -1452,7 +1474,7 @@ class SIDM_parametric_model(SIDM_cross_section):
         return out
 
     def dVmaxSIDMdtt_numexpr_optimized(self, tt, Vmax_CDM):
-        r"""Returns differential of Vmax obtained by the equation just below Eq. (3.3) of Yang et al. (2023),
+        r"""Differentiate the maximum circular speed polynomial in Yang et al. Eq. (2.4).
         using NumExpr for optimization.
         This optimized version performs the entire calculation in a single evaluation for maximum speed.
 
@@ -1481,6 +1503,20 @@ class SIDM_parametric_model(SIDM_cross_section):
         Ando et al., Section 2.2. A different caller-supplied cap changes that prescription and
         is not automatically covered by the published calibration.
 
+        The polynomial is differentiated from the displayed coefficients of Yang et al. Eq.
+        (2.4). For example its velocity derivative has 66.64*tau**3, whereas the separate
+        derivative list below Eq. (3.3) prints 66.62*tau**3. The radius derivative likewise
+        uses -0.55*tau**3, rather than the printed -0.5502*tau**3. These are distinct
+        coefficient lists; agreement with an exact derivative test does not verify the
+        separately printed list.
+
+        This implementation combines the running CDM normalization in Yang et al. Eq. (3.3)
+        with elapsed time (t-t_f)/t_c(t) and the 1.1 cutoff of Ando et al. Eqs. (2.12)-(2.15).
+        As printed, Yang uses tau'=t'/t_c(t'), whereas Ando writes the normalization at t_f.
+        The implemented combination is therefore not a literal transcription of either
+        displayed integral prescription. Here t_f is the formation-time integration origin,
+        which need not equal the accretion time.
+
         References
         ----------
 
@@ -1499,7 +1535,7 @@ class SIDM_parametric_model(SIDM_cross_section):
         return out
 
     def drmaxSIDMdtt(self, tt, rmax_CDM):
-        r"""Returns differential of rmax obtained by the equation just below Eq. (3.3) of Yang et al. (2023)
+        r"""Differentiate the radius of maximum circular speed polynomial in Yang et al. Eq. (2.4).
 
         Parameters
         ----------
@@ -1528,7 +1564,21 @@ class SIDM_parametric_model(SIDM_cross_section):
         is not automatically covered by the published calibration.
 
         - In the integral approach, drmax_{Model}/dtt is normalized by rmax_{CDM}(t), i.e. the CDM value
-          at the running time t of the integral, not the one at the accretion time t_f.
+          at the running time t of the integral, not the one at the formation-time lower endpoint t_f.
+
+        The polynomial is differentiated from the displayed coefficients of Yang et al. Eq.
+        (2.4). For example its velocity derivative has 66.64*tau**3, whereas the separate
+        derivative list below Eq. (3.3) prints 66.62*tau**3. The radius derivative likewise
+        uses -0.55*tau**3, rather than the printed -0.5502*tau**3. These are distinct
+        coefficient lists; agreement with an exact derivative test does not verify the
+        separately printed list.
+
+        This implementation combines the running CDM normalization in Yang et al. Eq. (3.3)
+        with elapsed time (t-t_f)/t_c(t) and the 1.1 cutoff of Ando et al. Eqs. (2.12)-(2.15).
+        As printed, Yang uses tau'=t'/t_c(t'), whereas Ando writes the normalization at t_f.
+        The implemented combination is therefore not a literal transcription of either
+        displayed integral prescription. Here t_f is the formation-time integration origin,
+        which need not equal the accretion time.
 
         References
         ----------
@@ -1545,7 +1595,7 @@ class SIDM_parametric_model(SIDM_cross_section):
         return out
 
     def drmaxSIDMdtt_numexpr_optimized(self, tt, rmax_CDM):
-        r"""Returns differential of rmax obtained by the equation just below Eq. (3.3) of Yang et al. (2023),
+        r"""Differentiate the radius of maximum circular speed polynomial in Yang et al. Eq. (2.4).
         using NumExpr for optimization.
         This optimized version performs the entire calculation in a single evaluation for maximum speed.
 
@@ -1574,6 +1624,20 @@ class SIDM_parametric_model(SIDM_cross_section):
         The default gravothermal cutoff tt_th=1.1 follows the stopped-evolution prescription of
         Ando et al., Section 2.2. A different caller-supplied cap changes that prescription and
         is not automatically covered by the published calibration.
+
+        The polynomial is differentiated from the displayed coefficients of Yang et al. Eq.
+        (2.4). For example its velocity derivative has 66.64*tau**3, whereas the separate
+        derivative list below Eq. (3.3) prints 66.62*tau**3. The radius derivative likewise
+        uses -0.55*tau**3, rather than the printed -0.5502*tau**3. These are distinct
+        coefficient lists; agreement with an exact derivative test does not verify the
+        separately printed list.
+
+        This implementation combines the running CDM normalization in Yang et al. Eq. (3.3)
+        with elapsed time (t-t_f)/t_c(t) and the 1.1 cutoff of Ando et al. Eqs. (2.12)-(2.15).
+        As printed, Yang uses tau'=t'/t_c(t'), whereas Ando writes the normalization at t_f.
+        The implemented combination is therefore not a literal transcription of either
+        displayed integral prescription. Here t_f is the formation-time integration origin,
+        which need not equal the accretion time.
 
         References
         ----------
@@ -1779,31 +1843,32 @@ class SIDM_parametric_model(SIDM_cross_section):
         return rc
 
     def master_function(self, Vmax_CDM, rmax_CDM, t, t_f):
-        r"""Calculate the properties of a SIDM halo at a given time t according to the integral approach proposed by Yang et al. (2023) [arXiv:2305.16176].
+        r"""Evolve SIDM structure with the adopted formation-time integral prescription.
 
         Parameters
         ----------
-        Vmax_CDM : float
-            The maximum circular velocity of the CDM halo, as a function of time (axis 1).
-        rmax_CDM : float
-            The radius at which the maximum circular velocity is obtained, as a function of time (axis 1).
-        t : float
-            The time, running from the accretion time t_f to the time of observation.
-        t_f : float
-            The accretion (formation) time of the subhalo, i.e. the lower end of the integral in Eq. (3.3).
+        Vmax_CDM : numpy.ndarray
+            CDM maximum circular speed in internal Mpc/s, shape (n_concentration, n_time, n_mass).
+        rmax_CDM : numpy.ndarray
+            CDM radius of maximum circular speed in Mpc, with the same shape as Vmax_CDM.
+        t : numpy.ndarray
+            Increasing cosmic time in seconds, shape (n_time, n_mass), from formation to observation.
+        t_f : array_like
+            Formation cosmic time in seconds, broadcastable over the mass tracks; this is the
+            lower integration endpoint and the origin of elapsed time, not generally accretion.
 
         Returns
         -------
-        VmaxSIDM_z0 : float
-            The maximum circular velocity of the SIDM halo at z=0.
-        rmaxSIDM_z0 : float
-            The radius at which the maximum circular velocity is obtained at z=0.
-        rhosSIDM_z0 : float
-            The density parameter of the SIDM halo at z=0.
-        rsSIDM_z0 : float
-            The scale radius of the SIDM halo at z=0.
-        rcSIDM_z0 : float
-            The core radius of the SIDM halo at z=0.
+        VmaxSIDM_z0 : numpy.ndarray
+            Final SIDM VmaxSIDM in Mpc/s, shape (n_concentration, n_mass).
+        rmaxSIDM_z0 : numpy.ndarray
+            Final SIDM rmaxSIDM in Mpc, shape (n_concentration, n_mass).
+        rhosSIDM_z0 : numpy.ndarray
+            Final SIDM rhosSIDM in Msun/Mpc**3, shape (n_concentration, n_mass).
+        rsSIDM_z0 : numpy.ndarray
+            Final SIDM rsSIDM in Mpc, shape (n_concentration, n_mass).
+        rcSIDM_z0 : numpy.ndarray
+            Final SIDM rcSIDM in Mpc, shape (n_concentration, n_mass).
 
         Notes
         -----
@@ -1822,13 +1887,20 @@ class SIDM_parametric_model(SIDM_cross_section):
         Ando et al., Section 2.2. A different caller-supplied cap changes that prescription and
         is not automatically covered by the published calibration.
 
+        This implementation combines the running CDM normalization in Yang et al. Eq. (3.3)
+        with elapsed time (t-t_f)/t_c(t) and the 1.1 cutoff of Ando et al. Eqs. (2.12)-(2.15).
+        As printed, Yang uses tau'=t'/t_c(t'), whereas Ando writes the normalization at t_f.
+        The implemented combination is therefore not a literal transcription of either
+        displayed integral prescription. Here t_f is the formation-time integration origin,
+        which need not equal the accretion time.
+
         References
         ----------
 
         .. [cite-nfw] Navarro, Frenk & White (1997), A Universal Density Profile from Hierarchical Clustering.
             https://arxiv.org/abs/astro-ph/9611107
 
-        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).
+        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (4)-(9), (28), (34).
             https://arxiv.org/abs/1803.07691
 
         .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
@@ -1839,7 +1911,7 @@ class SIDM_parametric_model(SIDM_cross_section):
         """
         # NOTE: In the equation just below Eq. (3.3) of Yang et al. (2023), dVmax_{Model}/dtt and
         # drmax_{Model}/dtt are normalized by Vmax_{CDM}(t) and rmax_{CDM}(t) evaluated at the running
-        # time t of the integral, not by their values at the accretion time t_f.
+        # time t of the integral, not by their values at the formation-time lower endpoint t_f.
         t_c = self.t_collapse(self.sigma_eff_m(Vmax_CDM), rmax_CDM, Vmax_CDM)
         integrand = self.dVmaxSIDMdtt_numexpr_optimized((t - t_f) / t_c, Vmax_CDM) / t_c
         VmaxSIDM_z0 = Vmax_CDM[:, -1] + integrate.simpson(

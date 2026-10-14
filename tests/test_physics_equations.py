@@ -143,7 +143,7 @@ def rmax_fit(t):
 
 
 def dVmax_fit(t):
-    r"""d/dtau of Vmax_fit, i.e. the polynomial just below Eq. (3.3).
+    r"""Differentiate the maximum circular speed polynomial in Yang et al. Eq. (2.4).
 
     Parameters
     ----------
@@ -164,6 +164,13 @@ def dVmax_fit(t):
     This fixture/helper supports the controlled checks in this test module; its synthetic
     values are not a calibrated halo model.
 
+    The polynomial is differentiated from the displayed coefficients of Yang et al. Eq.
+    (2.4). For example its velocity derivative has 66.64*tau**3, whereas the separate
+    derivative list below Eq. (3.3) prints 66.62*tau**3. The radius derivative likewise
+    uses -0.55*tau**3, rather than the printed -0.5502*tau**3. These are distinct
+    coefficient lists; agreement with an exact derivative test does not verify the
+    separately printed list.
+
     References
     ----------
 
@@ -181,7 +188,7 @@ def dVmax_fit(t):
 
 
 def drmax_fit(t):
-    r"""d/dtau of rmax_fit, i.e. the polynomial just below Eq. (3.3).
+    r"""Differentiate the radius of maximum circular speed polynomial in Yang et al. Eq. (2.4).
 
     Parameters
     ----------
@@ -201,6 +208,13 @@ def drmax_fit(t):
 
     This fixture/helper supports the controlled checks in this test module; its synthetic
     values are not a calibrated halo model.
+
+    The polynomial is differentiated from the displayed coefficients of Yang et al. Eq.
+    (2.4). For example its velocity derivative has 66.64*tau**3, whereas the separate
+    derivative list below Eq. (3.3) prints 66.62*tau**3. The radius derivative likewise
+    uses -0.55*tau**3, rather than the printed -0.5502*tau**3. These are distinct
+    coefficient lists; agreement with an exact derivative test does not verify the
+    separately printed list.
 
     References
     ----------
@@ -558,11 +572,26 @@ class TestIntegralApproach:
     This fixture/helper supports the controlled checks in this test module; its synthetic
     values are not a calibrated halo model.
 
+    This implementation combines the running CDM normalization in Yang et al. Eq. (3.3)
+    with elapsed time (t-t_f)/t_c(t) and the 1.1 cutoff of Ando et al. Eqs. (2.12)-(2.15).
+    As printed, Yang uses tau'=t'/t_c(t'), whereas Ando writes the normalization at t_f.
+    The implemented combination is therefore not a literal transcription of either
+    displayed integral prescription. Here t_f is the formation-time integration origin,
+    which need not equal the accretion time.
+
+    The reference independently evaluates the chosen elapsed-time and running-
+    normalization convention. Passing this test verifies that convention, not literal
+    equivalence to both papers or a choice between their printed time and normalization
+    prescriptions.
+
     References
     ----------
 
     .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
         https://arxiv.org/abs/2305.16176
+
+    .. [cite-sashimi-sidm] Ando et al. (2025), SASHIMI-SIDM: Semi-analytical subhalo modelling for self-interacting dark matter at sub-galactic scales, Section 2.2, Eqs. (2.12)-(2.17), Table 1.
+        https://arxiv.org/abs/2403.16633
     """
 
     @staticmethod
@@ -594,11 +623,26 @@ class TestIntegralApproach:
         This fixture/helper supports the controlled checks in this test module; its synthetic
         values are not a calibrated halo model.
 
+        This implementation combines the running CDM normalization in Yang et al. Eq. (3.3)
+        with elapsed time (t-t_f)/t_c(t) and the 1.1 cutoff of Ando et al. Eqs. (2.12)-(2.15).
+        As printed, Yang uses tau'=t'/t_c(t'), whereas Ando writes the normalization at t_f.
+        The implemented combination is therefore not a literal transcription of either
+        displayed integral prescription. Here t_f is the formation-time integration origin,
+        which need not equal the accretion time.
+
+        The reference independently evaluates the chosen elapsed-time and running-
+        normalization convention. Passing this test verifies that convention, not literal
+        equivalence to both papers or a choice between their printed time and normalization
+        prescriptions.
+
         References
         ----------
 
         .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
             https://arxiv.org/abs/2305.16176
+
+        .. [cite-sashimi-sidm] Ando et al. (2025), SASHIMI-SIDM: Semi-analytical subhalo modelling for self-interacting dark matter at sub-galactic scales, Section 2.2, Eqs. (2.12)-(2.17), Table 1.
+            https://arxiv.org/abs/2403.16633
         """
         Gyr, km, s, kpc = pm.Gyr, pm.km, pm.s, pm.kpc
         t_f = np.array([2.0, 2.0]) * Gyr
@@ -610,8 +654,9 @@ class TestIntegralApproach:
 
     @staticmethod
     def _eq33_reference(pm, Vmax_CDM, rmax_CDM, t, t_f, freeze_at_tf=False):
-        r"""Independent evaluation of Eq. (3.3), using the polynomials defined at the top
-        of this file rather than the ones inside sashimi_si.
+        r"""Evaluate an independent reference for the adopted SIDM time convention.
+
+        The polynomial coefficients are defined in this test module.
 
         Parameters
         ----------
@@ -646,11 +691,26 @@ class TestIntegralApproach:
         This fixture/helper supports the controlled checks in this test module; its synthetic
         values are not a calibrated halo model.
 
+        This implementation combines the running CDM normalization in Yang et al. Eq. (3.3)
+        with elapsed time (t-t_f)/t_c(t) and the 1.1 cutoff of Ando et al. Eqs. (2.12)-(2.15).
+        As printed, Yang uses tau'=t'/t_c(t'), whereas Ando writes the normalization at t_f.
+        The implemented combination is therefore not a literal transcription of either
+        displayed integral prescription. Here t_f is the formation-time integration origin,
+        which need not equal the accretion time.
+
+        The reference independently evaluates the chosen elapsed-time and running-
+        normalization convention. Passing this test verifies that convention, not literal
+        equivalence to both papers or a choice between their printed time and normalization
+        prescriptions.
+
         References
         ----------
 
         .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
             https://arxiv.org/abs/2305.16176
+
+        .. [cite-sashimi-sidm] Ando et al. (2025), SASHIMI-SIDM: Semi-analytical subhalo modelling for self-interacting dark matter at sub-galactic scales, Section 2.2, Eqs. (2.12)-(2.17), Table 1.
+            https://arxiv.org/abs/2403.16633
         """
         t_c = pm.t_collapse(pm.sigma_eff_m(Vmax_CDM), rmax_CDM, Vmax_CDM)
         tau = (t - t_f) / t_c
@@ -679,7 +739,7 @@ class TestIntegralApproach:
         astrophysical calibration.
 
         Pass criteria: For a deliberately declining CDM track, final Vmax and rmax match
-        independent integration of the stated equation to rtol=1e-10.
+        independent integration with the stated elapsed-time convention to rtol=1e-10.
 
         Failure criteria: any mismatch with the stated value, shape or identity requirements
         fails the test.
@@ -687,11 +747,26 @@ class TestIntegralApproach:
         Scope: This controlled calculation does not calibrate a subhalo population against
         simulations or observations.
 
+        This implementation combines the running CDM normalization in Yang et al. Eq. (3.3)
+        with elapsed time (t-t_f)/t_c(t) and the 1.1 cutoff of Ando et al. Eqs. (2.12)-(2.15).
+        As printed, Yang uses tau'=t'/t_c(t'), whereas Ando writes the normalization at t_f.
+        The implemented combination is therefore not a literal transcription of either
+        displayed integral prescription. Here t_f is the formation-time integration origin,
+        which need not equal the accretion time.
+
+        The reference independently evaluates the chosen elapsed-time and running-
+        normalization convention. Passing this test verifies that convention, not literal
+        equivalence to both papers or a choice between their printed time and normalization
+        prescriptions.
+
         References
         ----------
 
         .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
             https://arxiv.org/abs/2305.16176
+
+        .. [cite-sashimi-sidm] Ando et al. (2025), SASHIMI-SIDM: Semi-analytical subhalo modelling for self-interacting dark matter at sub-galactic scales, Section 2.2, Eqs. (2.12)-(2.17), Table 1.
+            https://arxiv.org/abs/2403.16633
         """
         args = self._synthetic_cdm_history(pm)
         Vmax_SIDM, rmax_SIDM, _, _, _ = pm.master_function(*args)
@@ -700,7 +775,7 @@ class TestIntegralApproach:
         assert np.allclose(rmax_SIDM, r_ref, rtol=1.0e-10, atol=0.0)
 
     def test_normalizing_at_t_f_would_give_a_different_answer(self, pm):
-        r"""Ensure the synthetic history can detect the wrong SIDM normalization epoch.
+        r"""Distinguish running and formation-time SIDM normalization on a controlled track.
 
         Parameters
         ----------
@@ -722,11 +797,26 @@ class TestIntegralApproach:
         Scope: This controlled calculation does not calibrate a subhalo population against
         simulations or observations.
 
+        This implementation combines the running CDM normalization in Yang et al. Eq. (3.3)
+        with elapsed time (t-t_f)/t_c(t) and the 1.1 cutoff of Ando et al. Eqs. (2.12)-(2.15).
+        As printed, Yang uses tau'=t'/t_c(t'), whereas Ando writes the normalization at t_f.
+        The implemented combination is therefore not a literal transcription of either
+        displayed integral prescription. Here t_f is the formation-time integration origin,
+        which need not equal the accretion time.
+
+        The reference independently evaluates the chosen elapsed-time and running-
+        normalization convention. Passing this test verifies that convention, not literal
+        equivalence to both papers or a choice between their printed time and normalization
+        prescriptions.
+
         References
         ----------
 
         .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
             https://arxiv.org/abs/2305.16176
+
+        .. [cite-sashimi-sidm] Ando et al. (2025), SASHIMI-SIDM: Semi-analytical subhalo modelling for self-interacting dark matter at sub-galactic scales, Section 2.2, Eqs. (2.12)-(2.17), Table 1.
+            https://arxiv.org/abs/2403.16633
         """
         args = self._synthetic_cdm_history(pm)
         V_running, r_running = self._eq33_reference(pm, *args, freeze_at_tf=False)
@@ -1024,7 +1114,7 @@ class TestNFWConstants:
         .. [cite-nfw] Navarro, Frenk & White (1997), A Universal Density Profile from Hierarchical Clustering.
             https://arxiv.org/abs/astro-ph/9611107
 
-        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).
+        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (4)-(9), (28), (34).
             https://arxiv.org/abs/1803.07691
         """
         assert self._c_max() == pytest.approx(2.1626, abs=1.0e-4)
@@ -1053,7 +1143,7 @@ class TestNFWConstants:
         .. [cite-nfw] Navarro, Frenk & White (1997), A Universal Density Profile from Hierarchical Clustering.
             https://arxiv.org/abs/astro-ph/9611107
 
-        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).
+        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (4)-(9), (28), (34).
             https://arxiv.org/abs/1803.07691
         """
         c = self._c_max()
