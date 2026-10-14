@@ -13,7 +13,28 @@ import numexpr as ne
 
 
 class SIUnits:
+    """Define the dimensional scales used by SI cross sections, collapse times and halo
+    evolution.
+
+    Notes
+    -----
+    SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+    prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+    Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+    rounded SI gravitational constant and its critical-density normalization are retained.
+    """
+
     def __init__(self):
+        """Initialize Msun, Mpc and second scales, including the retained rounded SI gravitational
+        constant.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         self.Mpc = 1.0
         self.kpc = self.Mpc / 1000.0
         self.pc = self.kpc / 1000.0
@@ -29,7 +50,27 @@ class SIUnits:
 
 
 class SIBackgroundKernels(SIUnits):
+    """Supply the retained flat-LambdaCDM background used by SI fitted halo relations.
+
+    Notes
+    -----
+    SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+    prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+    Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+    rounded SI gravitational constant and its critical-density normalization are retained.
+    """
+
     def __init__(self):
+        """Set the SI calibrated density fractions, expansion rate and critical-density
+        normalization.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         SIUnits.__init__(self)
         self.OmegaB = 0.049
         self.OmegaM = 0.315
@@ -40,15 +81,95 @@ class SIBackgroundKernels(SIUnits):
         self.rhocrit0 = 3 * self.H0**2 / (8.0 * np.pi * self.G)
 
     def g(self, z):
+        """Evaluate the flat matter-plus-Lambda squared expansion factor.
+
+        Parameters
+        ----------
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        array_like
+            OmegaM*(1+z)**3+OmegaL, dimensionless.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         return self.OmegaM * (1.0 + z) ** 3 + self.OmegaL
 
     def Hubble(self, z):
+        """Evaluate expansion in the SI inverse-second convention.
+
+        Parameters
+        ----------
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        numpy.ndarray
+            Expansion rate in inverse seconds, with the redshift shape.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         return self.H0 * np.sqrt(self.OmegaM * (1.0 + z) ** 3 + self.OmegaL)
 
     def rhocrit(self, z):
+        """Evaluate critical density using the retained rounded SI gravitational constant.
+
+        Parameters
+        ----------
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        array_like
+            3*H(z)**2/(8*pi*G) in Msun/Mpc^3.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         return 3.0 * self.Hubble(z) ** 2 / (np.pi * 8.0 * self.G)
 
     def growthD(self, z):
+        """Evaluate the retained normalized Carroll-Press-Turner growth approximation.
+
+        Parameters
+        ----------
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        numpy.ndarray
+            Dimensionless linear growth normalized at z=0.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         Omega_Lz = self.OmegaL / (self.OmegaL + self.OmegaM * (1.0 + z) ** 3)
         Omega_Mz = 1 - Omega_Lz
         phiz = Omega_Mz ** (4.0 / 7.0) - Omega_Lz + (1.0 + Omega_Mz / 2.0) * (1.0 + Omega_Lz / 70.0)
@@ -60,7 +181,48 @@ class SIBackgroundKernels(SIUnits):
         return (Omega_Mz / self.OmegaM) * (phi0 / phiz) / (1.0 + z)
 
     def dDdz(self, z):
+        """Differentiate the retained Carroll-Press-Turner growth approximation with redshift.
+
+        Parameters
+        ----------
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        array_like
+            Dimensionless derivative dD/dz, in the calibrated CDM background.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
+
         def dOdz(z):
+            """Evaluate d Omega_Lambda(z)/dz for the analytic growth derivative.
+
+            Parameters
+            ----------
+            z : float or array_like
+                Dimensionless redshift. The cosmological background requires z > -1; population
+                nodes use nonnegative redshifts.
+
+            Returns
+            -------
+            array_like
+                Redshift derivative of the dimensionless dark-energy fraction.
+
+            Notes
+            -----
+            SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+            prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+            Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+            rounded SI gravitational constant and its critical-density normalization are retained.
+            """
             return (
                 -self.OmegaL
                 * 3
@@ -90,14 +252,75 @@ class SIBackgroundKernels(SIUnits):
 
 
 class SIHaloKernels(SIBackgroundKernels):
+    """Supply SI-owned CDM linear variance, concentration and median host histories.
+
+    Notes
+    -----
+    SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+    prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+    Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+    rounded SI gravitational constant and its critical-density normalization are retained.
+    """
+
     def __init__(self):
+        """Initialize the calibrated SI background for the halo-history and EPS relations.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         SIBackgroundKernels.__init__(self)
 
     def xi(self, M):
+        """Form the inverse halo-mass variable of the Ludlow linear-variance fit.
+
+        Parameters
+        ----------
+        M : float or array_like
+            Halo M200 in the variant internal mass unit; divide by model.Msun for its numerical
+            value in solar masses.
+
+        Returns
+        -------
+        array_like
+            xi=(1e10 Msun/h)/M, dimensionless.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         return (M / ((1.0e10 * self.Msun) / self.h)) ** -1
 
     def sigmaMz(self, M, z):
-        """Ludlow et al. (2016)"""
+        """Evaluate the retained Ludlow CDM rms fluctuation scaled by linear growth.
+
+        Parameters
+        ----------
+        M : float or array_like
+            Halo M200 in the variant internal mass unit; divide by model.Msun for its numerical
+            value in solar masses.
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        array_like
+            Dimensionless sigma(M,z), not the variance S=sigma**2.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         return (
             self.growthD(z)
             * 22.26
@@ -106,19 +329,120 @@ class SIHaloKernels(SIBackgroundKernels):
         )
 
     def deltac_func(self, z):
+        """Evaluate the linearly extrapolated spherical-collapse barrier for EPS.
+
+        Parameters
+        ----------
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        array_like
+            delta_c(z)=1.686/D(z), dimensionless.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         return 1.686 / self.growthD(z)
 
     def s_func(self, M):
+        """Evaluate the present-day linear variance used throughout the EPS kernel.
+
+        Parameters
+        ----------
+        M : float or array_like
+            Halo M200 in the variant internal mass unit; divide by model.Msun for its numerical
+            value in solar masses.
+
+        Returns
+        -------
+        array_like
+            S(M)=sigma(M,0)**2, dimensionless.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         return self.sigmaMz(M, 0) ** 2
 
     def fc(self, x):
+        """Evaluate the dimensionless NFW enclosed-mass normalization.
+
+        Parameters
+        ----------
+        x : array_like
+            Positive NFW radius ratio r/r_s or concentration used to normalize enclosed mass.
+
+        Returns
+        -------
+        array_like
+            f(x)=ln(1+x)-x/(1+x), with x a radius ratio or concentration.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         return np.log(1 + x) - x * pow(1 + x, -1)
 
     def Delc(self, x):
+        """Evaluate the retained virial overdensity relative to critical density.
+
+        Parameters
+        ----------
+        x : array_like
+            Dimensionless Omega_m(z)-1, not a radius ratio.
+
+        Returns
+        -------
+        array_like
+            Delta_c=18*pi**2+82*x-39*x**2 with x=Omega_m(z)-1.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         return 18.0 * np.pi**2 + 82.0 * x - 39.0 * x**2
 
     def conc200(self, M200, z):
-        """Correa et al. (2015)"""
+        """Evaluate the retained Correa et al. (2015) median concentration relation.
+
+        Parameters
+        ----------
+        M200 : float or array_like
+            Halo M200 in the variant internal mass unit; divide by model.Msun for its numerical
+            value in solar masses.
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        array_like
+            Dimensionless c200, using the low-z branch through z=4 and the high-z branch above
+            it.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         alpha_cMz_1 = 1.7543 - 0.2766 * (1.0 + z) + 0.02039 * (1.0 + z) ** 2
         beta_cMz_1 = 0.2753 + 0.00351 * (1.0 + z) - 0.3038 * (1.0 + z) ** 0.0269
         gamma_cMz_1 = -0.01537 + 0.02102 * (1.0 + z) ** -0.1475
@@ -135,6 +459,30 @@ class SIHaloKernels(SIBackgroundKernels):
         return np.where(z <= 4.0, c_Mz_1, c_Mz_2)
 
     def Mvir_from_M200(self, M200, z):
+        """Convert M200 to virial mass by solving the same NFW enclosed-density equation.
+
+        Parameters
+        ----------
+        M200 : float or array_like
+            Halo M200 in the variant internal mass unit; divide by model.Msun for its numerical
+            value in solar masses.
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        numpy.ndarray
+            Virial mass in the input mass unit; fsolve uses the M200 radius as its initial
+            guess.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         gz = self.g(z)
         c200 = self.conc200(M200, z)
         r200 = (3.0 * M200 / (4 * np.pi * 200 * self.rhocrit0 * gz)) ** (1.0 / 3.0)
@@ -149,6 +497,29 @@ class SIHaloKernels(SIBackgroundKernels):
         return Mvir
 
     def Mvir_from_M200_fit(self, M200, z):
+        """Convert M200 to virial mass with the retained fitted NFW inversion.
+
+        Parameters
+        ----------
+        M200 : float or array_like
+            Halo M200 in the variant internal mass unit; divide by model.Msun for its numerical
+            value in solar masses.
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        array_like
+            Virial mass under Delta_c(z), in the input mass unit.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         a1 = 0.5116
         a2 = -0.4283
         a3 = -3.13e-3
@@ -156,9 +527,47 @@ class SIHaloKernels(SIBackgroundKernels):
         Oz = self.OmegaM * (1.0 + z) ** 3 / self.g(z)
 
         def ffunc(x):
+            """Express NFW mean enclosed density as a function of inverse concentration.
+
+            Parameters
+            ----------
+            x : array_like
+                Positive inverse NFW concentration r_s/r_delta.
+
+            Returns
+            -------
+            array_like
+                x**3*[ln(1+1/x)-1/(1+x)], with x the inverse concentration.
+
+            Notes
+            -----
+            SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+            prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+            Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+            rounded SI gravitational constant and its critical-density normalization are retained.
+            """
             return np.power(x, 3.0) * (np.log(1.0 + 1.0 / x) - 1.0 / (1.0 + x))
 
         def xfunc(f):
+            """Invert the dimensionless NFW mean-density mapping with the retained fit.
+
+            Parameters
+            ----------
+            f : array_like
+                Positive dimensionless mean-density mapping at the requested overdensity.
+
+            Returns
+            -------
+            array_like
+                Fitted inverse concentration corresponding to f.
+
+            Notes
+            -----
+            SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+            prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+            Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+            rounded SI gravitational constant and its critical-density normalization are retained.
+            """
             p = a2 + a3 * np.log(f) + a4 * np.power(np.log(f), 2.0)
             return np.power(a1 * np.power(f, 2.0 * p) + (3.0 / 4.0) ** 2, -0.5) + 2.0 * f
 
@@ -174,6 +583,29 @@ class SIHaloKernels(SIBackgroundKernels):
         )
 
     def Mzi(self, M0, z):
+        """Evaluate the median M200 host history anchored by its z=0 mass.
+
+        Parameters
+        ----------
+        M0 : float
+            Reference host M200 in the variant internal mass unit. M0 normally refers to z=0;
+            explicit epoch flags are described by the caller.
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        array_like
+            M200(z) in the same mass unit as M0.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         a = 1.686 * np.sqrt(2.0 / np.pi) * self.dDdz(0) + 1.0
         zf = -0.0064 * np.log10(M0 / self.Msun) ** 2 + 0.0237 * np.log10(M0 / self.Msun) + 1.8837
         q = 4.137 / zf**0.9476
@@ -181,6 +613,32 @@ class SIHaloKernels(SIBackgroundKernels):
         return M0 * np.power(1.0 + z, a * fM0) * np.exp(-fM0 * z)
 
     def Mzzi(self, M0, z, zi):
+        """Evaluate the re-anchored host history from the reference epoch zi.
+
+        Parameters
+        ----------
+        M0 : float
+            Reference host M200 in the variant internal mass unit. M0 normally refers to z=0;
+            explicit epoch flags are described by the caller.
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+        zi : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        array_like
+            M200(z), anchored to Mzi(M0,zi), in the internal mass unit.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         Mzi0 = self.Mzi(M0, zi)
         zf = -0.0064 * np.log10(M0 / self.Msun) ** 2 + 0.0237 * np.log10(M0 / self.Msun) + 1.8837
         q = 4.137 / zf**0.9476
@@ -190,6 +648,33 @@ class SIHaloKernels(SIBackgroundKernels):
         return Mzi0 * np.power(1.0 + z - zi, alpha) * np.exp(beta * (z - zi))
 
     def dMdz(self, M0, z, zi):
+        """Evaluate the retained virial host-growth factor used by the EPS abundance.
+
+        Parameters
+        ----------
+        M0 : float
+            Reference host M200 in the variant internal mass unit. M0 normally refers to z=0;
+            explicit epoch flags are described by the caller.
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+        zi : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        array_like
+            [beta+alpha/(1+z-zi)]*Mvir(z), in mass per unit redshift. The formula retains the
+            original fitted virial-growth convention.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         Mzi0 = self.Mzi(M0, zi)
         zf = -0.0064 * np.log10(M0 / self.Msun) ** 2 + 0.0237 * np.log10(M0 / self.Msun) + 1.8837
         q = 4.137 / zf**0.9476
@@ -201,7 +686,29 @@ class SIHaloKernels(SIBackgroundKernels):
         return (beta + alpha / (1.0 + z - zi)) * Mzzivir
 
     def dsdm(self, M, z):
-        """Ludlow et al. (2016)"""
+        """Differentiate the squared Ludlow rms fluctuation, retaining D(z)**2.
+
+        Parameters
+        ----------
+        M : float or array_like
+            Halo M200 in the variant internal mass unit; divide by model.Msun for its numerical
+            value in solar masses.
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        array_like
+            dS(M,z)/dM in inverse Msun.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         dsdsigma = 2.0 * self.sigmaMz(M, z)
         dxidm = -1.0e10 * self.Msun / self.h / M**2
         dsigmadxi = self.sigmaMz(M, z) * (
@@ -212,7 +719,29 @@ class SIHaloKernels(SIBackgroundKernels):
         return dsdsigma * dsigmadxi * dxidm
 
     def dlogSdlogM(self, M, z):
-        """Ludlow et al. (2016)"""
+        """Evaluate the logarithmic slope of the linear variance.
+
+        Parameters
+        ----------
+        M : float or array_like
+            Halo M200 in the variant internal mass unit; divide by model.Msun for its numerical
+            value in solar masses.
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        array_like
+            (M/S)*dS/dM, dimensionless.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         s = self.sigmaMz(M, z) ** 2
         dsdsigma = 2.0 * self.sigmaMz(M, z)
         dxidm = -1.0e10 * self.Msun / self.h / M**2
@@ -747,20 +1276,51 @@ class SIDM_parametric_model(SIDM_cross_section):
 
 
 class SITidalKernels(SIHaloKernels):
-    """Solve the tidal stripping equation for a given subhalo."""
+    """Solve the tidal stripping equation for a given subhalo.
+
+    Parameters
+    ----------
+    M0 : float
+        Reference host M200 in the variant internal mass unit. M0 normally refers to z=0;
+        explicit epoch flags are described by the caller.
+    z_min : float
+        Lower or upper redshift extent declared by the caller; require -1 < z_min <= z_max.
+    z_max : float
+        Lower or upper redshift extent declared by the caller; require -1 < z_min <= z_max.
+    n_z_interp : int
+        Redshift-node count for the retained perturbative coefficient
+        integrals/interpolants; independent of Picard endpoint-table settings.
+
+    Notes
+    -----
+    SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+    prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+    Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+    rounded SI gravitational constant and its critical-density normalization are retained.
+    """
 
     def __init__(self, M0, z_min=0.0, z_max=7.0, n_z_interp=64):
-        """Initial function of the class.
+        """Initialize the SI host-dependent tidal law and retained perturbative interpolants.
 
+        Parameters
+        ----------
+        M0 : float
+            Reference host M200 in the variant internal mass unit. M0 normally refers to z=0;
+            explicit epoch flags are described by the caller.
+        z_min : float
+            Lower or upper redshift extent declared by the caller; require -1 < z_min <= z_max.
+        z_max : float
+            Lower or upper redshift extent declared by the caller; require -1 < z_min <= z_max.
+        n_z_interp : int
+            Redshift-node count for the retained perturbative coefficient
+            integrals/interpolants; independent of Picard endpoint-table settings.
+
+        Notes
         -----
-        Input
-        -----
-        M0: Mass of the host halo defined as M_{200} (200 times critial density) at *z = 0*.
-            Note that this is *not* the host mass at any given redshift! It can be obtained
-            via Mzi(M0,redshift).
-        (Optional) z_min:          Minimum redshift to end the calculation of evolution to. (default: 0.)
-        (Optional) z_max:          Maximum redshift to start the calculation of evolution from. (default: 7.)
-        (Optional) n_z_interp:     Number of redshifts to calculate epsilon functions. (default: 64)
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
         """
         SIHaloKernels.__init__(self)
         self.z_min = z_min
@@ -770,28 +1330,61 @@ class SITidalKernels(SIHaloKernels):
 
     @property
     def M0(self):
+        """Return the z=0 host M200 anchoring the current tidal history.
+
+        Returns
+        -------
+        float
+            Reference host mass in the internal solar-mass unit.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         return self._M0
 
     @M0.setter
     def M0(self, value):
+        """Change the reference host M200 and rebuild the SI epsilon interpolants.
+
+        Parameters
+        ----------
+        value : float
+            New z=0 host M200 in internal solar-mass units.
+
+        Notes
+        -----
+        The retained perturbative coefficients are recomputed immediately. Shared Picard caches
+        additionally compare the complete physical-state key before reuse.
+        """
         self._M0 = value
         self.reset_interpolation(z_max=self.z_max, z_min=self.z_min, n_z=self.n_z_interp)
 
     def reset_interpolation(self, z_max, z_min, n_z):
-        """Reset interpolation for epsilon functions.
+        """Rebuild the retained epsilon integrals and interpolation functions for the current host.
 
         This function is called when the mass of the host
         halo is changed.
 
+        Parameters
+        ----------
+        z_max : float
+            Lower or upper redshift extent declared by the caller; require -1 < z_min <= z_max.
+        z_min : float
+            Lower or upper redshift extent declared by the caller; require -1 < z_min <= z_max.
+        n_z : int
+            Redshift-node count for the retained perturbative coefficient
+            integrals/interpolants; independent of Picard endpoint-table settings.
+
+        Notes
         -----
-        Input
-        -----
-        za_max: float
-            Maximum redshift to start the calculation of evolution from.
-        z_min: float
-            Minimum redshift to end the calculation of evolution to.
-        n_z: int
-            Number of redshifts to calculate epsilon functions.
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
         """
         _z, _eps_0 = self._eps_0(z_max, z_min, n_z)
         _, _eps_10, _eps_11 = self._eps_1(z_max, z_min, n_z)
@@ -821,22 +1414,103 @@ class SITidalKernels(SIHaloKernels):
         self.eps_33 = lambda _za, _z: self._eps_33_interp(_z) - self._eps_33_interp(_za)
 
     def Mzvir(self, z):
+        """Evaluate the virial host history used in the subhalo-to-host mass ratio.
+
+        Parameters
+        ----------
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        array_like
+            Virial host mass at z, in internal solar-mass units.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         Mz200 = self.Mzzi(self.M0, z, 0.0)
         Mvir = self.Mvir_from_M200_fit(Mz200, z)
         return Mvir
 
     def AMz(self, z):
+        """Evaluate the retained SI tidal-loss amplitude as a function of virial host mass and
+        redshift.
+
+        Parameters
+        ----------
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        array_like
+            A(M_host,z) from the retained host-mass/redshift fit.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         log10a = (-0.0003 * np.log10(self.Mzvir(z) / self.Msun) + 0.02) * z + (
             0.011 * np.log10(self.Mzvir(z) / self.Msun) - 0.354
         )
         return 10.0**log10a
 
     def zetaMz(self, z):
+        """Evaluate the fitted exponent of the tidal subhalo-to-host mass ratio.
+
+        Parameters
+        ----------
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        array_like
+            Dimensionless zeta(M_host,z).
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         return (0.00012 * np.log10(self.Mzvir(z) / self.Msun) - 0.0033) * z + (
             -0.0011 * np.log10(self.Mzvir(z) / self.Msun) + 0.026
         )
 
     def tdynz(self, z):
+        """Evaluate the virial dynamical time entering the fitted tidal loss law.
+
+        Parameters
+        ----------
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        array_like
+            Dynamical time in internal seconds, scaled by Delta_c(z) and H(z)/H0.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         Oz_z = self.OmegaM * (1.0 + z) ** 3 / self.g(z)
         return (
             1.628
@@ -848,6 +1522,29 @@ class SITidalKernels(SIHaloKernels):
         )
 
     def msolve(self, m, z):
+        """Evaluate the positive redshift derivative of the bound subhalo mass.
+
+        Parameters
+        ----------
+        m : float or array_like
+            Subhalo mass in the same internal unit as the host mass; masses must be positive for
+            logarithmic tidal evolution.
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        array_like
+            dm/dz=A*m*(m/M_host)**zeta/[t_dyn*H*(1+z)], in mass per unit redshift.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         return (
             self.AMz(z)
             * (m / self.tdynz(z))
@@ -862,6 +1559,34 @@ class SITidalKernels(SIHaloKernels):
         method's historical state-first signature; ITAMAE receives time first.
         The controller owns args/tfirst/full_output, which are not accepted as
         duplicate overrides. Repeated times and zero evolution are preserved.
+
+        Parameters
+        ----------
+        ma : float or array_like
+            Positive subhalo mass at accretion, in the same units as reference_mass; endpoint
+            queries broadcast over mass and redshift.
+        za : float or array_like
+            Dimensionless accretion redshift. History integration requires one scalar accretion
+            epoch.
+        z0 : float or array_like
+            Scalar final redshift or explicit output-redshift array. With an array the first
+            entry supplies the odeint initial epoch; include za as the first coordinate.
+        **kwargs : dict
+            Controls for the selected Picard or ODE backend. Historical odeint Dfun callbacks
+            use state-first signature; unsupported controller overrides are rejected.
+
+        Returns
+        -------
+        float or numpy.ndarray
+            Endpoint mass for a scalar target, or (n_redshift,n_mass) history for vector
+            targets, in internal Msun.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
         """
         options = dict(kwargs)
         rtol, atol = options.pop("rtol", None), options.pop("atol", None)
@@ -883,15 +1608,41 @@ class SITidalKernels(SIHaloKernels):
         return solution[-1] if scalar_output else solution
 
     def Phi(self, z):
-        """subhalo stripping factor assuming zetaMz(z) = 0.
-        The stripping rate dm/dt is given by
-          dm/dt(z) = m(z) * Phi(z) * (m(z)/Mzvir(z))**zetaMz(z)
+        """Evaluate the positive redshift coefficient A/[t_dyn*H*(1+z)] in the SI tidal law.
+
+        Parameters
+        ----------
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        array_like
+            A/[t_dyn*H*(1+z)], dimensionless per unit redshift.
+
+        Notes
+        -----
+        Phi includes dt/dz in magnitude. Evolving toward decreasing redshift therefore decreases
+        mass; the physical cosmic-time law is dm/dt=-A*m*(m/M_host)**zeta/t_dyn.
         """
         return self.AMz(z) / self.tdynz(z) / self.Hubble(z) / (1 + z)
 
     # @memoize_with_pickle()
     def _eps_0(self, za, z, n_z=64):
-        """calculate epsilon0.
+        """Integrate the order-0 coefficients of the retained log-mass perturbation expansion.
+
+        Parameters
+        ----------
+        za : float or array_like
+            Dimensionless accretion redshift. History integration requires one scalar accretion
+            epoch.
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+        n_z : int
+            Redshift-node count for the retained perturbative coefficient
+            integrals/interpolants; independent of Picard endpoint-table settings.
 
         Returns
         -------
@@ -899,6 +1650,12 @@ class SITidalKernels(SIHaloKernels):
             redshift array
         eps0 : array
             epsilon0 array.
+
+        Notes
+        -----
+        The output redshift grid runs from za to z. Cumulative trapezoidal integrals start at
+        zero at accretion. Polynomial coefficients multiply powers of ln(ma) in the fixed
+        internal mass unit; they are coupled terms, not separately physical mass losses.
         """
         _z = np.linspace(za, z, n_z)
         Phi_z = self.Phi(_z)
@@ -906,10 +1663,22 @@ class SITidalKernels(SIHaloKernels):
 
     # @memoize_with_pickle()
     def _eps_1(self, za, z, n_z=64):
-        """calculate the first order correction.
+        """Integrate the order-1 coefficients of the retained log-mass perturbation expansion.
 
         The first order correction epsilon_1 is given by the following equation:
             epsilon_1 = epsilon_10 + epsilon_11 * ln_ma
+
+        Parameters
+        ----------
+        za : float or array_like
+            Dimensionless accretion redshift. History integration requires one scalar accretion
+            epoch.
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+        n_z : int
+            Redshift-node count for the retained perturbative coefficient
+            integrals/interpolants; independent of Picard endpoint-table settings.
 
         Returns
         -------
@@ -919,6 +1688,12 @@ class SITidalKernels(SIHaloKernels):
             epsilon10 array.
         eps11 : array
             epsilon11 array.
+
+        Notes
+        -----
+        The output redshift grid runs from za to z. Cumulative trapezoidal integrals start at
+        zero at accretion. Polynomial coefficients multiply powers of ln(ma) in the fixed
+        internal mass unit; they are coupled terms, not separately physical mass losses.
         """
         _z, eps_0 = self._eps_0(za, z, n_z)
         Phi_z = self.Phi(_z)
@@ -932,10 +1707,22 @@ class SITidalKernels(SIHaloKernels):
 
     # @memoize_with_pickle()
     def _eps_2(self, za, z, n_z=64):
-        """calculate the second order correction.
+        """Integrate the order-2 coefficients of the retained log-mass perturbation expansion.
 
         The second order correction epsilon_2 is given by the following equation:
             epsilon_2 = epsilon_20 + epsilon_21 * ln_ma + epsilon_22 * ln_ma^2
+
+        Parameters
+        ----------
+        za : float or array_like
+            Dimensionless accretion redshift. History integration requires one scalar accretion
+            epoch.
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+        n_z : int
+            Redshift-node count for the retained perturbative coefficient
+            integrals/interpolants; independent of Picard endpoint-table settings.
 
         Returns
         -------
@@ -947,6 +1734,12 @@ class SITidalKernels(SIHaloKernels):
             epsilon21 array.
         eps22 : array
             epsilon22 array.
+
+        Notes
+        -----
+        The output redshift grid runs from za to z. Cumulative trapezoidal integrals start at
+        zero at accretion. Polynomial coefficients multiply powers of ln(ma) in the fixed
+        internal mass unit; they are coupled terms, not separately physical mass losses.
         """
         _z, eps_0 = self._eps_0(za, z, n_z)
         _, eps_10, eps_11 = self._eps_1(za, z, n_z)
@@ -963,10 +1756,22 @@ class SITidalKernels(SIHaloKernels):
 
     # @memoize_with_pickle()
     def _eps_3(self, za, z, n_z=64):
-        """calculate the third order correction.
+        """Integrate the order-3 coefficients of the retained log-mass perturbation expansion.
 
         The third order correction epsilon_3 is given by the following equation:
             epsilon_3 = epsilon_30 + epsilon_31 * ln_ma + epsilon_32 * ln_ma^2 + epsilon_33 * ln_ma^3
+
+        Parameters
+        ----------
+        za : float or array_like
+            Dimensionless accretion redshift. History integration requires one scalar accretion
+            epoch.
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+        n_z : int
+            Redshift-node count for the retained perturbative coefficient
+            integrals/interpolants; independent of Picard endpoint-table settings.
 
         Returns
         -------
@@ -980,6 +1785,12 @@ class SITidalKernels(SIHaloKernels):
             epsilon32 array.
         eps33 : array
             epsilon33 array.
+
+        Notes
+        -----
+        The output redshift grid runs from za to z. Cumulative trapezoidal integrals start at
+        zero at accretion. Polynomial coefficients multiply powers of ln(ma) in the fixed
+        internal mass unit; they are coupled terms, not separately physical mass losses.
         """
         _z, eps_0 = self._eps_0(za, z, n_z)
         _, eps_10, eps_11 = self._eps_1(za, z, n_z)
@@ -1011,12 +1822,64 @@ class SITidalKernels(SIHaloKernels):
         return _z, integral_30, integral_31, integral_32, integral_33
 
     def subhalo_mass_stripped_pert0(self, ma, za, z):
-        """Calculate subhalo mass stripping using zeroth-order perturbation."""
+        """Calculate subhalo mass stripping using zeroth-order perturbation.
+
+        Parameters
+        ----------
+        ma : float or array_like
+            Positive subhalo mass at accretion, in the same units as reference_mass; endpoint
+            queries broadcast over mass and redshift.
+        za : float or array_like
+            Dimensionless accretion redshift. History integration requires one scalar accretion
+            epoch.
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        array_like
+            Bound mass from the truncated order-0 log-mass expansion, in the accretion mass
+            unit.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         eps_0 = self.eps_0(za, z)
         return ma * np.exp(eps_0)
 
     def subhalo_mass_stripped_pert1(self, ma, za, z):
-        """Calculate subhalo mass stripping using first-order perturbation."""
+        """Calculate subhalo mass stripping using first-order perturbation.
+
+        Parameters
+        ----------
+        ma : float or array_like
+            Positive subhalo mass at accretion, in the same units as reference_mass; endpoint
+            queries broadcast over mass and redshift.
+        za : float or array_like
+            Dimensionless accretion redshift. History integration requires one scalar accretion
+            epoch.
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        array_like
+            Bound mass from the truncated order-1 log-mass expansion, in the accretion mass
+            unit.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         eps_0 = self.eps_0(za, z)
         eps_10 = self.eps_10(za, z)
         eps_11 = self.eps_11(za, z)
@@ -1025,7 +1888,33 @@ class SITidalKernels(SIHaloKernels):
         return ma * np.exp(eps)
 
     def subhalo_mass_stripped_pert2(self, ma, za, z):
-        """Calculate subhalo mass stripping using second-order perturbation."""
+        """Calculate subhalo mass stripping using second-order perturbation.
+
+        Parameters
+        ----------
+        ma : float or array_like
+            Positive subhalo mass at accretion, in the same units as reference_mass; endpoint
+            queries broadcast over mass and redshift.
+        za : float or array_like
+            Dimensionless accretion redshift. History integration requires one scalar accretion
+            epoch.
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        array_like
+            Bound mass from the truncated order-2 log-mass expansion, in the accretion mass
+            unit.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         eps_0 = self.eps_0(za, z)
         eps_10 = self.eps_10(za, z)
         eps_11 = self.eps_11(za, z)
@@ -1041,6 +1930,31 @@ class SITidalKernels(SIHaloKernels):
 
         The SASHIMI-specific rule that disables acceleration for corrections
         smaller than two percent is preserved.
+
+        Parameters
+        ----------
+        ma : float or array_like
+            Positive subhalo mass at accretion, in the same units as reference_mass; endpoint
+            queries broadcast over mass and redshift.
+        za : float or array_like
+            Dimensionless accretion redshift. History integration requires one scalar accretion
+            epoch.
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        array_like
+            Bound masses from the retained second-order sequence with Shanks acceleration except
+            for the prescribed small-correction branch.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
         """
 
         eps_0 = self.eps_0(za, z)
@@ -1057,7 +1971,33 @@ class SITidalKernels(SIHaloKernels):
         return ma * np.exp(eps)
 
     def subhalo_mass_stripped_pert3(self, ma, za, z):
-        """Calculate subhalo mass stripping using third-order perturbation."""
+        """Calculate subhalo mass stripping using third-order perturbation.
+
+        Parameters
+        ----------
+        ma : float or array_like
+            Positive subhalo mass at accretion, in the same units as reference_mass; endpoint
+            queries broadcast over mass and redshift.
+        za : float or array_like
+            Dimensionless accretion redshift. History integration requires one scalar accretion
+            epoch.
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        array_like
+            Bound mass from the truncated order-3 log-mass expansion, in the accretion mass
+            unit.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
+        """
         eps_0 = self.eps_0(za, z)
         eps_10 = self.eps_10(za, z)
         eps_11 = self.eps_11(za, z)
@@ -1084,7 +2024,7 @@ class SITidalKernels(SIHaloKernels):
         return ma * np.exp(eps)
 
     def subhalo_mass_stripped(self, ma, za, z, method="picard", **kwargs):
-        """A wrapper function to calculate subhalo mass stripping.
+        """Evaluate an SI tidal endpoint or full mass history with the explicitly selected solver.
 
         Parameters
         ----------
@@ -1092,25 +2032,27 @@ class SITidalKernels(SIHaloKernels):
             initial subhalo mass.
         za : float
             initial redshift.
-        z : float
-            final redshift.
-        method : str, optional
-            method to calculate the subhalo mass stripping.
-            - "picard" : shared ITAMAE Picard mass history (default).
-            - "dop853" : high-accuracy direct log-mass integration.
-            - "odeint" : use odeint to solve the differential equation.
-            - "pert0" : use perturbative method with zeroth-order correction.
-            - "pert1" : use perturbative method with first-order correction.
-            - "pert2" : use perturbative method with second-order correction.
-            - "pert2_shanks" : use perturbative method with second-order correction and Shanks transformation.
-            - "pert3" : use perturbative method with third-order correction.
-        kwargs : dict, optional
-            additional arguments for the odeint function.
+        z : float or array_like
+            Scalar final redshift or one-dimensional non-increasing history at or below za.
+        method : str
+            picard (default), dop853, odeint, or an explicitly selected retained perturbative
+            approximation.
+        **kwargs : dict
+            Controls for the selected shared Picard/DOP853 backend or historical state-first
+            odeint interface.
 
         Returns
         -------
-        float or np.ndarray
-            the mass of the subhalo
+        float or numpy.ndarray
+            Endpoint mass for a scalar target, or (n_redshift,n_mass) history for vector
+            targets, in internal Msun.
+
+        Notes
+        -----
+        SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
+        prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
+        Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
+        rounded SI gravitational constant and its critical-density normalization are retained.
         """
         if method == "picard":
             return get_picard_solver(self).history(ma, za, z, **kwargs)

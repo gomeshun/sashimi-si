@@ -35,11 +35,48 @@ CALCULATION_SPECIFICATION = "sashimi-si:paired-catalog:2026-09-10:v2"
 
 
 class HaloModel(SIHaloKernels):
-    """Planck2018 SI calibration with an explicit common background backend."""
+    """Planck2018 SI calibration with an explicit common background backend.
+
+    Parameters
+    ----------
+    backend_config : BackendConfig, optional
+        Explicit background/unit/array configuration; mutually exclusive with
+        cosmology_backend. SI requires NativeUnits and its calibrated cosmological
+        parameters.
+    cosmology_backend : CosmologyBackend, optional
+        ITAMAE background provider. The variant checks compatibility with the cosmology of
+        its fitted halo relations.
+
+    Notes
+    -----
+    CDM-reference and SIDM views share accretion nodes and generation weights. Formation
+    before accretion is a domain requirement; invalid histories are not integrated backward
+    and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
+    CDM tidal-truncation selection.
+    """
 
     calculation_specification = CALCULATION_SPECIFICATION
 
     def __init__(self, *, backend_config=None, cosmology_backend=None):
+        """Bind the SI calibrated background to one explicit native-unit backend configuration.
+
+        Parameters
+        ----------
+        backend_config : BackendConfig, optional
+            Explicit background/unit/array configuration; mutually exclusive with
+            cosmology_backend. SI requires NativeUnits and its calibrated cosmological
+            parameters.
+        cosmology_backend : CosmologyBackend, optional
+            ITAMAE background provider. The variant checks compatibility with the cosmology of
+            its fitted halo relations.
+
+        Notes
+        -----
+        CDM-reference and SIDM views share accretion nodes and generation weights. Formation
+        before accretion is a domain requirement; invalid histories are not integrated backward
+        and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
+        CDM tidal-truncation selection.
+        """
         if backend_config is not None and cosmology_backend is not None:
             raise ValueError("Pass either backend_config or cosmology_backend, not both.")
         config = backend_config or BackendConfig(
@@ -60,21 +97,106 @@ class HaloModel(SIHaloKernels):
         )
 
     def Hubble(self, z: Any) -> np.ndarray:
-        """Return the Hubble rate in the inverse-second unit."""
+        """Return the Hubble rate in the inverse-second unit.
+
+        Parameters
+        ----------
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        numpy.ndarray
+            H(z) in inverse seconds, with the redshift shape.
+
+        Notes
+        -----
+        CDM-reference and SIDM views share accretion nodes and generation weights. Formation
+        before accretion is a domain requirement; invalid histories are not integrated backward
+        and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
+        CDM tidal-truncation selection.
+        """
         return np.asarray(self.itamae_cosmology.H(z)) * self.km / self.s / self.Mpc
 
     def rhocrit(self, z: Any) -> np.ndarray:
-        """Return critical density in the published SI rounded-G convention."""
+        """Return critical density in the published SI rounded-G convention.
+
+        Parameters
+        ----------
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        numpy.ndarray
+            Critical density in Msun/Mpc^3 after the explicit rounded-G normalization scale.
+
+        Notes
+        -----
+        CDM-reference and SIDM views share accretion nodes and generation weights. Formation
+        before accretion is a domain requirement; invalid histories are not integrated backward
+        and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
+        CDM tidal-truncation selection.
+        """
         density = np.asarray(self.itamae_cosmology.rho_crit(z))
         return density * self.Msun / self.Mpc**3 * self._rho_crit_scale
 
     def growthD(self, z: Any) -> np.ndarray:
-        """Return the normalized linear growth factor."""
+        """Return the normalized linear growth factor.
+
+        Parameters
+        ----------
+        z : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+
+        Returns
+        -------
+        numpy.ndarray
+            Dimensionless D(z) returned by the selected background.
+
+        Notes
+        -----
+        CDM-reference and SIDM views share accretion nodes and generation weights. Formation
+        before accretion is a domain requirement; invalid histories are not integrated backward
+        and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
+        CDM tidal-truncation selection.
+        """
         return np.asarray(self.itamae_cosmology.growth_factor(z))
 
 
 class TidalStrippingSolver(HaloModel, SITidalKernels):
-    """SI tidal evolution retaining the selected immutable backend."""
+    """SI tidal evolution retaining the selected immutable backend.
+
+    Parameters
+    ----------
+    M0 : float
+        Reference host M200 in the variant internal mass unit. M0 normally refers to z=0;
+        explicit epoch flags are described by the caller.
+    z_min : float
+        Lower or upper redshift extent declared by the caller; require -1 < z_min <= z_max.
+    z_max : float
+        Lower or upper redshift extent declared by the caller; require -1 < z_min <= z_max.
+    n_z_interp : int
+        Redshift-node count for the retained perturbative coefficient
+        integrals/interpolants; independent of Picard endpoint-table settings.
+    backend_config : BackendConfig, optional
+        Explicit background/unit/array configuration; mutually exclusive with
+        cosmology_backend. SI requires NativeUnits and its calibrated cosmological
+        parameters.
+    cosmology_backend : CosmologyBackend, optional
+        ITAMAE background provider. The variant checks compatibility with the cosmology of
+        its fitted halo relations.
+
+    Notes
+    -----
+    CDM-reference and SIDM views share accretion nodes and generation weights. Formation
+    before accretion is a domain requirement; invalid histories are not integrated backward
+    and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
+    CDM tidal-truncation selection.
+    """
 
     def __init__(
         self,
@@ -86,12 +208,70 @@ class TidalStrippingSolver(HaloModel, SITidalKernels):
         backend_config=None,
         cosmology_backend=None,
     ):
+        """Prepare SI tidal integration while retaining the selected background configuration.
+
+        Parameters
+        ----------
+        M0 : float
+            Reference host M200 in the variant internal mass unit. M0 normally refers to z=0;
+            explicit epoch flags are described by the caller.
+        z_min : float
+            Lower or upper redshift extent declared by the caller; require -1 < z_min <= z_max.
+        z_max : float
+            Lower or upper redshift extent declared by the caller; require -1 < z_min <= z_max.
+        n_z_interp : int
+            Redshift-node count for the retained perturbative coefficient
+            integrals/interpolants; independent of Picard endpoint-table settings.
+        backend_config : BackendConfig, optional
+            Explicit background/unit/array configuration; mutually exclusive with
+            cosmology_backend. SI requires NativeUnits and its calibrated cosmological
+            parameters.
+        cosmology_backend : CosmologyBackend, optional
+            ITAMAE background provider. The variant checks compatibility with the cosmology of
+            its fitted halo relations.
+
+        Notes
+        -----
+        CDM-reference and SIDM views share accretion nodes and generation weights. Formation
+        before accretion is a domain requirement; invalid histories are not integrated backward
+        and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
+        CDM tidal-truncation selection.
+        """
         HaloModel.__init__(self, backend_config=backend_config, cosmology_backend=cosmology_backend)
         SITidalKernels.__init__(self, M0, z_min=z_min, z_max=z_max, n_z_interp=n_z_interp)
 
 
 class SubhaloProperties(HaloModel, SIDM_parametric_model):
-    """Calculate aligned CDM-reference/SIDM states with independent weights."""
+    """Calculate aligned CDM-reference/SIDM states with independent weights.
+
+    Parameters
+    ----------
+    sigma0_m : float
+        Low-velocity scattering cross section per particle mass, numerical value in cm^2/g
+        at the public constructor boundary.
+    w : float
+        Scattering velocity scale, numerical value in km/s at the public constructor
+        boundary.
+    beta : float
+        Dimensionless retained SIDM structural parameter stored by the population model.
+    tt_th : float
+        Upper dimensionless gravothermal time (t-t_f)/t_c at which the fitted SIDM evolution
+        contribution is stopped.
+    backend_config : BackendConfig, optional
+        Explicit background/unit/array configuration; mutually exclusive with
+        cosmology_backend. SI requires NativeUnits and its calibrated cosmological
+        parameters.
+    cosmology_backend : CosmologyBackend, optional
+        ITAMAE background provider. The variant checks compatibility with the cosmology of
+        its fitted halo relations.
+
+    Notes
+    -----
+    CDM-reference and SIDM views share accretion nodes and generation weights. Formation
+    before accretion is a domain requirement; invalid histories are not integrated backward
+    and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
+    CDM tidal-truncation selection.
+    """
 
     def __init__(
         self,
@@ -103,6 +283,36 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         backend_config=None,
         cosmology_backend=None,
     ):
+        """Bind the scattering law and gravothermal profile fit to a paired CDM/SIDM population.
+
+        Parameters
+        ----------
+        sigma0_m : float
+            Low-velocity scattering cross section per particle mass, numerical value in cm^2/g
+            at the public constructor boundary.
+        w : float
+            Scattering velocity scale, numerical value in km/s at the public constructor
+            boundary.
+        beta : float
+            Dimensionless retained SIDM structural parameter stored by the population model.
+        tt_th : float
+            Upper dimensionless gravothermal time (t-t_f)/t_c at which the fitted SIDM evolution
+            contribution is stopped.
+        backend_config : BackendConfig, optional
+            Explicit background/unit/array configuration; mutually exclusive with
+            cosmology_backend. SI requires NativeUnits and its calibrated cosmological
+            parameters.
+        cosmology_backend : CosmologyBackend, optional
+            ITAMAE background provider. The variant checks compatibility with the cosmology of
+            its fitted halo relations.
+
+        Notes
+        -----
+        CDM-reference and SIDM views share accretion nodes and generation weights. Formation
+        before accretion is a domain requirement; invalid histories are not integrated backward
+        and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
+        CDM tidal-truncation selection.
+        """
         HaloModel.__init__(self, backend_config=backend_config, cosmology_backend=cosmology_backend)
         self.param_model = SIDM_parametric_model(sigma0_m, w, tt_th)
         self.sigma0_m = sigma0_m * self.cm**2 / self.gram
@@ -118,20 +328,68 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         }
 
     def Ffunc(self, dela, s1, s2):
-        """Returns Eq. (12) of Yang et al. (2011)
+        """Evaluate the Yang et al. EPS kernel before support normalization.
 
-        Refereces
-        ---
-            - Yang et al. (2011), https://arxiv.org/abs/1104.1757
+        Parameters
+        ----------
+        dela : float or array_like
+            Dimensionless linear-collapse barrier at the indicated epoch, extrapolated in the
+            same growth convention.
+        s1 : float or array_like
+            Dimensionless linear variance S=sigma**2 at the indicated host/subhalo/support mass.
+            Active EPS terms require positive variance gaps.
+        s2 : float or array_like
+            Dimensionless linear variance S=sigma**2 at the indicated host/subhalo/support mass.
+            Active EPS terms require positive variance gaps.
+
+        Returns
+        -------
+        array_like
+            delta_a/[sqrt(2*pi)*(s2-s1)**(3/2)], on positive variance support.
+
+        Notes
+        -----
+        CDM-reference and SIDM views share accretion nodes and generation weights. Formation
+        before accretion is a domain requirement; invalid histories are not integrated backward
+        and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
+        CDM tidal-truncation selection.
+
+        References
+        ----------
+        - Yang et al. (2011), https://arxiv.org/abs/1104.1757
         """
         return 1 / np.sqrt(2.0 * np.pi) * dela / (s2 - s1) ** 1.5
 
     def Gfunc(self, dela, s1, s2):
-        """Returns the G function used in Eq. (13) of Yang et al. (2011)
+        """Evaluate the retained empirical multiplicative correction to the EPS kernel.
+
+        Parameters
+        ----------
+        dela : float or array_like
+            Dimensionless linear-collapse barrier at the indicated epoch, extrapolated in the
+            same growth convention.
+        s1 : float or array_like
+            Dimensionless linear variance S=sigma**2 at the indicated host/subhalo/support mass.
+            Active EPS terms require positive variance gaps.
+        s2 : float or array_like
+            Dimensionless linear variance S=sigma**2 at the indicated host/subhalo/support mass.
+            Active EPS terms require positive variance gaps.
+
+        Returns
+        -------
+        array_like
+            0.57*(sqrt(s2/s1))**0.38*(delta_a/sqrt(s1))**(-0.01), dimensionless.
+
+        Notes
+        -----
+        CDM-reference and SIDM views share accretion nodes and generation weights. Formation
+        before accretion is a domain requirement; invalid histories are not integrated backward
+        and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
+        CDM tidal-truncation selection.
 
         References
-        ---
-            - Yang et al. (2011), https://arxiv.org/abs/1104.1757
+        ----------
+        - Yang et al. (2011), https://arxiv.org/abs/1104.1757
         """
         G0 = 0.57
         gamma1 = 0.38
@@ -141,11 +399,38 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         return G0 * pow(sig2 / sig1, gamma1) * pow(dela / sig1, gamma2)
 
     def Ffunc_Yang(self, delc1, delc2, s1, s2):
-        """Returns Eq. (14) of Yang et al. (2011)
+        """Evaluate the conditional EPS kernel with its collapse-barrier difference.
+
+        Parameters
+        ----------
+        delc1 : float or array_like
+            Dimensionless linear-collapse barrier at the indicated epoch, extrapolated in the
+            same growth convention.
+        delc2 : float or array_like
+            Dimensionless linear-collapse barrier at the indicated epoch, extrapolated in the
+            same growth convention.
+        s1 : float or array_like
+            Dimensionless linear variance S=sigma**2 at the indicated host/subhalo/support mass.
+            Active EPS terms require positive variance gaps.
+        s2 : float or array_like
+            Dimensionless linear variance S=sigma**2 at the indicated host/subhalo/support mass.
+            Active EPS terms require positive variance gaps.
+
+        Returns
+        -------
+        array_like
+            Gaussian first-crossing density in variance, before support normalization.
+
+        Notes
+        -----
+        CDM-reference and SIDM views share accretion nodes and generation weights. Formation
+        before accretion is a domain requirement; invalid histories are not integrated backward
+        and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
+        CDM tidal-truncation selection.
 
         References
-        ---
-            - Yang et al. (2011), https://arxiv.org/abs/1104.1757
+        ----------
+        - Yang et al. (2011), https://arxiv.org/abs/1104.1757
         """
         return (
             1.0
@@ -161,19 +446,54 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         For x=delta/sqrt(2*(smin-s1)), erf(x)/x tends to 2/sqrt(pi).
         The small-x series evaluates that ratio before the vanishing factors
         are divided. This is the same normalized kernel, with no weight cut.
+
+        Parameters
+        ----------
+        delc1 : float or array_like
+            Dimensionless linear-collapse barrier at the indicated epoch, extrapolated in the
+            same growth convention.
+        delc2 : float or array_like
+            Dimensionless linear-collapse barrier at the indicated epoch, extrapolated in the
+            same growth convention.
+        s1 : float or array_like
+            Dimensionless linear variance S=sigma**2 at the indicated host/subhalo/support mass.
+            Active EPS terms require positive variance gaps.
+        s2 : float or array_like
+            Dimensionless linear variance S=sigma**2 at the indicated host/subhalo/support mass.
+            Active EPS terms require positive variance gaps.
+        smin : float or array_like
+            Dimensionless linear variance S=sigma**2 at the indicated host/subhalo/support mass.
+            Active EPS terms require positive variance gaps.
+
+        Returns
+        -------
+        numpy.ndarray
+            Conditional variance kernel divided by its finite-support integral, including the
+            zero-barrier-gap limit.
+
+        Notes
+        -----
+        CDM-reference and SIDM views share accretion nodes and generation weights. Formation
+        before accretion is a domain requirement; invalid histories are not integrated backward
+        and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
+        CDM tidal-truncation selection.
         """
         d1, d2, a, b, minimum = np.broadcast_arrays(delc1, delc2, s1, s2, smin)
         gap, ds, dsmin = d2 - d1, b - a, minimum - a
         if np.any(gap < 0) or np.any(ds <= 0) or np.any(dsmin <= 0):
-            raise ValueError("Normalized Yang kernel requires nonnegative barrier gap and positive variance gaps.")
+            raise ValueError(
+                "Normalized Yang kernel requires nonnegative barrier gap and positive variance gaps."
+            )
         x2 = gap**2 / (2.0 * dsmin)
         small = x2 < 1e-8
         result = np.empty_like(x2, dtype=float)
         x = x2[small]
         integral = 1.0 - x / 3.0 + x**2 / 10.0 - x**3 / 42.0 + x**4 / 216.0
         result[small] = (
-            np.sqrt(dsmin[small]) / (2.0 * ds[small]**1.5)
-            * np.exp(-gap[small]**2 / (2.0 * ds[small])) / integral
+            np.sqrt(dsmin[small])
+            / (2.0 * ds[small] ** 1.5)
+            * np.exp(-(gap[small] ** 2) / (2.0 * ds[small]))
+            / integral
         )
         regular = ~small
         norm = special.gamma(0.5) * special.gammainc(0.5, x2[regular]) / np.sqrt(np.pi)
@@ -184,30 +504,45 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         """Returns Na, Eq. (3) of Yang et al. (2011)
 
         Parameters
-        ---
-        ma : float
-            The mass of the subhalo.
-        zacc : float
-            The accretion redshift of the subhalo.
+        ----------
+        ma : float or array_like
+            Positive subhalo mass at accretion, in the same units as reference_mass; endpoint
+            queries broadcast over mass and redshift.
+        zacc : numpy.ndarray
+            One-dimensional dimensionless accretion-redshift grid, paired with the population
+            grid first axis.
         Mhost : float
-            The mass of the host halo.
+            Reference host M200 in the variant internal mass unit. M0 normally refers to z=0;
+            explicit epoch flags are described by the caller.
         z0 : float
-            The redshift.
+            Target or reference redshift specified by the routine; the tidal ODE evolves from za
+            down to this epoch.
         N_herm : int
-            The number of Hermite-Gauss quadrature points.
+            Positive Gauss-Hermite quadrature order for the scatter integrated by this routine:
+            concentration in catalogue stages or host history in Na_calc.
         Nrand : int
-            The number of random numbers.
-        Na_model : int
-            The model to calculate Na. Default is 3.
+            Number of points in the deterministic auxiliary redshift inversion grid; despite its
+            name, this is not a Monte Carlo sample size.
+        Na_model : {1, 2, 3}
+            Yang EPS accretion/normalization prescription. This is a physical model selection,
+            not a numerical tolerance.
 
         Returns
-        ---
-        Na : float
-            The value of Na.
+        -------
+        numpy.ndarray
+            Expected accretion rate per d ln(ma) d ln(1+zacc), after host-scatter averaging;
+            first axis is redshift.
+
+        Notes
+        -----
+        CDM-reference and SIDM views share accretion nodes and generation weights. Formation
+        before accretion is a domain requirement; invalid histories are not integrated backward
+        and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
+        CDM tidal-truncation selection.
 
         References
-        ---
-            - Yang et al. (2011), https://arxiv.org/abs/1104.1757
+        ----------
+        - Yang et al. (2011), https://arxiv.org/abs/1104.1757
         """
         zacc_2d = zacc.reshape(-1, 1)
         M200_0 = self.Mzzi(Mhost, zacc_2d, z0)
@@ -262,7 +597,9 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
             )
             d, s1, s2, norm, allowed = np.broadcast_arrays(delca, sM, sa, normB, mmax > ma)
             if np.any((s2 - s1)[allowed] <= 0):
-                raise ValueError("EPS accretion requires positive variance gaps in its active mass domain.")
+                raise ValueError(
+                    "EPS accretion requires positive variance gaps in its active mass domain."
+                )
             Phi = np.zeros(s2.shape)
             Phi[allowed] = self.Ffunc(d[allowed], s1[allowed], s2[allowed]) / norm[allowed]
         elif Na_model == 2:
@@ -289,7 +626,9 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
             )
             d, s1, s2, norm, allowed = np.broadcast_arrays(delca, sM, sa, normB, mmax > ma)
             if np.any((s2 - s1)[allowed] <= 0):
-                raise ValueError("EPS accretion requires positive variance gaps in its active mass domain.")
+                raise ValueError(
+                    "EPS accretion requires positive variance gaps in its active mass domain."
+                )
             Phi = np.zeros(s2.shape)
             Phi[allowed] = (
                 self.Ffunc(d[allowed], s1[allowed], s2[allowed])
@@ -327,8 +666,75 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         method="picard",
         **kwargs: Any,
     ):
-        """Run SIDM physical stages through the shared population executor."""
-        if method not in {"picard", "dop853", "odeint", "pert0", "pert1", "pert2", "pert2_shanks", "pert3"}:
+        """Run SIDM physical stages through the shared population executor.
+
+        Parameters
+        ----------
+        M0 : float
+            Reference host M200 in the variant internal mass unit. M0 normally refers to z=0;
+            explicit epoch flags are described by the caller.
+        redshift : float or array_like
+            Dimensionless redshift. The cosmological background requires z > -1; population
+            nodes use nonnegative redshifts.
+        dz : float
+            Positive nominal spacing of the accretion-redshift quadrature grid.
+        zmax : float
+            Largest requested accretion redshift, above the target epoch; the actual grid
+            convention belongs to this variant.
+        N_ma : int
+            Number of logarithmically spaced accretion-mass nodes.
+        sigmalogc : float
+            Nonnegative standard deviation of log10 concentration, in dex.
+        N_herm : int
+            Positive Gauss-Hermite quadrature order for the scatter integrated by this routine:
+            concentration in catalogue stages or host history in Na_calc.
+        logmamin : float, optional
+            Lower or upper log10(M200_acc/Msun) bound. A None upper bound uses the model
+            host-relative mass limit.
+        logmamax : float, optional
+            Lower or upper log10(M200_acc/Msun) bound. A None upper bound uses the model
+            host-relative mass limit.
+        N_hermNa : int
+            Positive Gauss-Hermite order for the host-history scatter in the EPS accretion rate.
+        Na_model : {1, 2, 3}
+            Yang EPS accretion/normalization prescription. This is a physical model selection,
+            not a numerical tolerance.
+        ct_th : float
+            Dimensionless tidal truncation threshold r_t/r_s; the specified strict survival rule
+            is applied once through its mask.
+        M0_at_redshift : bool
+            Interpret the input host mass at the target redshift and invert the prescribed
+            history to obtain its z=0 reference value.
+        method : str
+            picard (default), dop853, odeint, or an explicitly selected retained perturbative
+            approximation.
+        **kwargs : dict
+            Additional keyword options forwarded to the called routine; reserved scientific
+            controls remain owned by that routine.
+
+        Returns
+        -------
+        dict[str, WeightedSubhaloCatalog]
+            cdm_reference and sidm catalogues sharing aligned physical columns and independent
+            generation factors, with distinct survival weights.
+
+        Notes
+        -----
+        Masses are Msun, radii Mpc, densities Msun/Mpc^3 and named velocities km/s.
+        Formation-invalid SIDM entries remain explicitly zero and have zero survival weight. The
+        original arange(target+dz,zmax+dz,dz) grid convention is retained; non-aligned zmax may
+        be exceeded by less than one nominal step.
+        """
+        if method not in {
+            "picard",
+            "dop853",
+            "odeint",
+            "pert0",
+            "pert1",
+            "pert2",
+            "pert2_shanks",
+            "pert3",
+        }:
             raise ValueError(f"Invalid stripping method: {method}")
         self.calculation_parameters = {
             "M0": M0,
@@ -484,7 +890,9 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
                     extra={
                         "state": state,
                         "default_stripping_method": "picard",
-                        "picard_diagnostics": solver._picard_backend.diagnostics() if method == "picard" and hasattr(solver, "_picard_backend") else None,
+                        "picard_diagnostics": solver._picard_backend.diagnostics()
+                        if method == "picard" and hasattr(solver, "_picard_backend")
+                        else None,
                         "physical_parameters": self.physical_parameters,
                         "calculation_parameters": self.calculation_parameters,
                         "cosmology_parameters": {
@@ -511,7 +919,30 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         }
 
     def subhalo_catalog_calc(self, *args: Any, state: str = "sidm", **kwargs: Any):
-        """Calculate one named state view as a weighted ITAMAE catalog."""
+        """Calculate one named state view as a weighted ITAMAE catalog.
+
+        Parameters
+        ----------
+        state : {"sidm", "cdm_reference", "cdm"}
+            Select the SIDM view or the paired CDM reference; cdm is an alias for cdm_reference.
+        *args : tuple
+            Positional population inputs accepted by subhalo_catalogs_calc, beginning with host
+            M0.
+        **kwargs : dict
+            Named population and numerical settings accepted by subhalo_catalogs_calc.
+
+        Returns
+        -------
+        WeightedSubhaloCatalog
+            Requested named survival view of the paired calculation.
+
+        Notes
+        -----
+        CDM-reference and SIDM views share accretion nodes and generation weights. Formation
+        before accretion is a domain requirement; invalid histories are not integrated backward
+        and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
+        CDM tidal-truncation selection.
+        """
         if state == "cdm":
             state = "cdm_reference"
         if state not in {"cdm_reference", "sidm"}:
@@ -523,6 +954,30 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         """Format the paired catalogs as the historical 27-field tuple.
 
         Velocities in this format are Mpc/s; named catalogs use km/s.
+
+        Parameters
+        ----------
+        return_weight_factors : bool
+            Also return independent generation/survival factors alongside the historical
+            paired-state tuple.
+        *args : tuple
+            Positional population inputs forwarded to subhalo_catalogs_calc.
+        **kwargs : dict
+            Population and numerical settings forwarded to subhalo_catalogs_calc.
+
+        Returns
+        -------
+        tuple
+            Historical 27-field paired-state result; if return_weight_factors is true, return
+            (result, named factor dictionaries). Velocities are converted back to Mpc/s in this
+            format.
+
+        Notes
+        -----
+        CDM-reference and SIDM views share accretion nodes and generation weights. Formation
+        before accretion is a domain requirement; invalid histories are not integrated backward
+        and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
+        CDM tidal-truncation selection.
         """
         catalogs = self.subhalo_catalogs_calc(*args, **kwargs)
         cdm, sidm = catalogs["cdm_reference"], catalogs["sidm"]
