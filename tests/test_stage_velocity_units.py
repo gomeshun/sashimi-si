@@ -10,7 +10,7 @@ from sashimi_si_itamae_components import SIDMInitialStructure, SIDMProfileEvolut
 
 
 def test_real_stage_velocities_follow_canonical_nfw_identity(monkeypatch):
-    """Use km/s consistently at every SI population-stage boundary.
+    r"""Use km/s consistently at every SI population-stage boundary.
 
     Parameters
     ----------
@@ -20,6 +20,10 @@ def test_real_stage_velocities_follow_canonical_nfw_identity(monkeypatch):
 
     Notes
     -----
+    The NFW profile is from Navarro et al. The rounded factors rmax/rs = 2.163 (2.1626 where
+    explicitly used) and 4.625 are NFW maximum-circular-speed identities, as written in
+    Hiroshima et al., Eqs. (5)-(7), rather than independent empirical fits.
+
     Pass criteria: Recorded initial and evolved CDM velocities satisfy the canonical NFW
     relation to rtol=5e-15 and are transported unchanged into all four catalogue velocity
     columns.
@@ -29,6 +33,15 @@ def test_real_stage_velocities_follow_canonical_nfw_identity(monkeypatch):
 
     Scope: This controlled calculation does not calibrate a subhalo population against
     simulations or observations.
+
+    References
+    ----------
+
+    .. [cite-nfw] Navarro, Frenk & White (1997), A Universal Density Profile from Hierarchical Clustering.
+        https://arxiv.org/abs/astro-ph/9611107
+
+    .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).
+        https://arxiv.org/abs/1803.07691
     """
     initial_states, evolved_states = [], []
     initialize = SIDMInitialStructure.initialize

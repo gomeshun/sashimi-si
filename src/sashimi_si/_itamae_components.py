@@ -67,7 +67,7 @@ class SIDMAccretionSlices:
     t_f: np.ndarray
 
     def build(self, index: int):
-        """Build concentration quadrature and pre-accretion CDM histories for one active epoch.
+        r"""Build concentration quadrature and pre-accretion CDM histories for one active epoch.
 
         Parameters
         ----------
@@ -82,10 +82,23 @@ class SIDMAccretionSlices:
 
         Notes
         -----
+        The NFW profile is from Navarro et al. The rounded factors rmax/rs = 2.163 (2.1626 where
+        explicitly used) and 4.625 are NFW maximum-circular-speed identities, as written in
+        Hiroshima et al., Eqs. (5)-(7), rather than independent empirical fits.
+
         Stage arrays use Msun, Mpc, km/s and Msun/Mpc^3, but the SI history/context kernels use
         Mpc/s. Every velocity conversion occurs explicitly at that boundary. Nodes are flattened
         in concentration-major then mass order, and the same generation weights support both
         survival views.
+
+        References
+        ----------
+
+        .. [cite-nfw] Navarro, Frenk & White (1997), A Universal Density Profile from Hierarchical Clustering.
+            https://arxiv.org/abs/astro-ph/9611107
+
+        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).
+            https://arxiv.org/abs/1803.07691
         """
         za = self.zdist_accreted[index]
         ma = self.ma_matrix_accreted[index]
@@ -150,7 +163,7 @@ class SIDMInitialStructure:
     model: Any
 
     def initialize(self, batch, context):
-        """Extract the accreted NFW reference state and convert its circular speed to km/s.
+        r"""Extract the accreted NFW reference state and convert its circular speed to km/s.
 
         Parameters
         ----------
@@ -169,10 +182,23 @@ class SIDMInitialStructure:
 
         Notes
         -----
+        The NFW profile is from Navarro et al. The rounded factors rmax/rs = 2.163 (2.1626 where
+        explicitly used) and 4.625 are NFW maximum-circular-speed identities, as written in
+        Hiroshima et al., Eqs. (5)-(7), rather than independent empirical fits.
+
         Stage arrays use Msun, Mpc, km/s and Msun/Mpc^3, but the SI history/context kernels use
         Mpc/s. Every velocity conversion occurs explicitly at that boundary. Nodes are flattened
         in concentration-major then mass order, and the same generation weights support both
         survival views.
+
+        References
+        ----------
+
+        .. [cite-nfw] Navarro, Frenk & White (1997), A Universal Density Profile from Hierarchical Clustering.
+            https://arxiv.org/abs/astro-ph/9611107
+
+        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).
+            https://arxiv.org/abs/1803.07691
         """
         return {
             "r_s_cdm_acc": (context["rmax_ba"][:, -1, :] / 2.1626).reshape(-1),
@@ -232,7 +258,7 @@ class SIDMProfileEvolution:
     ma200_z0: np.ndarray
 
     def evolve(self, batch, initial, context):
-        """Evolve the tidal mass history and gravothermal SIDM response on the same CDM reference
+        r"""Evolve the tidal mass history and gravothermal SIDM response on the same CDM reference
         tracks.
 
         Parameters
@@ -255,10 +281,33 @@ class SIDMProfileEvolution:
 
         Notes
         -----
+        The factors 2**0.4*mu**0.3/(1+mu)**0.4 and 2**(-0.3)*mu**0.4*(1+mu)**0.3 are the cuspy
+        tidal tracks of Penarrubia et al., reproduced in Hiroshima et al., Eqs. (8)-(9), with mu
+        the retained bound-mass fraction. The NFW profile is from Navarro et al. The rounded
+        factors rmax/rs = 2.163 (2.1626 where explicitly used) and 4.625 are NFW maximum-
+        circular-speed identities, as written in Hiroshima et al., Eqs. (5)-(7), rather than
+        independent empirical fits.
+
+        The NFW profile is from Navarro et al. The rounded factors rmax/rs = 2.163 (2.1626 where
+        explicitly used) and 4.625 are NFW maximum-circular-speed identities, as written in
+        Hiroshima et al., Eqs. (5)-(7), rather than independent empirical fits.
+
         Stage arrays use Msun, Mpc, km/s and Msun/Mpc^3, but the SI history/context kernels use
         Mpc/s. Every velocity conversion occurs explicitly at that boundary. Nodes are flattened
         in concentration-major then mass order, and the same generation weights support both
         survival views.
+
+        References
+        ----------
+
+        .. [cite-tracks] Penarrubia et al. (2010), The impact of dark matter cusps and cores on the satellite galaxy population around spiral galaxies, Eq. (8), Fig. 6.
+            https://arxiv.org/abs/1002.3376
+
+        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).
+            https://arxiv.org/abs/1803.07691
+
+        .. [cite-nfw] Navarro, Frenk & White (1997), A Universal Density Profile from Hierarchical Clustering.
+            https://arxiv.org/abs/astro-ph/9611107
         """
         n_mass = context["ma"].size
         ma = context["ma"]
@@ -360,7 +409,7 @@ class SIDMProfileEvolution:
 
 @dataclass(frozen=True, slots=True)
 class SIDMSurvival:
-    """Apply C-truncation and SIDM-profile validity rules to paired states.
+    r"""Apply C-truncation and SIDM-profile validity rules to paired states.
 
     Parameters
     ----------
@@ -370,16 +419,30 @@ class SIDMSurvival:
 
     Notes
     -----
+    The literature threshold rt/rs > 0.77 follows the Hayashi et al. disruption prescription
+    adopted by Hiroshima et al. A caller-supplied threshold takes precedence in variants
+    that expose it (C and SI currently default to 0). This is a model selection rule; an
+    exact-boundary test does not calibrate disruption physics.
+
     Stage arrays use Msun, Mpc, km/s and Msun/Mpc^3, but the SI history/context kernels use
     Mpc/s. Every velocity conversion occurs explicitly at that boundary. Nodes are flattened
     in concentration-major then mass order, and the same generation weights support both
     survival views.
+
+    References
+    ----------
+
+    .. [cite-survival] Hayashi et al. (2003), The Structural Evolution of Substructure.
+        https://arxiv.org/abs/astro-ph/0203004
+
+    .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).
+        https://arxiv.org/abs/1803.07691
     """
 
     ct_threshold: float
 
     def select(self, batch, initial, evolved, context):
-        """Apply formation, CDM truncation and SIDM profile-domain conditions to paired states.
+        r"""Apply formation, CDM truncation and SIDM profile-domain conditions to paired states.
 
         Parameters
         ----------
@@ -404,10 +467,24 @@ class SIDMSurvival:
 
         Notes
         -----
+        The literature threshold rt/rs > 0.77 follows the Hayashi et al. disruption prescription
+        adopted by Hiroshima et al. A caller-supplied threshold takes precedence in variants
+        that expose it (C and SI currently default to 0). This is a model selection rule; an
+        exact-boundary test does not calibrate disruption physics.
+
         Stage arrays use Msun, Mpc, km/s and Msun/Mpc^3, but the SI history/context kernels use
         Mpc/s. Every velocity conversion occurs explicitly at that boundary. Nodes are flattened
         in concentration-major then mass order, and the same generation weights support both
         survival views.
+
+        References
+        ----------
+
+        .. [cite-survival] Hayashi et al. (2003), The Structural Evolution of Substructure.
+            https://arxiv.org/abs/astro-ph/0203004
+
+        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).
+            https://arxiv.org/abs/1803.07691
         """
         formed = evolved["valid_accretion"]
         cdm = formed & (evolved["c_t_cdm"] > self.ct_threshold)

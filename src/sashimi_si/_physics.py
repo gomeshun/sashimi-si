@@ -13,27 +13,47 @@ import numexpr as ne
 
 
 class SIUnits:
-    """Define the dimensional scales used by SI cross sections, collapse times and halo
+    r"""Define the dimensional scales used by SI cross sections, collapse times and halo
     evolution.
 
     Notes
     -----
+    The inherited G=6.6742e-8 cm**3/g/s**2 equals the CODATA-2002 recommended value in cgs
+    units. Rounded parsec, solar-mass and speed-of-light conversions are retained
+    implementation conventions; this audit does not update their precision.
+
     SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
     prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
     Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
     rounded SI gravitational constant and its critical-density normalization are retained.
+
+    References
+    ----------
+
+    .. [cite-constants] Mohr & Taylor (2005), CODATA recommended values of the fundamental physical constants: 2002, Table XXVI.
+        https://physics.nist.gov/cuu/pdf/CODATA_RMP2005.pdf
     """
 
     def __init__(self):
-        """Initialize Msun, Mpc and second scales, including the retained rounded SI gravitational
+        r"""Initialize Msun, Mpc and second scales, including the retained rounded SI gravitational
         constant.
 
         Notes
         -----
+        The inherited G=6.6742e-8 cm**3/g/s**2 equals the CODATA-2002 recommended value in cgs
+        units. Rounded parsec, solar-mass and speed-of-light conversions are retained
+        implementation conventions; this audit does not update their precision.
+
         SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
         prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
         Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
         rounded SI gravitational constant and its critical-density normalization are retained.
+
+        References
+        ----------
+
+        .. [cite-constants] Mohr & Taylor (2005), CODATA recommended values of the fundamental physical constants: 2002, Table XXVI.
+            https://physics.nist.gov/cuu/pdf/CODATA_RMP2005.pdf
         """
         self.Mpc = 1.0
         self.kpc = self.Mpc / 1000.0
@@ -50,26 +70,46 @@ class SIUnits:
 
 
 class SIBackgroundKernels(SIUnits):
-    """Supply the retained flat-LambdaCDM background used by SI fitted halo relations.
+    r"""Supply the retained flat-LambdaCDM background used by SI fitted halo relations.
 
     Notes
     -----
+    The adopted background Omega_m0=0.315 and h=0.674 (and Omega_b0=0.049 where used) is a
+    rounded Planck-2018 parameter choice. It is not evidence that every retained halo fit
+    was calibrated in this background.
+
     SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
     prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
     Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
     rounded SI gravitational constant and its critical-density normalization are retained.
+
+    References
+    ----------
+
+    .. [cite-planck] Planck Collaboration (2020), Planck 2018 results. VI. Cosmological parameters, Table 2.
+        https://arxiv.org/abs/1807.06209
     """
 
     def __init__(self):
-        """Set the SI calibrated density fractions, expansion rate and critical-density
+        r"""Set the adopted SI density fractions, expansion rate and critical-density
         normalization.
 
         Notes
         -----
+        The adopted background Omega_m0=0.315 and h=0.674 (and Omega_b0=0.049 where used) is a
+        rounded Planck-2018 parameter choice. It is not evidence that every retained halo fit
+        was calibrated in this background.
+
         SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
         prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
         Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
         rounded SI gravitational constant and its critical-density normalization are retained.
+
+        References
+        ----------
+
+        .. [cite-planck] Planck Collaboration (2020), Planck 2018 results. VI. Cosmological parameters, Table 2.
+            https://arxiv.org/abs/1807.06209
         """
         SIUnits.__init__(self)
         self.OmegaB = 0.049
@@ -150,7 +190,7 @@ class SIBackgroundKernels(SIUnits):
         return 3.0 * self.Hubble(z) ** 2 / (np.pi * 8.0 * self.G)
 
     def growthD(self, z):
-        """Evaluate the retained normalized Carroll-Press-Turner growth approximation.
+        r"""Evaluate the retained normalized Carroll-Press-Turner growth approximation.
 
         Parameters
         ----------
@@ -165,10 +205,20 @@ class SIBackgroundKernels(SIUnits):
 
         Notes
         -----
+        The factors 5/2, 4/7 and 1/70 belong to the Carroll--Press--Turner growth approximation.
+        Redshift derivatives differentiate that approximation; they are not a separate growth
+        calibration.
+
         SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
         prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
         Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
         rounded SI gravitational constant and its critical-density normalization are retained.
+
+        References
+        ----------
+
+        .. [cite-growth] Carroll, Press & Turner (1992), The Cosmological Constant, Section 3.5.
+            https://doi.org/10.1146/annurev.aa.30.090192.002435
         """
         Omega_Lz = self.OmegaL / (self.OmegaL + self.OmegaM * (1.0 + z) ** 3)
         Omega_Mz = 1 - Omega_Lz
@@ -181,7 +231,7 @@ class SIBackgroundKernels(SIUnits):
         return (Omega_Mz / self.OmegaM) * (phi0 / phiz) / (1.0 + z)
 
     def dDdz(self, z):
-        """Differentiate the retained Carroll-Press-Turner growth approximation with redshift.
+        r"""Differentiate the retained Carroll-Press-Turner growth approximation with redshift.
 
         Parameters
         ----------
@@ -192,14 +242,24 @@ class SIBackgroundKernels(SIUnits):
         Returns
         -------
         array_like
-            Dimensionless derivative dD/dz, in the calibrated CDM background.
+            Dimensionless derivative dD/dz, in the adopted CDM background.
 
         Notes
         -----
+        The factors 5/2, 4/7 and 1/70 belong to the Carroll--Press--Turner growth approximation.
+        Redshift derivatives differentiate that approximation; they are not a separate growth
+        calibration.
+
         SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
         prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
         Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
         rounded SI gravitational constant and its critical-density normalization are retained.
+
+        References
+        ----------
+
+        .. [cite-growth] Carroll, Press & Turner (1992), The Cosmological Constant, Section 3.5.
+            https://doi.org/10.1146/annurev.aa.30.090192.002435
         """
 
         def dOdz(z):
@@ -263,7 +323,7 @@ class SIHaloKernels(SIBackgroundKernels):
     """
 
     def __init__(self):
-        """Initialize the calibrated SI background for the halo-history and EPS relations.
+        r"""Initialize the adopted SI background for the halo-history and EPS relations.
 
         Notes
         -----
@@ -275,7 +335,7 @@ class SIHaloKernels(SIBackgroundKernels):
         SIBackgroundKernels.__init__(self)
 
     def xi(self, M):
-        """Form the inverse halo-mass variable of the Ludlow linear-variance fit.
+        r"""Form the inverse halo-mass variable of the Ludlow linear-variance fit.
 
         Parameters
         ----------
@@ -290,15 +350,25 @@ class SIHaloKernels(SIBackgroundKernels):
 
         Notes
         -----
+        The coefficients 22.26, 1.53, 3.36 and exponents 0.292, 0.275, 0.198 are the variance
+        fit in Ludlow et al., Appendix C. Its argument uses M in solar masses divided by h.
+        Derivatives are analytic derivatives of this retained fit.
+
         SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
         prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
         Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
         rounded SI gravitational constant and its critical-density normalization are retained.
+
+        References
+        ----------
+
+        .. [cite-ludlow] Ludlow et al. (2016), The mass-concentration-redshift relation of cold and warm dark matter haloes, Appendix C.
+            https://arxiv.org/abs/1601.02624
         """
         return (M / ((1.0e10 * self.Msun) / self.h)) ** -1
 
     def sigmaMz(self, M, z):
-        """Evaluate the retained Ludlow CDM rms fluctuation scaled by linear growth.
+        r"""Evaluate the retained Ludlow CDM rms fluctuation scaled by linear growth.
 
         Parameters
         ----------
@@ -316,10 +386,20 @@ class SIHaloKernels(SIBackgroundKernels):
 
         Notes
         -----
+        The coefficients 22.26, 1.53, 3.36 and exponents 0.292, 0.275, 0.198 are the variance
+        fit in Ludlow et al., Appendix C. Its argument uses M in solar masses divided by h.
+        Derivatives are analytic derivatives of this retained fit.
+
         SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
         prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
         Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
         rounded SI gravitational constant and its critical-density normalization are retained.
+
+        References
+        ----------
+
+        .. [cite-ludlow] Ludlow et al. (2016), The mass-concentration-redshift relation of cold and warm dark matter haloes, Appendix C.
+            https://arxiv.org/abs/1601.02624
         """
         return (
             self.growthD(z)
@@ -329,7 +409,7 @@ class SIHaloKernels(SIBackgroundKernels):
         )
 
     def deltac_func(self, z):
-        """Evaluate the linearly extrapolated spherical-collapse barrier for EPS.
+        r"""Evaluate the linearly extrapolated spherical-collapse barrier for EPS.
 
         Parameters
         ----------
@@ -344,10 +424,20 @@ class SIHaloKernels(SIBackgroundKernels):
 
         Notes
         -----
+        The adopted spherical-collapse barrier is delta_c(z)=1.686/D(z), as used in Ludlow et
+        al., Appendix C. This approximation is separate from any mass-dependent WDM collapse
+        correction.
+
         SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
         prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
         Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
         rounded SI gravitational constant and its critical-density normalization are retained.
+
+        References
+        ----------
+
+        .. [cite-ludlow] Ludlow et al. (2016), The mass-concentration-redshift relation of cold and warm dark matter haloes, Appendix C.
+            https://arxiv.org/abs/1601.02624
         """
         return 1.686 / self.growthD(z)
 
@@ -375,7 +465,7 @@ class SIHaloKernels(SIBackgroundKernels):
         return self.sigmaMz(M, 0) ** 2
 
     def fc(self, x):
-        """Evaluate the dimensionless NFW enclosed-mass normalization.
+        r"""Evaluate the dimensionless NFW enclosed-mass normalization.
 
         Parameters
         ----------
@@ -389,15 +479,24 @@ class SIHaloKernels(SIBackgroundKernels):
 
         Notes
         -----
+        The enclosed-mass factor ln(1+c)-c/(1+c) follows the NFW density profile. Algebraic
+        inversion tolerances concern this profile identity, not agreement with simulated halos.
+
         SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
         prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
         Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
         rounded SI gravitational constant and its critical-density normalization are retained.
+
+        References
+        ----------
+
+        .. [cite-nfw] Navarro, Frenk & White (1997), A Universal Density Profile from Hierarchical Clustering.
+            https://arxiv.org/abs/astro-ph/9611107
         """
         return np.log(1 + x) - x * pow(1 + x, -1)
 
     def Delc(self, x):
-        """Evaluate the retained virial overdensity relative to critical density.
+        r"""Evaluate the retained virial overdensity relative to critical density.
 
         Parameters
         ----------
@@ -411,15 +510,24 @@ class SIHaloKernels(SIBackgroundKernels):
 
         Notes
         -----
+        The flat-universe expression 18*pi**2+82*x-39*x**2, x=Omega_m(z)-1, is Bryan & Norman,
+        Eq. (6); it defines overdensity relative to the critical density.
+
         SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
         prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
         Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
         rounded SI gravitational constant and its critical-density normalization are retained.
+
+        References
+        ----------
+
+        .. [cite-virial] Bryan & Norman (1998), Statistical Properties of X-ray Clusters: Analytic and Numerical Comparisons, Eq. (6).
+            https://arxiv.org/abs/astro-ph/9710107
         """
         return 18.0 * np.pi**2 + 82.0 * x - 39.0 * x**2
 
     def conc200(self, M200, z):
-        """Evaluate the retained Correa et al. (2015) median concentration relation.
+        r"""Evaluate the retained Correa et al. (2015) median concentration relation.
 
         Parameters
         ----------
@@ -438,10 +546,20 @@ class SIHaloKernels(SIBackgroundKernels):
 
         Notes
         -----
+        The low/high-redshift concentration coefficients, with the branch at z=4, are the
+        Planck-fit formulae in Correa et al., Appendix B1. Evaluation in the adopted
+        Planck-2018-like background does not refit these earlier coefficients.
+
         SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
         prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
         Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
         rounded SI gravitational constant and its critical-density normalization are retained.
+
+        References
+        ----------
+
+        .. [cite-correa] Correa et al. (2015), The accretion history of dark matter haloes - III. A physical model for the concentration-mass relation, Section 3 and Appendix B.
+            https://arxiv.org/abs/1502.00391
         """
         alpha_cMz_1 = 1.7543 - 0.2766 * (1.0 + z) + 0.02039 * (1.0 + z) ** 2
         beta_cMz_1 = 0.2753 + 0.00351 * (1.0 + z) - 0.3038 * (1.0 + z) ** 0.0269
@@ -459,7 +577,7 @@ class SIHaloKernels(SIBackgroundKernels):
         return np.where(z <= 4.0, c_Mz_1, c_Mz_2)
 
     def Mvir_from_M200(self, M200, z):
-        """Convert M200 to virial mass by solving the same NFW enclosed-density equation.
+        r"""Convert M200 to virial mass by solving the same NFW enclosed-density equation.
 
         Parameters
         ----------
@@ -478,10 +596,19 @@ class SIHaloKernels(SIBackgroundKernels):
 
         Notes
         -----
+        The enclosed-mass factor ln(1+c)-c/(1+c) follows the NFW density profile. Algebraic
+        inversion tolerances concern this profile identity, not agreement with simulated halos.
+
         SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
         prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
         Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
         rounded SI gravitational constant and its critical-density normalization are retained.
+
+        References
+        ----------
+
+        .. [cite-nfw] Navarro, Frenk & White (1997), A Universal Density Profile from Hierarchical Clustering.
+            https://arxiv.org/abs/astro-ph/9611107
         """
         gz = self.g(z)
         c200 = self.conc200(M200, z)
@@ -497,7 +624,7 @@ class SIHaloKernels(SIBackgroundKernels):
         return Mvir
 
     def Mvir_from_M200_fit(self, M200, z):
-        """Convert M200 to virial mass with the retained fitted NFW inversion.
+        r"""Convert M200 to virial mass with the retained fitted NFW inversion.
 
         Parameters
         ----------
@@ -515,10 +642,20 @@ class SIHaloKernels(SIBackgroundKernels):
 
         Notes
         -----
+        The inverse mass-conversion approximation, including coefficients 0.5116, -0.4283,
+        -3.13e-3 and -3.52e-5 where used, is Hu & Kravtsov, Appendix C. It is an approximate NFW
+        inversion, not the exact root-solved conversion.
+
         SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
         prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
         Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
         rounded SI gravitational constant and its critical-density normalization are retained.
+
+        References
+        ----------
+
+        .. [cite-conversion] Hu & Kravtsov (2003), Sample Variance Considerations for Cluster Surveys, Appendix C.
+            https://arxiv.org/abs/astro-ph/0203169
         """
         a1 = 0.5116
         a2 = -0.4283
@@ -527,7 +664,7 @@ class SIHaloKernels(SIBackgroundKernels):
         Oz = self.OmegaM * (1.0 + z) ** 3 / self.g(z)
 
         def ffunc(x):
-            """Express NFW mean enclosed density as a function of inverse concentration.
+            r"""Express NFW mean enclosed density as a function of inverse concentration.
 
             Parameters
             ----------
@@ -541,15 +678,25 @@ class SIHaloKernels(SIBackgroundKernels):
 
             Notes
             -----
+            The inverse mass-conversion approximation, including coefficients 0.5116, -0.4283,
+            -3.13e-3 and -3.52e-5 where used, is Hu & Kravtsov, Appendix C. It is an approximate NFW
+            inversion, not the exact root-solved conversion.
+
             SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
             prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
             Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
             rounded SI gravitational constant and its critical-density normalization are retained.
+
+            References
+            ----------
+
+            .. [cite-conversion] Hu & Kravtsov (2003), Sample Variance Considerations for Cluster Surveys, Appendix C.
+                https://arxiv.org/abs/astro-ph/0203169
             """
             return np.power(x, 3.0) * (np.log(1.0 + 1.0 / x) - 1.0 / (1.0 + x))
 
         def xfunc(f):
-            """Invert the dimensionless NFW mean-density mapping with the retained fit.
+            r"""Invert the dimensionless NFW mean-density mapping with the retained fit.
 
             Parameters
             ----------
@@ -563,10 +710,20 @@ class SIHaloKernels(SIBackgroundKernels):
 
             Notes
             -----
+            The inverse mass-conversion approximation, including coefficients 0.5116, -0.4283,
+            -3.13e-3 and -3.52e-5 where used, is Hu & Kravtsov, Appendix C. It is an approximate NFW
+            inversion, not the exact root-solved conversion.
+
             SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
             prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
             Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
             rounded SI gravitational constant and its critical-density normalization are retained.
+
+            References
+            ----------
+
+            .. [cite-conversion] Hu & Kravtsov (2003), Sample Variance Considerations for Cluster Surveys, Appendix C.
+                https://arxiv.org/abs/astro-ph/0203169
             """
             p = a2 + a3 * np.log(f) + a4 * np.power(np.log(f), 2.0)
             return np.power(a1 * np.power(f, 2.0 * p) + (3.0 / 4.0) ** 2, -0.5) + 2.0 * f
@@ -583,7 +740,7 @@ class SIHaloKernels(SIBackgroundKernels):
         )
 
     def Mzi(self, M0, z):
-        """Evaluate the median M200 host history anchored by its z=0 mass.
+        r"""Evaluate the median M200 host history anchored by its z=0 mass.
 
         Parameters
         ----------
@@ -601,10 +758,23 @@ class SIHaloKernels(SIBackgroundKernels):
 
         Notes
         -----
+        The mass-history coefficients, including q = 4.137 / zf**0.9476 and the polynomial for
+        zf, follow Correa et al., Section 3. Their original calibration is retained while the
+        configured background is used; changing the background does not recalibrate the fit.
+
         SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
         prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
         Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
         rounded SI gravitational constant and its critical-density normalization are retained.
+
+        References
+        ----------
+
+        .. [cite-correa] Correa et al. (2015), The accretion history of dark matter haloes - III. A physical model for the concentration-mass relation, Section 3 and Appendix B.
+            https://arxiv.org/abs/1502.00391
+
+        .. [cite-ludlow] Ludlow et al. (2016), The mass-concentration-redshift relation of cold and warm dark matter haloes, Appendix C.
+            https://arxiv.org/abs/1601.02624
         """
         a = 1.686 * np.sqrt(2.0 / np.pi) * self.dDdz(0) + 1.0
         zf = -0.0064 * np.log10(M0 / self.Msun) ** 2 + 0.0237 * np.log10(M0 / self.Msun) + 1.8837
@@ -613,7 +783,7 @@ class SIHaloKernels(SIBackgroundKernels):
         return M0 * np.power(1.0 + z, a * fM0) * np.exp(-fM0 * z)
 
     def Mzzi(self, M0, z, zi):
-        """Evaluate the re-anchored host history from the reference epoch zi.
+        r"""Evaluate the re-anchored host history from the reference epoch zi.
 
         Parameters
         ----------
@@ -634,10 +804,23 @@ class SIHaloKernels(SIBackgroundKernels):
 
         Notes
         -----
+        The mass-history coefficients, including q = 4.137 / zf**0.9476 and the polynomial for
+        zf, follow Correa et al., Section 3. Their original calibration is retained while the
+        configured background is used; changing the background does not recalibrate the fit.
+
         SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
         prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
         Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
         rounded SI gravitational constant and its critical-density normalization are retained.
+
+        References
+        ----------
+
+        .. [cite-correa] Correa et al. (2015), The accretion history of dark matter haloes - III. A physical model for the concentration-mass relation, Section 3 and Appendix B.
+            https://arxiv.org/abs/1502.00391
+
+        .. [cite-ludlow] Ludlow et al. (2016), The mass-concentration-redshift relation of cold and warm dark matter haloes, Appendix C.
+            https://arxiv.org/abs/1601.02624
         """
         Mzi0 = self.Mzi(M0, zi)
         zf = -0.0064 * np.log10(M0 / self.Msun) ** 2 + 0.0237 * np.log10(M0 / self.Msun) + 1.8837
@@ -648,7 +831,7 @@ class SIHaloKernels(SIBackgroundKernels):
         return Mzi0 * np.power(1.0 + z - zi, alpha) * np.exp(beta * (z - zi))
 
     def dMdz(self, M0, z, zi):
-        """Evaluate the retained virial host-growth factor used by the EPS abundance.
+        r"""Evaluate the retained virial host-growth factor used by the EPS abundance.
 
         Parameters
         ----------
@@ -670,10 +853,23 @@ class SIHaloKernels(SIBackgroundKernels):
 
         Notes
         -----
+        The mass-history coefficients, including q = 4.137 / zf**0.9476 and the polynomial for
+        zf, follow Correa et al., Section 3. Their original calibration is retained while the
+        configured background is used; changing the background does not recalibrate the fit.
+
         SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
         prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
         Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
         rounded SI gravitational constant and its critical-density normalization are retained.
+
+        References
+        ----------
+
+        .. [cite-correa] Correa et al. (2015), The accretion history of dark matter haloes - III. A physical model for the concentration-mass relation, Section 3 and Appendix B.
+            https://arxiv.org/abs/1502.00391
+
+        .. [cite-ludlow] Ludlow et al. (2016), The mass-concentration-redshift relation of cold and warm dark matter haloes, Appendix C.
+            https://arxiv.org/abs/1601.02624
         """
         Mzi0 = self.Mzi(M0, zi)
         zf = -0.0064 * np.log10(M0 / self.Msun) ** 2 + 0.0237 * np.log10(M0 / self.Msun) + 1.8837
@@ -686,7 +882,7 @@ class SIHaloKernels(SIBackgroundKernels):
         return (beta + alpha / (1.0 + z - zi)) * Mzzivir
 
     def dsdm(self, M, z):
-        """Differentiate the squared Ludlow rms fluctuation, retaining D(z)**2.
+        r"""Differentiate the squared Ludlow rms fluctuation, retaining D(z)**2.
 
         Parameters
         ----------
@@ -704,10 +900,20 @@ class SIHaloKernels(SIBackgroundKernels):
 
         Notes
         -----
+        The coefficients 22.26, 1.53, 3.36 and exponents 0.292, 0.275, 0.198 are the variance
+        fit in Ludlow et al., Appendix C. Its argument uses M in solar masses divided by h.
+        Derivatives are analytic derivatives of this retained fit.
+
         SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
         prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
         Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
         rounded SI gravitational constant and its critical-density normalization are retained.
+
+        References
+        ----------
+
+        .. [cite-ludlow] Ludlow et al. (2016), The mass-concentration-redshift relation of cold and warm dark matter haloes, Appendix C.
+            https://arxiv.org/abs/1601.02624
         """
         dsdsigma = 2.0 * self.sigmaMz(M, z)
         dxidm = -1.0e10 * self.Msun / self.h / M**2
@@ -719,7 +925,7 @@ class SIHaloKernels(SIBackgroundKernels):
         return dsdsigma * dsigmadxi * dxidm
 
     def dlogSdlogM(self, M, z):
-        """Evaluate the logarithmic slope of the linear variance.
+        r"""Evaluate the logarithmic slope of the linear variance.
 
         Parameters
         ----------
@@ -737,10 +943,20 @@ class SIHaloKernels(SIBackgroundKernels):
 
         Notes
         -----
+        The coefficients 22.26, 1.53, 3.36 and exponents 0.292, 0.275, 0.198 are the variance
+        fit in Ludlow et al., Appendix C. Its argument uses M in solar masses divided by h.
+        Derivatives are analytic derivatives of this retained fit.
+
         SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
         prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
         Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
         rounded SI gravitational constant and its critical-density normalization are retained.
+
+        References
+        ----------
+
+        .. [cite-ludlow] Ludlow et al. (2016), The mass-concentration-redshift relation of cold and warm dark matter haloes, Appendix C.
+            https://arxiv.org/abs/1601.02624
         """
         s = self.sigmaMz(M, z) ** 2
         dsdsigma = 2.0 * self.sigmaMz(M, z)
@@ -754,20 +970,51 @@ class SIHaloKernels(SIBackgroundKernels):
 
 
 class SIDM_cross_section(SIUnits):
-    """Calculate the effective cross section of SIDM.
+    r"""Calculate the effective cross section of SIDM.
 
     Notes
-    ---
+    -----
+    The differential and viscosity cross sections are Yang & Yu, PDF Eqs. (2.1), (2.7).
+    Effective averaging uses nu_eff=0.64*Vmax and the 1/(512*nu_eff**8) normalization in
+    Yang et al., PDF Eq. (1.1). Finite velocity grids, the low-speed floor and asymptotic
+    switching thresholds are implementation controls.
+
     - v is the relative velocity between the two initial particles.
     - w is defined as w = m_phi * c / m_chi, where m_phi is the mass of the mediator, c is the speed of light, and m_chi is the mass of the dark matter particle.
 
     References
-    ---
+    ----------
         - Yang et al. (2023), https://arxiv.org/abs/2305.16176
         - Yang et al. (2022), https://arxiv.org/abs/2205.03392
+
+    .. [cite-cross] Yang & Yu (2022), Gravothermal evolution of dark matter halos with differential elastic scattering, PDF Eqs. (2.1), (2.7).
+        https://arxiv.org/abs/2205.03392
+
+    .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+        https://arxiv.org/abs/2305.16176
     """
 
     def __init__(self):
+        r"""Set the internal mass, length and time units used by the SIDM scattering kernels.
+
+        Notes
+        -----
+        The differential and viscosity cross sections are Yang & Yu, PDF Eqs. (2.1), (2.7).
+        Effective averaging uses nu_eff=0.64*Vmax and the 1/(512*nu_eff**8) normalization in
+        Yang et al., PDF Eq. (1.1). Finite velocity grids, the low-speed floor and asymptotic
+        switching thresholds are implementation controls.
+
+        This constructor initializes unit conversions. Scattering strength and mediator velocity are supplied to the kernel calls; it does not fit them.
+
+        References
+        ----------
+
+        .. [cite-cross] Yang & Yu (2022), Gravothermal evolution of dark matter halos with differential elastic scattering, PDF Eqs. (2.1), (2.7).
+            https://arxiv.org/abs/2205.03392
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
+        """
         SIUnits.__init__(self)
 
     def dsigmadcostheta(self, sigma0_m, w, v, costheta):
@@ -781,22 +1028,40 @@ class SIDM_cross_section(SIUnits):
         Parameters
         ----------
         sigma0_m : float
-            The value of sigma_0 / m.
+            Cross section per mass; internal calls use Mpc**2/Msun. The result retains the supplied cross-section units.
         w : float
-            The value of w in unit of km/s.
+            Characteristic speed in the same units as v; internal calls use Mpc/s.
         v : float
-            The value of v in unit of km/s.
+            Relative speed in the same units as w; internal calls use Mpc/s.
+
+        costheta : array_like
+            Dimensionless cosine of the scattering angle, in [-1,1].
 
         Returns
         -------
         dsigmadcostheta : float
             The value of d\sigma / d\cos\theta divided by m.
 
+        Notes
+        -----
+        The differential and viscosity cross sections are Yang & Yu, PDF Eqs. (2.1), (2.7).
+        Effective averaging uses nu_eff=0.64*Vmax and the 1/(512*nu_eff**8) normalization in
+        Yang et al., PDF Eq. (1.1). Finite velocity grids, the low-speed floor and asymptotic
+        switching thresholds are implementation controls.
+
+        References
+        ----------
+
+        .. [cite-cross] Yang & Yu (2022), Gravothermal evolution of dark matter halos with differential elastic scattering, PDF Eqs. (2.1), (2.7).
+            https://arxiv.org/abs/2205.03392
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         return sigma0_m * w**4 / 2.0 / (w**2 + v**2 / 2.0 * (1.0 - costheta)) ** 2
 
     def sigma_total(self, sigma0_m, w, v):
-        """Return the angular integral of the Rutherford differential cross section.
+        r"""Return the angular integral of the Rutherford differential cross section.
 
         sigma_total/m = (sigma0/m) / (1 + v**2/w**2). See the text
         following Eq. (2.1) of Yang & Yu (2022), arXiv:2205.03392
@@ -804,35 +1069,70 @@ class SIDM_cross_section(SIUnits):
         because dsigmadcostheta is already differential in cos(theta).
 
         Parameters
-        ---
+        ----------
         sigma0_m : float
-            The value of sigma_0 / m in units of cm^2/g.
+            Cross section per mass; internal calls use Mpc**2/Msun. The result retains the supplied cross-section units.
         w : float
-            The value of w in unit of km/s.
+            Characteristic speed in the same units as v; internal calls use Mpc/s.
         v : float
-            The value of v in unit of km/s.
+            Relative speed in the same units as w; internal calls use Mpc/s.
 
         Returns
-        ---
+        -------
         sigma_total_m : float
             The value of the total cross section of SIDM divided by m.
+
+        Notes
+        -----
+        The differential and viscosity cross sections are Yang & Yu, PDF Eqs. (2.1), (2.7).
+        Effective averaging uses nu_eff=0.64*Vmax and the 1/(512*nu_eff**8) normalization in
+        Yang et al., PDF Eq. (1.1). Finite velocity grids, the low-speed floor and asymptotic
+        switching thresholds are implementation controls.
+
+        References
+        ----------
+
+        .. [cite-cross] Yang & Yu (2022), Gravothermal evolution of dark matter halos with differential elastic scattering, PDF Eqs. (2.1), (2.7).
+            https://arxiv.org/abs/2205.03392
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         return sigma0_m / (1.0 + v**2 / w**2)
 
     def sigma_viscosity(self, sigma0_m, w, v):
-        """Returns the viscosity cross section of SIDM divided by m, given by Eq. (2.7) of Yang et al. (2022) [arXiv:2205.03392].
+        r"""Returns the viscosity cross section of SIDM divided by m, given by Eq. (2.7) of Yang et al. (2022) [arXiv:2205.03392].
 
         Parameters
-        ---
+        ----------
         sigma0_m : float
-            The value of sigma_0 / m in units of cm^2/g.
+            Cross section per mass; internal calls use Mpc**2/Msun. The result retains the supplied cross-section units.
         w : float
-            The value of w in unit of km/s.
+            Characteristic speed in the same units as v; internal calls use Mpc/s.
+
+        v : numpy.ndarray
+            Relative speed in the same internal velocity units as w.
 
         Returns
-        ---
+        -------
         sigma_V_m : float
             The value of the viscosity cross section of SIDM divided by m.
+
+        Notes
+        -----
+        The differential and viscosity cross sections are Yang & Yu, PDF Eqs. (2.1), (2.7).
+        Effective averaging uses nu_eff=0.64*Vmax and the 1/(512*nu_eff**8) normalization in
+        Yang et al., PDF Eq. (1.1). Finite velocity grids, the low-speed floor and asymptotic
+        switching thresholds are implementation controls.
+
+        References
+        ----------
+
+        .. [cite-cross] Yang & Yu (2022), Gravothermal evolution of dark matter halos with differential elastic scattering, PDF Eqs. (2.1), (2.7).
+            https://arxiv.org/abs/2205.03392
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         sigma_V_m = 6.0 * sigma0_m * w**4 / v**4
         sigma_V_m *= (2.0 * w**2 / v**2 + 1.0) * np.log(1.0 + v**2 / w**2) - 2.0
@@ -854,14 +1154,30 @@ class SIDM_cross_section(SIUnits):
         Parameters
         ----------
         sigma0_m : float
-            The value of sigma_0 / m.
+            Cross section per mass; internal calls use Mpc**2/Msun. The result retains the supplied cross-section units.
         w : float
-            The value of w.
+            Characteristic speed in internal Mpc/s; convert a km/s value using self.km/self.s.
 
         Returns
         -------
         sigma_eff_m_interpolate : scipy.interpolate.interp1d
-            The interpolation function of the effective cross section of SIDM divided by m.
+            Interpolator from internal Vmax (Mpc/s) to cross section per mass in the supplied sigma0_m units; its velocity domain is 1e-5 to 1e3 km/s.
+
+        Notes
+        -----
+        The differential and viscosity cross sections are Yang & Yu, PDF Eqs. (2.1), (2.7).
+        Effective averaging uses nu_eff=0.64*Vmax and the 1/(512*nu_eff**8) normalization in
+        Yang et al., PDF Eq. (1.1). Finite velocity grids, the low-speed floor and asymptotic
+        switching thresholds are implementation controls.
+
+        References
+        ----------
+
+        .. [cite-cross] Yang & Yu (2022), Gravothermal evolution of dark matter halos with differential elastic scattering, PDF Eqs. (2.1), (2.7).
+            https://arxiv.org/abs/2205.03392
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         Vmax_dummy = np.logspace(-5.0, 3.0, 1000) * self.km / self.s
 
@@ -884,8 +1200,7 @@ class SIDM_cross_section(SIUnits):
         return f_int
 
     def sigma_eff_m_interpolate_analytical(self, sigma0_m, w, a_threshold=703.0, degree=6):
-        """
-        Returns the analytic evaluation of the effective cross section of SIDM divided by m,
+        r"""Returns the analytic evaluation of the effective cross section of SIDM divided by m,
         simplified via the substitution
             a = w^2/(4*nu_eff^2)   with   nu_eff = 0.64 * Vmax.
 
@@ -902,9 +1217,9 @@ class SIDM_cross_section(SIUnits):
         Parameters
         ----------
         sigma0_m : float
-            The value of sigma_0 / m.
+            Cross section per mass; internal calls use Mpc**2/Msun. The result retains the supplied cross-section units.
         w : float
-            The value of w (in the same units as used in the numerical methods).
+            Characteristic speed in internal Mpc/s; convert a km/s value using self.km/self.s.
         a_threshold : float, optional
             The threshold for switching to the degree-limited asymptotic expansion.
             (Default is 703., based on that Ei(-a) returns NaN for such large a.)
@@ -913,8 +1228,24 @@ class SIDM_cross_section(SIUnits):
             (Default is 6, which gives a good approximation for large a.)
         Returns
         -------
-        sigma_eff : float or np.ndarray
-            The effective cross section of SIDM divided by m.
+        sigma_eff : scipy.interpolate.interp1d
+            Interpolator from internal Vmax to effective cross section per mass; its velocity domain is 1e-5 to 1e3 km/s.
+
+        Notes
+        -----
+        The differential and viscosity cross sections are Yang & Yu, PDF Eqs. (2.1), (2.7).
+        Effective averaging uses nu_eff=0.64*Vmax and the 1/(512*nu_eff**8) normalization in
+        Yang et al., PDF Eq. (1.1). Finite velocity grids, the low-speed floor and asymptotic
+        switching thresholds are implementation controls.
+
+        References
+        ----------
+
+        .. [cite-cross] Yang & Yu (2022), Gravothermal evolution of dark matter halos with differential elastic scattering, PDF Eqs. (2.1), (2.7).
+            https://arxiv.org/abs/2205.03392
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         # dummy Vmax for the interpolation
         Vmax = np.logspace(-5.0, 3.0, 1000) * self.km / self.s
@@ -952,22 +1283,65 @@ class SIDM_cross_section(SIUnits):
 
 
 class SIDM_parametric_model(SIDM_cross_section):
-    """A class to calculate the SIDM parametric model proposed by Yang et al. (2023) [arXiv:2305.16176].
+    r"""A class to calculate the SIDM parametric model proposed by Yang et al. (2023) [arXiv:2305.16176].
 
-    Refereces
-    ---
+    Notes
+    -----
+    The gravothermal calibration is Yang et al.: collapse normalization C=0.75 and 150 in
+    PDF Eq. (2.2); density/scale/core-radius fits in Eq. (2.3); velocity/radius polynomials
+    in Eq. (2.4); integral evolution in Eq. (3.3). Derivative coefficients here
+    differentiate Eq. (2.4) exactly and may differ from separately rounded printed
+    derivatives. The tt_th cap is an explicit implementation limit, not an accuracy
+    guarantee.
+
+    The default gravothermal cutoff tt_th=1.1 follows the stopped-evolution prescription of
+    Ando et al., Section 2.2. A different caller-supplied cap changes that prescription and
+    is not automatically covered by the published calibration.
+
+    References
+    ----------
     - Yang et al. (2023), https://arxiv.org/abs/2305.16176
+
+    .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+        https://arxiv.org/abs/2305.16176
+
+    .. [cite-sashimi-sidm] Ando et al. (2025), SASHIMI-SIDM: Semi-analytical subhalo modelling for self-interacting dark matter at sub-galactic scales, Sections 2.2-2.3, Table 1.
+        https://arxiv.org/abs/2403.16633
     """
 
     def __init__(self, sigma0_m, w, tt_th=1.1):
-        """Initialize the SIDM_parametric_model class.
+        r"""Initialize the SIDM_parametric_model class.
 
         Parameters
-        ---
+        ----------
         sigma0_m : float
             The value of sigma_0 / m in units of cm^2/g.
         w : float
             The value of w in unit of km/s.
+        tt_th : float, optional
+            Maximum dimensionless evolution time used by the derivative/integral implementation.
+
+        Notes
+        -----
+        The gravothermal calibration is Yang et al.: collapse normalization C=0.75 and 150 in
+        PDF Eq. (2.2); density/scale/core-radius fits in Eq. (2.3); velocity/radius polynomials
+        in Eq. (2.4); integral evolution in Eq. (3.3). Derivative coefficients here
+        differentiate Eq. (2.4) exactly and may differ from separately rounded printed
+        derivatives. The tt_th cap is an explicit implementation limit, not an accuracy
+        guarantee.
+
+        The default gravothermal cutoff tt_th=1.1 follows the stopped-evolution prescription of
+        Ando et al., Section 2.2. A different caller-supplied cap changes that prescription and
+        is not automatically covered by the published calibration.
+
+        References
+        ----------
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
+
+        .. [cite-sashimi-sidm] Ando et al. (2025), SASHIMI-SIDM: Semi-analytical subhalo modelling for self-interacting dark matter at sub-galactic scales, Sections 2.2-2.3, Table 1.
+            https://arxiv.org/abs/2403.16633
         """
         SIDM_cross_section.__init__(self)
         self.sigma0_m = sigma0_m * self.cm**2 / self.gram
@@ -976,10 +1350,10 @@ class SIDM_parametric_model(SIDM_cross_section):
         self.tt_th = tt_th
 
     def t_collapse(self, sigma_eff_m, rmax, Vmax):
-        """Returns the collapse time of a subhalo according to Eq. (2.2) of Yang et al. (2023)
+        r"""Returns the collapse time of a subhalo according to Eq. (2.2) of Yang et al. (2023)
 
         Parameters
-        ---
+        ----------
         sigma_eff_m : float
             The effective cross section of SIDM divided by m.
         rmax : float
@@ -988,9 +1362,34 @@ class SIDM_parametric_model(SIDM_cross_section):
             The maximum circular velocity.
 
         Returns
-        ---
+        -------
         t_c : float
             The collapse time of a subhalo.
+
+        Notes
+        -----
+        The NFW profile is from Navarro et al. The rounded factors rmax/rs = 2.163 (2.1626 where
+        explicitly used) and 4.625 are NFW maximum-circular-speed identities, as written in
+        Hiroshima et al., Eqs. (5)-(7), rather than independent empirical fits.
+
+        The gravothermal calibration is Yang et al.: collapse normalization C=0.75 and 150 in
+        PDF Eq. (2.2); density/scale/core-radius fits in Eq. (2.3); velocity/radius polynomials
+        in Eq. (2.4); integral evolution in Eq. (3.3). Derivative coefficients here
+        differentiate Eq. (2.4) exactly and may differ from separately rounded printed
+        derivatives. The tt_th cap is an explicit implementation limit, not an accuracy
+        guarantee.
+
+        References
+        ----------
+
+        .. [cite-nfw] Navarro, Frenk & White (1997), A Universal Density Profile from Hierarchical Clustering.
+            https://arxiv.org/abs/astro-ph/9611107
+
+        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).
+            https://arxiv.org/abs/1803.07691
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         C = 0.75
         reff = rmax / 2.1626  # NOTE: from the lines just after Eq. (1.1) of Yang et al. (2023)
@@ -1001,24 +1400,44 @@ class SIDM_parametric_model(SIDM_cross_section):
         return t_c
 
     def dVmaxSIDMdtt(self, tt, Vmax_CDM):
-        """Returns differential of Vmax obtained by the equation just below Eq. (3.3) of Yang et al. (2023)
+        r"""Returns differential of Vmax obtained by the equation just below Eq. (3.3) of Yang et al. (2023)
 
         Parameters
-        ---
+        ----------
         tt : float
             The time normalized by the collapse time.
         Vmax_CDM : float
             The maximum circular velocity of the CDM halo, evaluated at the same time as tt.
 
         Returns
-        ---
+        -------
         out : float
             The differential of Vmax.
 
         Notes
-        ---
+        -----
+        The gravothermal calibration is Yang et al.: collapse normalization C=0.75 and 150 in
+        PDF Eq. (2.2); density/scale/core-radius fits in Eq. (2.3); velocity/radius polynomials
+        in Eq. (2.4); integral evolution in Eq. (3.3). Derivative coefficients here
+        differentiate Eq. (2.4) exactly and may differ from separately rounded printed
+        derivatives. The tt_th cap is an explicit implementation limit, not an accuracy
+        guarantee.
+
+        The default gravothermal cutoff tt_th=1.1 follows the stopped-evolution prescription of
+        Ando et al., Section 2.2. A different caller-supplied cap changes that prescription and
+        is not automatically covered by the published calibration.
+
         - In the integral approach, dVmax_{Model}/dtt is normalized by Vmax_{CDM}(t), i.e. the CDM value
           at the running time t of the integral, not the one at the accretion time t_f.
+
+        References
+        ----------
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
+
+        .. [cite-sashimi-sidm] Ando et al. (2025), SASHIMI-SIDM: Semi-analytical subhalo modelling for self-interacting dark matter at sub-galactic scales, Sections 2.2-2.3, Table 1.
+            https://arxiv.org/abs/2403.16633
         """
         out = (
             0.1777
@@ -1033,22 +1452,43 @@ class SIDM_parametric_model(SIDM_cross_section):
         return out
 
     def dVmaxSIDMdtt_numexpr_optimized(self, tt, Vmax_CDM):
-        """
-        Returns differential of Vmax obtained by the equation just below Eq. (3.3) of Yang et al. (2023),
+        r"""Returns differential of Vmax obtained by the equation just below Eq. (3.3) of Yang et al. (2023),
         using NumExpr for optimization.
         This optimized version performs the entire calculation in a single evaluation for maximum speed.
 
         Parameters
-        ---
+        ----------
         tt : np.ndarray
             The time normalized by the collapse time.
         Vmax_CDM : np.ndarray or float
             The maximum circular velocity of the CDM halo, evaluated at the same time as tt.
 
         Returns
-        ---
+        -------
         out : np.ndarray
             The differential of Vmax.
+
+        Notes
+        -----
+        The gravothermal calibration is Yang et al.: collapse normalization C=0.75 and 150 in
+        PDF Eq. (2.2); density/scale/core-radius fits in Eq. (2.3); velocity/radius polynomials
+        in Eq. (2.4); integral evolution in Eq. (3.3). Derivative coefficients here
+        differentiate Eq. (2.4) exactly and may differ from separately rounded printed
+        derivatives. The tt_th cap is an explicit implementation limit, not an accuracy
+        guarantee.
+
+        The default gravothermal cutoff tt_th=1.1 follows the stopped-evolution prescription of
+        Ando et al., Section 2.2. A different caller-supplied cap changes that prescription and
+        is not automatically covered by the published calibration.
+
+        References
+        ----------
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
+
+        .. [cite-sashimi-sidm] Ando et al. (2025), SASHIMI-SIDM: Semi-analytical subhalo modelling for self-interacting dark matter at sub-galactic scales, Sections 2.2-2.3, Table 1.
+            https://arxiv.org/abs/2403.16633
         """
         out = ne.evaluate(
             "where(tt <= tt_th, (0.1777 - 13.197*tt*tt + 66.64*tt*tt*tt"
@@ -1059,10 +1499,10 @@ class SIDM_parametric_model(SIDM_cross_section):
         return out
 
     def drmaxSIDMdtt(self, tt, rmax_CDM):
-        """Returns differential of rmax obtained by the equation just below Eq. (3.3) of Yang et al. (2023)
+        r"""Returns differential of rmax obtained by the equation just below Eq. (3.3) of Yang et al. (2023)
 
         Parameters
-        ---
+        ----------
         tt : float
             The time normalized by the collapse time.
         rmax_CDM : float
@@ -1070,14 +1510,34 @@ class SIDM_parametric_model(SIDM_cross_section):
             evaluated at the same time as tt.
 
         Returns
-        ---
+        -------
         out : float
             The differential of rmax.
 
         Notes
-        ---
+        -----
+        The gravothermal calibration is Yang et al.: collapse normalization C=0.75 and 150 in
+        PDF Eq. (2.2); density/scale/core-radius fits in Eq. (2.3); velocity/radius polynomials
+        in Eq. (2.4); integral evolution in Eq. (3.3). Derivative coefficients here
+        differentiate Eq. (2.4) exactly and may differ from separately rounded printed
+        derivatives. The tt_th cap is an explicit implementation limit, not an accuracy
+        guarantee.
+
+        The default gravothermal cutoff tt_th=1.1 follows the stopped-evolution prescription of
+        Ando et al., Section 2.2. A different caller-supplied cap changes that prescription and
+        is not automatically covered by the published calibration.
+
         - In the integral approach, drmax_{Model}/dtt is normalized by rmax_{CDM}(t), i.e. the CDM value
           at the running time t of the integral, not the one at the accretion time t_f.
+
+        References
+        ----------
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
+
+        .. [cite-sashimi-sidm] Ando et al. (2025), SASHIMI-SIDM: Semi-analytical subhalo modelling for self-interacting dark matter at sub-galactic scales, Sections 2.2-2.3, Table 1.
+            https://arxiv.org/abs/2403.16633
         """
         out = 0.007623 - 0.7200 * (2.0 * tt) + 0.3376 * (3.0 * tt**2) - 0.1375 * (4.0 * tt**3)
         out = np.where(tt > self.tt_th, 0.0, out)
@@ -1085,13 +1545,12 @@ class SIDM_parametric_model(SIDM_cross_section):
         return out
 
     def drmaxSIDMdtt_numexpr_optimized(self, tt, rmax_CDM):
-        """
-        Returns differential of rmax obtained by the equation just below Eq. (3.3) of Yang et al. (2023),
+        r"""Returns differential of rmax obtained by the equation just below Eq. (3.3) of Yang et al. (2023),
         using NumExpr for optimization.
         This optimized version performs the entire calculation in a single evaluation for maximum speed.
 
         Parameters
-        ---
+        ----------
         tt : np.ndarray
             The time normalized by the collapse time.
         rmax_CDM : np.ndarray or float
@@ -1099,9 +1558,31 @@ class SIDM_parametric_model(SIDM_cross_section):
             evaluated at the same time as tt.
 
         Returns
-        ---
+        -------
         out : np.ndarray
             The differential of rmax.
+
+        Notes
+        -----
+        The gravothermal calibration is Yang et al.: collapse normalization C=0.75 and 150 in
+        PDF Eq. (2.2); density/scale/core-radius fits in Eq. (2.3); velocity/radius polynomials
+        in Eq. (2.4); integral evolution in Eq. (3.3). Derivative coefficients here
+        differentiate Eq. (2.4) exactly and may differ from separately rounded printed
+        derivatives. The tt_th cap is an explicit implementation limit, not an accuracy
+        guarantee.
+
+        The default gravothermal cutoff tt_th=1.1 follows the stopped-evolution prescription of
+        Ando et al., Section 2.2. A different caller-supplied cap changes that prescription and
+        is not automatically covered by the published calibration.
+
+        References
+        ----------
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
+
+        .. [cite-sashimi-sidm] Ando et al. (2025), SASHIMI-SIDM: Semi-analytical subhalo modelling for self-interacting dark matter at sub-galactic scales, Sections 2.2-2.3, Table 1.
+            https://arxiv.org/abs/2403.16633
         """
         out = ne.evaluate(
             "where(tt <= tt_th, (0.007623 - 1.44*tt + 1.0128*tt*tt - 0.55*tt*tt*tt) * rmax_CDM, 0)",
@@ -1110,19 +1591,34 @@ class SIDM_parametric_model(SIDM_cross_section):
         return out
 
     def get_Vmax0(self, Vmax, tt):
-        """Returns the maximum circular velocity of the initial NFW profile, given by Eq. (2.3) of Yang et al. (2023)
+        r"""Returns the maximum circular velocity of the initial NFW profile, given by Eq. (2.4) of Yang et al. (2023)
 
         Parameters
-        ---
+        ----------
         Vmax : float
             The maximum circular velocity.
         tt : float
             The time normalized by the collapse time.
 
         Returns
-        ---
+        -------
         Vmax0 : float
             The value of Vmax of the initial NFW profile.
+
+        Notes
+        -----
+        The gravothermal calibration is Yang et al.: collapse normalization C=0.75 and 150 in
+        PDF Eq. (2.2); density/scale/core-radius fits in Eq. (2.3); velocity/radius polynomials
+        in Eq. (2.4); integral evolution in Eq. (3.3). Derivative coefficients here
+        differentiate Eq. (2.4) exactly and may differ from separately rounded printed
+        derivatives. The tt_th cap is an explicit implementation limit, not an accuracy
+        guarantee.
+
+        References
+        ----------
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         Vmax0 = Vmax / (
             1.0
@@ -1136,37 +1632,67 @@ class SIDM_parametric_model(SIDM_cross_section):
         return Vmax0
 
     def get_rmax0(self, rmax, tt):
-        """Returns the radius at which the maximum circular velocity is obtained, given by Eq. (2.3) of Yang et al. (2023)
+        r"""Returns the radius at which the maximum circular velocity is obtained, given by Eq. (2.4) of Yang et al. (2023)
 
         Parameters
-        ---
+        ----------
         rmax : float
             The radius at which the maximum circular velocity is obtained.
         tt : float
             The time normalized by the collapse time.
 
         Returns
-        ---
+        -------
         rmax0 : float
             The value of rmax of the initial NFW profile.
+
+        Notes
+        -----
+        The gravothermal calibration is Yang et al.: collapse normalization C=0.75 and 150 in
+        PDF Eq. (2.2); density/scale/core-radius fits in Eq. (2.3); velocity/radius polynomials
+        in Eq. (2.4); integral evolution in Eq. (3.3). Derivative coefficients here
+        differentiate Eq. (2.4) exactly and may differ from separately rounded printed
+        derivatives. The tt_th cap is an explicit implementation limit, not an accuracy
+        guarantee.
+
+        References
+        ----------
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         rmax0 = rmax / (1.0 + 0.007623 * tt - 0.7200 * tt**2 + 0.3376 * tt**3 - 0.1375 * tt**4)
         return rmax0
 
     def get_rhos(self, rhos0, tt):
-        """Returns the density parameter of a SIDM halo, given by Eq. (2.3) of Yang et al. (2023)
+        r"""Returns the density parameter of a SIDM halo, given by Eq. (2.3) of Yang et al. (2023)
 
         Parameters
-        ---
+        ----------
         rhos0 : float
             The density parameter of the initial NFW profile.
         tt : float
             The time normalized by the collapse time.
 
         Returns
-        ---
+        -------
         rhos : float
             The density parameter of a SIDM halo.
+
+        Notes
+        -----
+        The gravothermal calibration is Yang et al.: collapse normalization C=0.75 and 150 in
+        PDF Eq. (2.2); density/scale/core-radius fits in Eq. (2.3); velocity/radius polynomials
+        in Eq. (2.4); integral evolution in Eq. (3.3). Derivative coefficients here
+        differentiate Eq. (2.4) exactly and may differ from separately rounded printed
+        derivatives. The tt_th cap is an explicit implementation limit, not an accuracy
+        guarantee.
+
+        References
+        ----------
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         rhos = (
             2.033
@@ -1179,19 +1705,34 @@ class SIDM_parametric_model(SIDM_cross_section):
         return rhos
 
     def get_rs(self, rs0, tt):
-        """Returns the scale radius of a SIDM halo, given by Eq. (2.3) of Yang et al. (2023)
+        r"""Returns the scale radius of a SIDM halo, given by Eq. (2.3) of Yang et al. (2023)
 
         Parameters
-        ---
+        ----------
         rs0 : float
             The scale radius of the initial NFW profile.
         tt : float
             The time normalized by the collapse time.
 
         Returns
-        ---
+        -------
         rs : float
             The scale radius of a SIDM halo.
+
+        Notes
+        -----
+        The gravothermal calibration is Yang et al.: collapse normalization C=0.75 and 150 in
+        PDF Eq. (2.2); density/scale/core-radius fits in Eq. (2.3); velocity/radius polynomials
+        in Eq. (2.4); integral evolution in Eq. (3.3). Derivative coefficients here
+        differentiate Eq. (2.4) exactly and may differ from separately rounded printed
+        derivatives. The tt_th cap is an explicit implementation limit, not an accuracy
+        guarantee.
+
+        References
+        ----------
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         rs = (
             0.7178
@@ -1203,19 +1744,34 @@ class SIDM_parametric_model(SIDM_cross_section):
         return rs
 
     def get_rc(self, rs0, tt):
-        """Returns the core radius of a SIDM halo, given by Eq. (2.3) of Yang et al. (2023)
+        r"""Returns the core radius of a SIDM halo, given by Eq. (2.3) of Yang et al. (2023)
 
         Parameters
-        ---
+        ----------
         rs0 : float
             The scale radius of the initial NFW profile.
         tt : float
             The time normalized by the collapse time.
 
         Returns
-        ---
+        -------
         rc : float
             The core radius of a SIDM halo.
+
+        Notes
+        -----
+        The gravothermal calibration is Yang et al.: collapse normalization C=0.75 and 150 in
+        PDF Eq. (2.2); density/scale/core-radius fits in Eq. (2.3); velocity/radius polynomials
+        in Eq. (2.4); integral evolution in Eq. (3.3). Derivative coefficients here
+        differentiate Eq. (2.4) exactly and may differ from separately rounded printed
+        derivatives. The tt_th cap is an explicit implementation limit, not an accuracy
+        guarantee.
+
+        References
+        ----------
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         rc = (
             2.555 * np.sqrt(tt) - 3.632 * tt + 2.131 * tt**2 - 1.415 * tt**3 + 0.4683 * tt**4
@@ -1223,10 +1779,10 @@ class SIDM_parametric_model(SIDM_cross_section):
         return rc
 
     def master_function(self, Vmax_CDM, rmax_CDM, t, t_f):
-        """Calculate the properties of a SIDM halo at a given time t according to the integral approach proposed by Yang et al. (2023) [arXiv:2305.16176].
+        r"""Calculate the properties of a SIDM halo at a given time t according to the integral approach proposed by Yang et al. (2023) [arXiv:2305.16176].
 
         Parameters
-        ---
+        ----------
         Vmax_CDM : float
             The maximum circular velocity of the CDM halo, as a function of time (axis 1).
         rmax_CDM : float
@@ -1237,7 +1793,7 @@ class SIDM_parametric_model(SIDM_cross_section):
             The accretion (formation) time of the subhalo, i.e. the lower end of the integral in Eq. (3.3).
 
         Returns
-        ---
+        -------
         VmaxSIDM_z0 : float
             The maximum circular velocity of the SIDM halo at z=0.
         rmaxSIDM_z0 : float
@@ -1248,6 +1804,38 @@ class SIDM_parametric_model(SIDM_cross_section):
             The scale radius of the SIDM halo at z=0.
         rcSIDM_z0 : float
             The core radius of the SIDM halo at z=0.
+
+        Notes
+        -----
+        The NFW profile is from Navarro et al. The rounded factors rmax/rs = 2.163 (2.1626 where
+        explicitly used) and 4.625 are NFW maximum-circular-speed identities, as written in
+        Hiroshima et al., Eqs. (5)-(7), rather than independent empirical fits.
+
+        The gravothermal calibration is Yang et al.: collapse normalization C=0.75 and 150 in
+        PDF Eq. (2.2); density/scale/core-radius fits in Eq. (2.3); velocity/radius polynomials
+        in Eq. (2.4); integral evolution in Eq. (3.3). Derivative coefficients here
+        differentiate Eq. (2.4) exactly and may differ from separately rounded printed
+        derivatives. The tt_th cap is an explicit implementation limit, not an accuracy
+        guarantee.
+
+        The default gravothermal cutoff tt_th=1.1 follows the stopped-evolution prescription of
+        Ando et al., Section 2.2. A different caller-supplied cap changes that prescription and
+        is not automatically covered by the published calibration.
+
+        References
+        ----------
+
+        .. [cite-nfw] Navarro, Frenk & White (1997), A Universal Density Profile from Hierarchical Clustering.
+            https://arxiv.org/abs/astro-ph/9611107
+
+        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).
+            https://arxiv.org/abs/1803.07691
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
+
+        .. [cite-sashimi-sidm] Ando et al. (2025), SASHIMI-SIDM: Semi-analytical subhalo modelling for self-interacting dark matter at sub-galactic scales, Sections 2.2-2.3, Table 1.
+            https://arxiv.org/abs/2403.16633
         """
         # NOTE: In the equation just below Eq. (3.3) of Yang et al. (2023), dVmax_{Model}/dtt and
         # drmax_{Model}/dtt are normalized by Vmax_{CDM}(t) and rmax_{CDM}(t) evaluated at the running
@@ -1439,7 +2027,7 @@ class SITidalKernels(SIHaloKernels):
         return Mvir
 
     def AMz(self, z):
-        """Evaluate the retained SI tidal-loss amplitude as a function of virial host mass and
+        r"""Evaluate the retained SI tidal-loss amplitude as a function of virial host mass and
         redshift.
 
         Parameters
@@ -1455,10 +2043,21 @@ class SITidalKernels(SIHaloKernels):
 
         Notes
         -----
+        The adopted A(M,z) and zeta(M,z) coefficients are Hiroshima et al., Eqs. (23)-(24),
+        calibrated for host masses 1e-6 to 1e16 solar masses and redshifts 0 to 7. Numerical
+        integration or iteration controls do not extend that calibration or bound total model
+        error.
+
         SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
         prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
         Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
         rounded SI gravitational constant and its critical-density normalization are retained.
+
+        References
+        ----------
+
+        .. [cite-tidal] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Eqs. (23)-(24).
+            https://arxiv.org/abs/1803.07691
         """
         log10a = (-0.0003 * np.log10(self.Mzvir(z) / self.Msun) + 0.02) * z + (
             0.011 * np.log10(self.Mzvir(z) / self.Msun) - 0.354
@@ -1466,7 +2065,7 @@ class SITidalKernels(SIHaloKernels):
         return 10.0**log10a
 
     def zetaMz(self, z):
-        """Evaluate the fitted exponent of the tidal subhalo-to-host mass ratio.
+        r"""Evaluate the fitted exponent of the tidal subhalo-to-host mass ratio.
 
         Parameters
         ----------
@@ -1481,17 +2080,28 @@ class SITidalKernels(SIHaloKernels):
 
         Notes
         -----
+        The adopted A(M,z) and zeta(M,z) coefficients are Hiroshima et al., Eqs. (23)-(24),
+        calibrated for host masses 1e-6 to 1e16 solar masses and redshifts 0 to 7. Numerical
+        integration or iteration controls do not extend that calibration or bound total model
+        error.
+
         SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
         prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
         Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
         rounded SI gravitational constant and its critical-density normalization are retained.
+
+        References
+        ----------
+
+        .. [cite-tidal] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Eqs. (23)-(24).
+            https://arxiv.org/abs/1803.07691
         """
         return (0.00012 * np.log10(self.Mzvir(z) / self.Msun) - 0.0033) * z + (
             -0.0011 * np.log10(self.Mzvir(z) / self.Msun) + 0.026
         )
 
     def tdynz(self, z):
-        """Evaluate the virial dynamical time entering the fitted tidal loss law.
+        r"""Evaluate the virial dynamical time entering the fitted tidal loss law.
 
         Parameters
         ----------
@@ -1506,10 +2116,22 @@ class SITidalKernels(SIHaloKernels):
 
         Notes
         -----
+        The normalization 1.628/h Gyr and factors (Delta_vir/178)**(-1/2)*(H/H0)**(-1) are Jiang
+        & van den Bosch, Eq. (2), with Bryan--Norman virial overdensity.
+
         SI retains its fitted CDM background/host/tidal relations and SIDM gravothermal
         prescriptions. Internal base units are Msun, Mpc and seconds, so internal speeds are
         Mpc/s. The public stage/catalogue interface explicitly converts velocities to km/s. The
         rounded SI gravitational constant and its critical-density normalization are retained.
+
+        References
+        ----------
+
+        .. [cite-time] Jiang & van den Bosch (2016), Statistics of Dark Matter Substructure: I. Model and Universal Fitting Functions, Eq. (2).
+            https://arxiv.org/abs/1403.6827
+
+        .. [cite-virial] Bryan & Norman (1998), Statistical Properties of X-ray Clusters: Analytic and Numerical Comparisons, Eq. (6).
+            https://arxiv.org/abs/astro-ph/9710107
         """
         Oz_z = self.OmegaM * (1.0 + z) ** 3 / self.g(z)
         return (

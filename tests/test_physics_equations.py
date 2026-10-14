@@ -79,7 +79,7 @@ def tau():
 
 
 def Vmax_fit(t):
-    """Vmax(tau)/Vmax_0, Eq. (2.4).
+    r"""Vmax(tau)/Vmax_0, Eq. (2.4).
 
     Parameters
     ----------
@@ -93,8 +93,18 @@ def Vmax_fit(t):
 
     Notes
     -----
+    The independent polynomial/reference values are from Yang et al., PDF Eqs. (2.2)-(2.4),
+    (3.3). Agreement checks the implemented equations at the controlled inputs, not
+    astrophysical calibration.
+
     This fixture/helper supports the controlled checks in this test module; its synthetic
     values are not a calibrated halo model.
+
+    References
+    ----------
+
+    .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+        https://arxiv.org/abs/2305.16176
     """
     return (
         1.0 + 0.1777 * t - 4.399 * t**3 + 16.66 * t**4 - 18.87 * t**5 + 9.077 * t**7 - 2.436 * t**9
@@ -102,7 +112,7 @@ def Vmax_fit(t):
 
 
 def rmax_fit(t):
-    """rmax(tau)/rmax_0, Eq. (2.4).
+    r"""rmax(tau)/rmax_0, Eq. (2.4).
 
     Parameters
     ----------
@@ -116,14 +126,24 @@ def rmax_fit(t):
 
     Notes
     -----
+    The independent polynomial/reference values are from Yang et al., PDF Eqs. (2.2)-(2.4),
+    (3.3). Agreement checks the implemented equations at the controlled inputs, not
+    astrophysical calibration.
+
     This fixture/helper supports the controlled checks in this test module; its synthetic
     values are not a calibrated halo model.
+
+    References
+    ----------
+
+    .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+        https://arxiv.org/abs/2305.16176
     """
     return 1.0 + 0.007623 * t - 0.7200 * t**2 + 0.3376 * t**3 - 0.1375 * t**4
 
 
 def dVmax_fit(t):
-    """d/dtau of Vmax_fit, i.e. the polynomial just below Eq. (3.3).
+    r"""d/dtau of Vmax_fit, i.e. the polynomial just below Eq. (3.3).
 
     Parameters
     ----------
@@ -137,8 +157,18 @@ def dVmax_fit(t):
 
     Notes
     -----
+    The independent polynomial/reference values are from Yang et al., PDF Eqs. (2.2)-(2.4),
+    (3.3). Agreement checks the implemented equations at the controlled inputs, not
+    astrophysical calibration.
+
     This fixture/helper supports the controlled checks in this test module; its synthetic
     values are not a calibrated halo model.
+
+    References
+    ----------
+
+    .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+        https://arxiv.org/abs/2305.16176
     """
     return (
         0.1777
@@ -151,7 +181,7 @@ def dVmax_fit(t):
 
 
 def drmax_fit(t):
-    """d/dtau of rmax_fit, i.e. the polynomial just below Eq. (3.3).
+    r"""d/dtau of rmax_fit, i.e. the polynomial just below Eq. (3.3).
 
     Parameters
     ----------
@@ -165,24 +195,44 @@ def drmax_fit(t):
 
     Notes
     -----
+    The independent polynomial/reference values are from Yang et al., PDF Eqs. (2.2)-(2.4),
+    (3.3). Agreement checks the implemented equations at the controlled inputs, not
+    astrophysical calibration.
+
     This fixture/helper supports the controlled checks in this test module; its synthetic
     values are not a calibrated halo model.
+
+    References
+    ----------
+
+    .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+        https://arxiv.org/abs/2305.16176
     """
     return 0.007623 - 2 * 0.7200 * t + 3 * 0.3376 * t**2 - 4 * 0.1375 * t**3
 
 
 class TestParametricModelDerivatives:
-    """Compare SIDM fitted-profile derivatives with independent derivatives of their stated
+    r"""Compare SIDM fitted-profile derivatives with independent derivatives of their stated
     functions.
 
     Notes
     -----
+    The independent polynomial/reference values are from Yang et al., PDF Eqs. (2.2)-(2.4),
+    (3.3). Agreement checks the implemented equations at the controlled inputs, not
+    astrophysical calibration.
+
     This fixture/helper supports the controlled checks in this test module; its synthetic
     values are not a calibrated halo model.
+
+    References
+    ----------
+
+    .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+        https://arxiv.org/abs/2305.16176
     """
 
     def test_dVmax_matches_finite_difference_of_eq24(self, pm, tau):
-        """Differentiate the SIDM maximum-velocity fit consistently with its evolution equation.
+        r"""Differentiate the SIDM maximum-velocity fit consistently with its evolution equation.
 
         Parameters
         ----------
@@ -194,6 +244,10 @@ class TestParametricModelDerivatives:
 
         Notes
         -----
+        The independent polynomial/reference values are from Yang et al., PDF Eqs. (2.2)-(2.4),
+        (3.3). Agreement checks the implemented equations at the controlled inputs, not
+        astrophysical calibration.
+
         Pass criteria: Over the supplied dimensionless times, the implemented derivative agrees
         with a central finite difference of the independently written fit to absolute tolerance
         1e-6.
@@ -203,13 +257,19 @@ class TestParametricModelDerivatives:
 
         Scope: This controlled calculation does not calibrate a subhalo population against
         simulations or observations.
+
+        References
+        ----------
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         h = 1.0e-6
         expected = (Vmax_fit(tau + h) - Vmax_fit(tau - h)) / (2 * h)
         assert np.allclose(pm.dVmaxSIDMdtt(tau, np.ones_like(tau)), expected, rtol=0.0, atol=1.0e-6)
 
     def test_drmax_matches_finite_difference_of_eq24(self, pm, tau):
-        """Differentiate the SIDM maximum-velocity radius fit consistently.
+        r"""Differentiate the SIDM maximum-velocity radius fit consistently.
 
         Parameters
         ----------
@@ -221,6 +281,10 @@ class TestParametricModelDerivatives:
 
         Notes
         -----
+        The independent polynomial/reference values are from Yang et al., PDF Eqs. (2.2)-(2.4),
+        (3.3). Agreement checks the implemented equations at the controlled inputs, not
+        astrophysical calibration.
+
         Pass criteria: The radius derivative agrees with a central finite difference of the
         independent polynomial to absolute tolerance 1e-6.
 
@@ -229,13 +293,19 @@ class TestParametricModelDerivatives:
 
         Scope: This controlled calculation does not calibrate a subhalo population against
         simulations or observations.
+
+        References
+        ----------
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         h = 1.0e-6
         expected = (rmax_fit(tau + h) - rmax_fit(tau - h)) / (2 * h)
         assert np.allclose(pm.drmaxSIDMdtt(tau, np.ones_like(tau)), expected, rtol=0.0, atol=1.0e-6)
 
     def test_numexpr_variants_agree_with_the_numpy_variants(self, pm, tau):
-        """Keep optimized SIDM evolution algebraically equivalent to the readable formula.
+        r"""Keep optimized SIDM evolution algebraically equivalent to the readable formula.
 
         Parameters
         ----------
@@ -247,6 +317,10 @@ class TestParametricModelDerivatives:
 
         Notes
         -----
+        The independent polynomial/reference values are from Yang et al., PDF Eqs. (2.2)-(2.4),
+        (3.3). Agreement checks the implemented equations at the controlled inputs, not
+        astrophysical calibration.
+
         Pass criteria: Both optimized derivatives agree with their NumPy counterparts to
         rtol=1e-12.
 
@@ -255,6 +329,12 @@ class TestParametricModelDerivatives:
 
         Scope: This controlled calculation does not calibrate a subhalo population against
         simulations or observations.
+
+        References
+        ----------
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         ones = np.ones_like(tau)
         assert np.allclose(
@@ -271,7 +351,7 @@ class TestParametricModelDerivatives:
         )
 
     def test_derivatives_are_linear_in_the_cdm_normalization(self, pm, tau):
-        """Scale SIDM velocity evolution with the instantaneous CDM velocity amplitude.
+        r"""Scale SIDM velocity evolution with the instantaneous CDM velocity amplitude.
 
         Parameters
         ----------
@@ -283,6 +363,10 @@ class TestParametricModelDerivatives:
 
         Notes
         -----
+        The independent polynomial/reference values are from Yang et al., PDF Eqs. (2.2)-(2.4),
+        (3.3). Agreement checks the implemented equations at the controlled inputs, not
+        astrophysical calibration.
+
         Pass criteria: Multiplying the CDM normalization by the tested scale array multiplies
         dVmax/dtau by that array.
 
@@ -291,6 +375,12 @@ class TestParametricModelDerivatives:
 
         Scope: This controlled calculation does not calibrate a subhalo population against
         simulations or observations.
+
+        References
+        ----------
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         scale = np.linspace(2.0, 50.0, tau.size)
         assert np.allclose(
@@ -298,7 +388,7 @@ class TestParametricModelDerivatives:
         )
 
     def test_evolution_is_frozen_beyond_the_threshold(self, pm):
-        """Respect the declared cutoff of the SIDM structural fit.
+        r"""Respect the declared cutoff of the SIDM structural fit.
 
         Parameters
         ----------
@@ -307,6 +397,10 @@ class TestParametricModelDerivatives:
 
         Notes
         -----
+        The independent polynomial/reference values are from Yang et al., PDF Eqs. (2.2)-(2.4),
+        (3.3). Agreement checks the implemented equations at the controlled inputs, not
+        astrophysical calibration.
+
         Pass criteria: Both velocity and radius derivatives, including optimized forms, are
         exactly zero above tt_th.
 
@@ -315,6 +409,12 @@ class TestParametricModelDerivatives:
 
         Scope: This controlled calculation does not calibrate a subhalo population against
         simulations or observations.
+
+        References
+        ----------
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         beyond = np.array([pm.tt_th + 1.0e-6, 2.0, 10.0])
         ones = np.ones_like(beyond)
@@ -325,16 +425,26 @@ class TestParametricModelDerivatives:
 
 
 class TestParametricModelInversion:
-    """Check that the initial-profile reconstruction inverts the retained SIDM fit.
+    r"""Check that the initial-profile reconstruction inverts the retained SIDM fit.
 
     Notes
     -----
+    The independent polynomial/reference values are from Yang et al., PDF Eqs. (2.2)-(2.4),
+    (3.3). Agreement checks the implemented equations at the controlled inputs, not
+    astrophysical calibration.
+
     This fixture/helper supports the controlled checks in this test module; its synthetic
     values are not a calibrated halo model.
+
+    References
+    ----------
+
+    .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+        https://arxiv.org/abs/2305.16176
     """
 
     def test_get_Vmax0_inverts_eq24(self, pm, tau):
-        """Recover the initial velocity normalization from the SIDM velocity fit.
+        r"""Recover the initial velocity normalization from the SIDM velocity fit.
 
         Parameters
         ----------
@@ -346,6 +456,10 @@ class TestParametricModelInversion:
 
         Notes
         -----
+        The independent polynomial/reference values are from Yang et al., PDF Eqs. (2.2)-(2.4),
+        (3.3). Agreement checks the implemented equations at the controlled inputs, not
+        astrophysical calibration.
+
         Pass criteria: Applying the inverse to the independent unit-normalized fit returns one
         to rtol=1e-12.
 
@@ -354,11 +468,17 @@ class TestParametricModelInversion:
 
         Scope: This controlled calculation does not calibrate a subhalo population against
         simulations or observations.
+
+        References
+        ----------
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         assert np.allclose(pm.get_Vmax0(Vmax_fit(tau), tau), 1.0, rtol=1.0e-12, atol=0.0)
 
     def test_get_rmax0_inverts_eq24(self, pm, tau):
-        """Recover the initial radius normalization from the SIDM radius fit.
+        r"""Recover the initial radius normalization from the SIDM radius fit.
 
         Parameters
         ----------
@@ -370,6 +490,10 @@ class TestParametricModelInversion:
 
         Notes
         -----
+        The independent polynomial/reference values are from Yang et al., PDF Eqs. (2.2)-(2.4),
+        (3.3). Agreement checks the implemented equations at the controlled inputs, not
+        astrophysical calibration.
+
         Pass criteria: Applying the inverse to the independent unit-normalized radius fit
         returns one to rtol=1e-12.
 
@@ -378,11 +502,17 @@ class TestParametricModelInversion:
 
         Scope: This controlled calculation does not calibrate a subhalo population against
         simulations or observations.
+
+        References
+        ----------
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         assert np.allclose(pm.get_rmax0(rmax_fit(tau), tau), 1.0, rtol=1.0e-12, atol=0.0)
 
     def test_eq23_reduces_to_the_initial_nfw_at_tau_zero(self, pm):
-        """Start SIDM evolution from the stated NFW halo with no interaction-generated core.
+        r"""Start SIDM evolution from the stated NFW halo with no interaction-generated core.
 
         Parameters
         ----------
@@ -391,6 +521,10 @@ class TestParametricModelInversion:
 
         Notes
         -----
+        The independent polynomial/reference values are from Yang et al., PDF Eqs. (2.2)-(2.4),
+        (3.3). Agreement checks the implemented equations at the controlled inputs, not
+        astrophysical calibration.
+
         Pass criteria: At tau=0, density and scale-radius factors equal one and core radius
         equals zero within 1e-12.
 
@@ -399,6 +533,12 @@ class TestParametricModelInversion:
 
         Scope: This controlled calculation does not calibrate a subhalo population against
         simulations or observations.
+
+        References
+        ----------
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         assert pm.get_rhos(1.0, 0.0) == pytest.approx(1.0, abs=1.0e-12)
         assert pm.get_rs(1.0, 0.0) == pytest.approx(1.0, abs=1.0e-12)
@@ -406,18 +546,28 @@ class TestParametricModelInversion:
 
 
 class TestIntegralApproach:
-    """Compare the gravothermal history integral with explicit instantaneous-normalization
+    r"""Compare the gravothermal history integral with explicit instantaneous-normalization
     reference polynomials.
 
     Notes
     -----
+    The independent polynomial/reference values are from Yang et al., PDF Eqs. (2.2)-(2.4),
+    (3.3). Agreement checks the implemented equations at the controlled inputs, not
+    astrophysical calibration.
+
     This fixture/helper supports the controlled checks in this test module; its synthetic
     values are not a calibrated halo model.
+
+    References
+    ----------
+
+    .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+        https://arxiv.org/abs/2305.16176
     """
 
     @staticmethod
     def _synthetic_cdm_history(pm, n_t=801):
-        """Construct a deterministic declining CDM reference track with explicit SI unit
+        r"""Construct a deterministic declining CDM reference track with explicit SI unit
         conversions.
 
         Parameters
@@ -437,8 +587,18 @@ class TestIntegralApproach:
 
         Notes
         -----
+        The independent polynomial/reference values are from Yang et al., PDF Eqs. (2.2)-(2.4),
+        (3.3). Agreement checks the implemented equations at the controlled inputs, not
+        astrophysical calibration.
+
         This fixture/helper supports the controlled checks in this test module; its synthetic
         values are not a calibrated halo model.
+
+        References
+        ----------
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         Gyr, km, s, kpc = pm.Gyr, pm.km, pm.s, pm.kpc
         t_f = np.array([2.0, 2.0]) * Gyr
@@ -450,7 +610,7 @@ class TestIntegralApproach:
 
     @staticmethod
     def _eq33_reference(pm, Vmax_CDM, rmax_CDM, t, t_f, freeze_at_tf=False):
-        """Independent evaluation of Eq. (3.3), using the polynomials defined at the top
+        r"""Independent evaluation of Eq. (3.3), using the polynomials defined at the top
         of this file rather than the ones inside sashimi_si.
 
         Parameters
@@ -479,8 +639,18 @@ class TestIntegralApproach:
 
         Notes
         -----
+        The independent polynomial/reference values are from Yang et al., PDF Eqs. (2.2)-(2.4),
+        (3.3). Agreement checks the implemented equations at the controlled inputs, not
+        astrophysical calibration.
+
         This fixture/helper supports the controlled checks in this test module; its synthetic
         values are not a calibrated halo model.
+
+        References
+        ----------
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         t_c = pm.t_collapse(pm.sigma_eff_m(Vmax_CDM), rmax_CDM, Vmax_CDM)
         tau = (t - t_f) / t_c
@@ -495,7 +665,7 @@ class TestIntegralApproach:
         )
 
     def test_master_function_matches_an_independent_eq33_reference(self, pm):
-        """Normalize the SIDM correction along the evolving CDM history.
+        r"""Normalize the SIDM correction along the evolving CDM history.
 
         Parameters
         ----------
@@ -504,6 +674,10 @@ class TestIntegralApproach:
 
         Notes
         -----
+        The independent polynomial/reference values are from Yang et al., PDF Eqs. (2.2)-(2.4),
+        (3.3). Agreement checks the implemented equations at the controlled inputs, not
+        astrophysical calibration.
+
         Pass criteria: For a deliberately declining CDM track, final Vmax and rmax match
         independent integration of the stated equation to rtol=1e-10.
 
@@ -512,6 +686,12 @@ class TestIntegralApproach:
 
         Scope: This controlled calculation does not calibrate a subhalo population against
         simulations or observations.
+
+        References
+        ----------
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         args = self._synthetic_cdm_history(pm)
         Vmax_SIDM, rmax_SIDM, _, _, _ = pm.master_function(*args)
@@ -520,7 +700,7 @@ class TestIntegralApproach:
         assert np.allclose(rmax_SIDM, r_ref, rtol=1.0e-10, atol=0.0)
 
     def test_normalizing_at_t_f_would_give_a_different_answer(self, pm):
-        """Ensure the synthetic history can detect the wrong SIDM normalization epoch.
+        r"""Ensure the synthetic history can detect the wrong SIDM normalization epoch.
 
         Parameters
         ----------
@@ -529,6 +709,10 @@ class TestIntegralApproach:
 
         Notes
         -----
+        The independent polynomial/reference values are from Yang et al., PDF Eqs. (2.2)-(2.4),
+        (3.3). Agreement checks the implemented equations at the controlled inputs, not
+        astrophysical calibration.
+
         Pass criteria: The independent running-time and frozen-at-formation formulas differ by
         more than 1e-3 in both outputs.
 
@@ -537,6 +721,12 @@ class TestIntegralApproach:
 
         Scope: This controlled calculation does not calibrate a subhalo population against
         simulations or observations.
+
+        References
+        ----------
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         args = self._synthetic_cdm_history(pm)
         V_running, r_running = self._eq33_reference(pm, *args, freeze_at_tf=False)
@@ -546,16 +736,28 @@ class TestIntegralApproach:
 
 
 class TestCrossSection:
-    """Check low-velocity limits and relative-velocity conventions of the SIDM cross section.
+    r"""Check low-velocity limits and relative-velocity conventions of the SIDM cross section.
 
     Notes
     -----
+    The reference scattering and effective-velocity laws are Yang & Yu and Yang et al. These
+    comparisons test numerical evaluation of those adopted laws.
+
     This fixture/helper supports the controlled checks in this test module; its synthetic
     values are not a calibrated halo model.
+
+    References
+    ----------
+
+    .. [cite-cross] Yang & Yu (2022), Gravothermal evolution of dark matter halos with differential elastic scattering, PDF Eqs. (2.1), (2.7).
+        https://arxiv.org/abs/2205.03392
+
+    .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+        https://arxiv.org/abs/2305.16176
     """
 
     def test_analytic_sigma_eff_matches_brute_force_quadrature(self, pm):
-        """Recover the effective scattering rate from its angular and velocity integral.
+        r"""Recover the effective scattering rate from its angular and velocity integral.
 
         Parameters
         ----------
@@ -564,6 +766,9 @@ class TestCrossSection:
 
         Notes
         -----
+        The reference scattering and effective-velocity laws are Yang & Yu and Yang et al. These
+        comparisons test numerical evaluation of those adopted laws.
+
         Pass criteria: Across six velocities 0.1..300 km/s, the analytic/interpolated effective
         cross section agrees with direct two-dimensional quadrature to one percent.
 
@@ -572,6 +777,15 @@ class TestCrossSection:
 
         Scope: This controlled calculation does not calibrate a subhalo population against
         simulations or observations.
+
+        References
+        ----------
+
+        .. [cite-cross] Yang & Yu (2022), Gravothermal evolution of dark matter halos with differential elastic scattering, PDF Eqs. (2.1), (2.7).
+            https://arxiv.org/abs/2205.03392
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         km, s, cm, gram = pm.km, pm.s, pm.cm, pm.gram
         sigma0_m, w = SIGMA0_M * cm**2 / gram, W * km / s
@@ -593,7 +807,7 @@ class TestCrossSection:
             assert f_ana(Vmax) == pytest.approx(reference, rel=1.0e-2)
 
     def test_sigma_eff_approaches_sigma0_in_the_contact_limit(self, pm):
-        """Recover isotropic contact scattering at velocities much below the interaction scale.
+        r"""Recover isotropic contact scattering at velocities much below the interaction scale.
 
         Parameters
         ----------
@@ -602,6 +816,9 @@ class TestCrossSection:
 
         Notes
         -----
+        The reference scattering and effective-velocity laws are Yang & Yu and Yang et al. These
+        comparisons test numerical evaluation of those adopted laws.
+
         Pass criteria: At Vmax=1e-3 km/s, sigma_eff/m approaches sigma0/m to relative tolerance
         1e-3.
 
@@ -610,16 +827,28 @@ class TestCrossSection:
 
         Scope: This controlled calculation does not calibrate a subhalo population against
         simulations or observations.
+
+        References
+        ----------
+
+        .. [cite-cross] Yang & Yu (2022), Gravothermal evolution of dark matter halos with differential elastic scattering, PDF Eqs. (2.1), (2.7).
+            https://arxiv.org/abs/2205.03392
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         km, s, cm, gram = pm.km, pm.s, pm.cm, pm.gram
         f_ana = pm.sigma_eff_m_interpolate_analytical(SIGMA0_M * cm**2 / gram, W * km / s)
         assert f_ana(1.0e-3 * km / s) / (cm**2 / gram) == pytest.approx(SIGMA0_M, rel=1.0e-3)
 
     def test_subhalo_properties_shares_sigma_eff_with_its_parametric_model(self):
-        """Keep collapse-time diagnostics tied to the interaction law used for evolution.
+        r"""Keep collapse-time diagnostics tied to the interaction law used for evolution.
 
         Notes
         -----
+        The reference scattering and effective-velocity laws are Yang & Yu and Yang et al. These
+        comparisons test numerical evaluation of those adopted laws.
+
         Pass criteria: The population model and its parametric model hold the identical
         sigma_eff callable.
 
@@ -628,6 +857,15 @@ class TestCrossSection:
 
         Scope: This controlled calculation does not calibrate a subhalo population against
         simulations or observations.
+
+        References
+        ----------
+
+        .. [cite-cross] Yang & Yu (2022), Gravothermal evolution of dark matter halos with differential elastic scattering, PDF Eqs. (2.1), (2.7).
+            https://arxiv.org/abs/2205.03392
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         sh = sashimi_si.subhalo_properties(sigma0_m=SIGMA0_M, w=W)
         assert sh.sigma_eff_m is sh.param_model.sigma_eff_m
@@ -756,10 +994,18 @@ class TestNFWConstants:
         return brentq(stationarity, 1.0, 5.0)
 
     def test_rmax_over_rs(self):
-        """Check the numerical NFW peak-radius constant quoted by the SI model.
+        r"""Check the numerical NFW peak-radius constant quoted by the SI model.
 
         Notes
         -----
+        The independent polynomial/reference values are from Yang et al., PDF Eqs. (2.2)-(2.4),
+        (3.3). Agreement checks the implemented equations at the controlled inputs, not
+        astrophysical calibration.
+
+        The NFW profile is from Navarro et al. The rounded factors rmax/rs = 2.163 (2.1626 where
+        explicitly used) and 4.625 are NFW maximum-circular-speed identities, as written in
+        Hiroshima et al., Eqs. (5)-(7), rather than independent empirical fits.
+
         Pass criteria: An independent root of the NFW circular-speed stationarity condition
         agrees with literal 2.1626 to absolute tolerance 1e-4.
 
@@ -768,14 +1014,30 @@ class TestNFWConstants:
 
         Scope: This controlled calculation does not calibrate a subhalo population against
         simulations or observations.
+
+        References
+        ----------
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
+
+        .. [cite-nfw] Navarro, Frenk & White (1997), A Universal Density Profile from Hierarchical Clustering.
+            https://arxiv.org/abs/astro-ph/9611107
+
+        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).
+            https://arxiv.org/abs/1803.07691
         """
         assert self._c_max() == pytest.approx(2.1626, abs=1.0e-4)
 
     def test_vmax_and_rhos_normalizations(self):
-        """Check the rounded NFW structure constants quoted in the SIDM prescription.
+        r"""Check the rounded NFW structure constants quoted in the SIDM prescription.
 
         Notes
         -----
+        The NFW profile is from Navarro et al. The rounded factors rmax/rs = 2.163 (2.1626 where
+        explicitly used) and 4.625 are NFW maximum-circular-speed identities, as written in
+        Hiroshima et al., Eqs. (5)-(7), rather than independent empirical fits.
+
         Pass criteria: Independent NFW algebra agrees with literal coefficients 1.648 and 4.625
         to absolute tolerance 1e-3.
 
@@ -784,6 +1046,15 @@ class TestNFWConstants:
 
         Scope: This controlled calculation does not calibrate a subhalo population against
         simulations or observations.
+
+        References
+        ----------
+
+        .. [cite-nfw] Navarro, Frenk & White (1997), A Universal Density Profile from Hierarchical Clustering.
+            https://arxiv.org/abs/astro-ph/9611107
+
+        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).
+            https://arxiv.org/abs/1803.07691
         """
         c = self._c_max()
         mu = (np.log(1 + c) - c / (1 + c)) / c
@@ -893,10 +1164,13 @@ class TestEndToEnd:
             assert np.all(values > 0.0)
 
     def test_sidm_reduces_to_cdm_when_the_cross_section_vanishes(self):
-        """Recover collisionless structure in the vanishing-interaction limit.
+        r"""Recover collisionless structure in the vanishing-interaction limit.
 
         Notes
         -----
+        The reference scattering and effective-velocity laws are Yang & Yu and Yang et al. These
+        comparisons test numerical evaluation of those adopted laws.
+
         Pass criteria: At sigma0/m=1e-8, surviving SIDM and CDM structure agrees to rtol=1e-3
         and the SIDM core is less than 1e-3 of r_s.
 
@@ -905,6 +1179,15 @@ class TestEndToEnd:
 
         Scope: This controlled calculation does not calibrate a subhalo population against
         simulations or observations.
+
+        References
+        ----------
+
+        .. [cite-cross] Yang & Yu (2022), Gravothermal evolution of dark matter halos with differential elastic scattering, PDF Eqs. (2.1), (2.7).
+            https://arxiv.org/abs/2205.03392
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         cat = self._run(sigma0_m=1.0e-8)
         alive = cat["weightSIDM"] > 0.0

@@ -35,13 +35,13 @@ CALCULATION_SPECIFICATION = "sashimi-si:paired-catalog:2026-09-10:v2"
 
 
 class HaloModel(SIHaloKernels):
-    """Planck2018 SI calibration with an explicit common background backend.
+    r"""Planck2018 SI calibration with an explicit common background backend.
 
     Parameters
     ----------
     backend_config : BackendConfig, optional
         Explicit background/unit/array configuration; mutually exclusive with
-        cosmology_backend. SI requires NativeUnits and its calibrated cosmological
+        cosmology_backend. SI requires NativeUnits and its adopted cosmological
         parameters.
     cosmology_backend : CosmologyBackend, optional
         ITAMAE background provider. The variant checks compatibility with the cosmology of
@@ -58,13 +58,13 @@ class HaloModel(SIHaloKernels):
     calculation_specification = CALCULATION_SPECIFICATION
 
     def __init__(self, *, backend_config=None, cosmology_backend=None):
-        """Bind the SI calibrated background to one explicit native-unit backend configuration.
+        r"""Bind the adopted SI background to one explicit native-unit backend configuration.
 
         Parameters
         ----------
         backend_config : BackendConfig, optional
             Explicit background/unit/array configuration; mutually exclusive with
-            cosmology_backend. SI requires NativeUnits and its calibrated cosmological
+            cosmology_backend. SI requires NativeUnits and its adopted cosmological
             parameters.
         cosmology_backend : CosmologyBackend, optional
             ITAMAE background provider. The variant checks compatibility with the cosmology of
@@ -72,10 +72,20 @@ class HaloModel(SIHaloKernels):
 
         Notes
         -----
+        The backend compatibility requirement Omega_m0=0.315, H0=67.4 km/s/Mpc is the adopted
+        rounded Planck-2018 background. It does not imply that the earlier concentration or
+        tidal fits were recalibrated for this background.
+
         CDM-reference and SIDM views share accretion nodes and generation weights. Formation
         before accretion is a domain requirement; invalid histories are not integrated backward
         and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
         CDM tidal-truncation selection.
+
+        References
+        ----------
+
+        .. [cite-planck] Planck Collaboration (2020), Planck 2018 results. VI. Cosmological parameters, Table 2.
+            https://arxiv.org/abs/1807.06209
         """
         if backend_config is not None and cosmology_backend is not None:
             raise ValueError("Pass either backend_config or cosmology_backend, not both.")
@@ -144,7 +154,7 @@ class HaloModel(SIHaloKernels):
         return density * self.Msun / self.Mpc**3 * self._rho_crit_scale
 
     def growthD(self, z: Any) -> np.ndarray:
-        """Return the normalized linear growth factor.
+        r"""Return the normalized linear growth factor.
 
         Parameters
         ----------
@@ -159,16 +169,26 @@ class HaloModel(SIHaloKernels):
 
         Notes
         -----
+        The factors 5/2, 4/7 and 1/70 belong to the Carroll--Press--Turner growth approximation.
+        Redshift derivatives differentiate that approximation; they are not a separate growth
+        calibration.
+
         CDM-reference and SIDM views share accretion nodes and generation weights. Formation
         before accretion is a domain requirement; invalid histories are not integrated backward
         and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
         CDM tidal-truncation selection.
+
+        References
+        ----------
+
+        .. [cite-growth] Carroll, Press & Turner (1992), The Cosmological Constant, Section 3.5.
+            https://doi.org/10.1146/annurev.aa.30.090192.002435
         """
         return np.asarray(self.itamae_cosmology.growth_factor(z))
 
 
 class TidalStrippingSolver(HaloModel, SITidalKernels):
-    """SI tidal evolution retaining the selected immutable backend.
+    r"""SI tidal evolution retaining the selected immutable backend.
 
     Parameters
     ----------
@@ -184,7 +204,7 @@ class TidalStrippingSolver(HaloModel, SITidalKernels):
         integrals/interpolants; independent of Picard endpoint-table settings.
     backend_config : BackendConfig, optional
         Explicit background/unit/array configuration; mutually exclusive with
-        cosmology_backend. SI requires NativeUnits and its calibrated cosmological
+        cosmology_backend. SI requires NativeUnits and its adopted cosmological
         parameters.
     cosmology_backend : CosmologyBackend, optional
         ITAMAE background provider. The variant checks compatibility with the cosmology of
@@ -208,7 +228,7 @@ class TidalStrippingSolver(HaloModel, SITidalKernels):
         backend_config=None,
         cosmology_backend=None,
     ):
-        """Prepare SI tidal integration while retaining the selected background configuration.
+        r"""Prepare SI tidal integration while retaining the selected background configuration.
 
         Parameters
         ----------
@@ -224,7 +244,7 @@ class TidalStrippingSolver(HaloModel, SITidalKernels):
             integrals/interpolants; independent of Picard endpoint-table settings.
         backend_config : BackendConfig, optional
             Explicit background/unit/array configuration; mutually exclusive with
-            cosmology_backend. SI requires NativeUnits and its calibrated cosmological
+            cosmology_backend. SI requires NativeUnits and its adopted cosmological
             parameters.
         cosmology_backend : CosmologyBackend, optional
             ITAMAE background provider. The variant checks compatibility with the cosmology of
@@ -242,7 +262,7 @@ class TidalStrippingSolver(HaloModel, SITidalKernels):
 
 
 class SubhaloProperties(HaloModel, SIDM_parametric_model):
-    """Calculate aligned CDM-reference/SIDM states with independent weights.
+    r"""Calculate aligned CDM-reference/SIDM states with independent weights.
 
     Parameters
     ----------
@@ -259,7 +279,7 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         contribution is stopped.
     backend_config : BackendConfig, optional
         Explicit background/unit/array configuration; mutually exclusive with
-        cosmology_backend. SI requires NativeUnits and its calibrated cosmological
+        cosmology_backend. SI requires NativeUnits and its adopted cosmological
         parameters.
     cosmology_backend : CosmologyBackend, optional
         ITAMAE background provider. The variant checks compatibility with the cosmology of
@@ -267,10 +287,25 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
 
     Notes
     -----
+    The defaults sigma0/m=147.1 cm**2/g and w=24.33 km/s are the fiducial Model I in Ando et
+    al., Table 1, also used by Yang et al. The default stop at gravothermal time 1.1 follows
+    Ando et al., Section 2.2; it bounds the adopted evolution prescription, not numerical
+    error. The beta argument is retained state and is not used by the current evolution
+    kernels.
+
     CDM-reference and SIDM views share accretion nodes and generation weights. Formation
     before accretion is a domain requirement; invalid histories are not integrated backward
     and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
     CDM tidal-truncation selection.
+
+    References
+    ----------
+
+    .. [cite-sashimi-sidm] Ando et al. (2025), SASHIMI-SIDM: Semi-analytical subhalo modelling for self-interacting dark matter at sub-galactic scales, Sections 2.2-2.3, Table 1.
+        https://arxiv.org/abs/2403.16633
+
+    .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+        https://arxiv.org/abs/2305.16176
     """
 
     def __init__(
@@ -283,7 +318,7 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         backend_config=None,
         cosmology_backend=None,
     ):
-        """Bind the scattering law and gravothermal profile fit to a paired CDM/SIDM population.
+        r"""Bind the scattering law and gravothermal profile fit to a paired CDM/SIDM population.
 
         Parameters
         ----------
@@ -300,7 +335,7 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
             contribution is stopped.
         backend_config : BackendConfig, optional
             Explicit background/unit/array configuration; mutually exclusive with
-            cosmology_backend. SI requires NativeUnits and its calibrated cosmological
+            cosmology_backend. SI requires NativeUnits and its adopted cosmological
             parameters.
         cosmology_backend : CosmologyBackend, optional
             ITAMAE background provider. The variant checks compatibility with the cosmology of
@@ -308,10 +343,25 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
 
         Notes
         -----
+        The defaults sigma0/m=147.1 cm**2/g and w=24.33 km/s are the fiducial Model I in Ando et
+        al., Table 1, also used by Yang et al. The default stop at gravothermal time 1.1 follows
+        Ando et al., Section 2.2; it bounds the adopted evolution prescription, not numerical
+        error. The beta argument is retained state and is not used by the current evolution
+        kernels.
+
         CDM-reference and SIDM views share accretion nodes and generation weights. Formation
         before accretion is a domain requirement; invalid histories are not integrated backward
         and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
         CDM tidal-truncation selection.
+
+        References
+        ----------
+
+        .. [cite-sashimi-sidm] Ando et al. (2025), SASHIMI-SIDM: Semi-analytical subhalo modelling for self-interacting dark matter at sub-galactic scales, Sections 2.2-2.3, Table 1.
+            https://arxiv.org/abs/2403.16633
+
+        .. [cite-sidm] Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).
+            https://arxiv.org/abs/2305.16176
         """
         HaloModel.__init__(self, backend_config=backend_config, cosmology_backend=cosmology_backend)
         self.param_model = SIDM_parametric_model(sigma0_m, w, tt_th)
@@ -328,7 +378,7 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         }
 
     def Ffunc(self, dela, s1, s2):
-        """Evaluate the Yang et al. EPS kernel before support normalization.
+        r"""Evaluate the Yang et al. EPS kernel before support normalization.
 
         Parameters
         ----------
@@ -349,6 +399,10 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
 
         Notes
         -----
+        The EPS accretion kernel and, where used, host-history scatter 0.12-0.15*log10(Ma/M0)
+        follow Yang et al., Eqs. (12)-(14), (21). Finite-gap normalization and zero-barrier
+        limits are numerical treatments of that kernel, not new empirical fits.
+
         CDM-reference and SIDM views share accretion nodes and generation weights. Formation
         before accretion is a domain requirement; invalid histories are not integrated backward
         and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
@@ -357,11 +411,14 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         References
         ----------
         - Yang et al. (2011), https://arxiv.org/abs/1104.1757
+
+        .. [cite-yang] Yang et al. (2011), An Analytical Model for the Accretion of Dark Matter Subhalos, Eqs. (12)-(14), (21).
+            https://arxiv.org/abs/1104.1757
         """
         return 1 / np.sqrt(2.0 * np.pi) * dela / (s2 - s1) ** 1.5
 
     def Gfunc(self, dela, s1, s2):
-        """Evaluate the retained empirical multiplicative correction to the EPS kernel.
+        r"""Evaluate the retained empirical multiplicative correction to the EPS kernel.
 
         Parameters
         ----------
@@ -382,6 +439,9 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
 
         Notes
         -----
+        The empirical correction G0=0.57, gamma1=0.38, gamma2=-0.01 is from Parkinson et al.,
+        Section 3.1, and is adopted in Yang et al., Eq. (13).
+
         CDM-reference and SIDM views share accretion nodes and generation weights. Formation
         before accretion is a domain requirement; invalid histories are not integrated backward
         and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
@@ -390,6 +450,12 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         References
         ----------
         - Yang et al. (2011), https://arxiv.org/abs/1104.1757
+
+        .. [cite-parkinson] Parkinson, Cole & Helly (2008), Generating Dark Matter Halo Merger Trees, Section 3.1.
+            https://arxiv.org/abs/0708.1382
+
+        .. [cite-yang] Yang et al. (2011), An Analytical Model for the Accretion of Dark Matter Subhalos, Eqs. (12)-(14), (21).
+            https://arxiv.org/abs/1104.1757
         """
         G0 = 0.57
         gamma1 = 0.38
@@ -399,7 +465,7 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         return G0 * pow(sig2 / sig1, gamma1) * pow(dela / sig1, gamma2)
 
     def Ffunc_Yang(self, delc1, delc2, s1, s2):
-        """Evaluate the conditional EPS kernel with its collapse-barrier difference.
+        r"""Evaluate the conditional EPS kernel with its collapse-barrier difference.
 
         Parameters
         ----------
@@ -423,6 +489,10 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
 
         Notes
         -----
+        The EPS accretion kernel and, where used, host-history scatter 0.12-0.15*log10(Ma/M0)
+        follow Yang et al., Eqs. (12)-(14), (21). Finite-gap normalization and zero-barrier
+        limits are numerical treatments of that kernel, not new empirical fits.
+
         CDM-reference and SIDM views share accretion nodes and generation weights. Formation
         before accretion is a domain requirement; invalid histories are not integrated backward
         and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
@@ -431,6 +501,9 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         References
         ----------
         - Yang et al. (2011), https://arxiv.org/abs/1104.1757
+
+        .. [cite-yang] Yang et al. (2011), An Analytical Model for the Accretion of Dark Matter Subhalos, Eqs. (12)-(14), (21).
+            https://arxiv.org/abs/1104.1757
         """
         return (
             1.0
@@ -441,7 +514,7 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         )
 
     def _normalized_yang_kernel(self, delc1, delc2, s1, s2, smin):
-        """Yang Eq. (14) divided by its mass-support integral, including gap=0.
+        r"""Yang Eq. (14) divided by its mass-support integral, including gap=0.
 
         For x=delta/sqrt(2*(smin-s1)), erf(x)/x tends to 2/sqrt(pi).
         The small-x series evaluates that ratio before the vanishing factors
@@ -473,10 +546,20 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
 
         Notes
         -----
+        The EPS accretion kernel and, where used, host-history scatter 0.12-0.15*log10(Ma/M0)
+        follow Yang et al., Eqs. (12)-(14), (21). Finite-gap normalization and zero-barrier
+        limits are numerical treatments of that kernel, not new empirical fits.
+
         CDM-reference and SIDM views share accretion nodes and generation weights. Formation
         before accretion is a domain requirement; invalid histories are not integrated backward
         and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
         CDM tidal-truncation selection.
+
+        References
+        ----------
+
+        .. [cite-yang] Yang et al. (2011), An Analytical Model for the Accretion of Dark Matter Subhalos, Eqs. (12)-(14), (21).
+            https://arxiv.org/abs/1104.1757
         """
         d1, d2, a, b, minimum = np.broadcast_arrays(delc1, delc2, s1, s2, smin)
         gap, ds, dsmin = d2 - d1, b - a, minimum - a
@@ -501,7 +584,7 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         return result
 
     def Na_calc(self, ma, zacc, Mhost, z0=0.0, N_herm=200, Nrand=1000, Na_model=3):
-        """Returns Na, Eq. (3) of Yang et al. (2011)
+        r"""Returns Na, Eq. (3) of Yang et al. (2011)
 
         Parameters
         ----------
@@ -535,6 +618,10 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
 
         Notes
         -----
+        The EPS accretion kernel and, where used, host-history scatter 0.12-0.15*log10(Ma/M0)
+        follow Yang et al., Eqs. (12)-(14), (21). Finite-gap normalization and zero-barrier
+        limits are numerical treatments of that kernel, not new empirical fits.
+
         CDM-reference and SIDM views share accretion nodes and generation weights. Formation
         before accretion is a domain requirement; invalid histories are not integrated backward
         and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
@@ -543,6 +630,9 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         References
         ----------
         - Yang et al. (2011), https://arxiv.org/abs/1104.1757
+
+        .. [cite-yang] Yang et al. (2011), An Analytical Model for the Accretion of Dark Matter Subhalos, Eqs. (12)-(14), (21).
+            https://arxiv.org/abs/1104.1757
         """
         zacc_2d = zacc.reshape(-1, 1)
         M200_0 = self.Mzzi(Mhost, zacc_2d, z0)
@@ -666,7 +756,7 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         method="picard",
         **kwargs: Any,
     ):
-        """Run SIDM physical stages through the shared population executor.
+        r"""Run SIDM physical stages through the shared population executor.
 
         Parameters
         ----------
@@ -720,10 +810,31 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
 
         Notes
         -----
+        The retained default scatter sigma(log10(c)) = 0.128 dex is the Ishiyama et al. Eq. (7),
+        Fig. 10 value for z=0 halos of 1e9 to 1e10 solar masses; Hiroshima et al. adopt the
+        rounded value 0.13 dex. Using one value across masses and redshifts is a model
+        assumption, not a quadrature error or a new calibration. The literature threshold rt/rs
+        > 0.77 follows the Hayashi et al. disruption prescription adopted by Hiroshima et al. A
+        caller-supplied threshold takes precedence in variants that expose it (C and SI
+        currently default to 0). This is a model selection rule; an exact-boundary test does not
+        calibrate disruption physics.
+
         Masses are Msun, radii Mpc, densities Msun/Mpc^3 and named velocities km/s.
         Formation-invalid SIDM entries remain explicitly zero and have zero survival weight. The
         original arange(target+dz,zmax+dz,dz) grid convention is retained; non-aligned zmax may
         be exceeded by less than one nominal step.
+
+        References
+        ----------
+
+        .. [cite-scatter] Ishiyama et al. (2013), The Cosmogrid Simulation: Statistical Properties of Small Dark Matter Halos, Eq. (7), Fig. 10.
+            https://arxiv.org/abs/1101.2020
+
+        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).
+            https://arxiv.org/abs/1803.07691
+
+        .. [cite-survival] Hayashi et al. (2003), The Structural Evolution of Substructure.
+            https://arxiv.org/abs/astro-ph/0203004
         """
         if method not in {
             "picard",
@@ -919,7 +1030,7 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         }
 
     def subhalo_catalog_calc(self, *args: Any, state: str = "sidm", **kwargs: Any):
-        """Calculate one named state view as a weighted ITAMAE catalog.
+        r"""Calculate one named state view as a weighted ITAMAE catalog.
 
         Parameters
         ----------
@@ -938,10 +1049,31 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
 
         Notes
         -----
+        The retained default scatter sigma(log10(c)) = 0.128 dex is the Ishiyama et al. Eq. (7),
+        Fig. 10 value for z=0 halos of 1e9 to 1e10 solar masses; Hiroshima et al. adopt the
+        rounded value 0.13 dex. Using one value across masses and redshifts is a model
+        assumption, not a quadrature error or a new calibration. The literature threshold rt/rs
+        > 0.77 follows the Hayashi et al. disruption prescription adopted by Hiroshima et al. A
+        caller-supplied threshold takes precedence in variants that expose it (C and SI
+        currently default to 0). This is a model selection rule; an exact-boundary test does not
+        calibrate disruption physics.
+
         CDM-reference and SIDM views share accretion nodes and generation weights. Formation
         before accretion is a domain requirement; invalid histories are not integrated backward
         and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
         CDM tidal-truncation selection.
+
+        References
+        ----------
+
+        .. [cite-scatter] Ishiyama et al. (2013), The Cosmogrid Simulation: Statistical Properties of Small Dark Matter Halos, Eq. (7), Fig. 10.
+            https://arxiv.org/abs/1101.2020
+
+        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).
+            https://arxiv.org/abs/1803.07691
+
+        .. [cite-survival] Hayashi et al. (2003), The Structural Evolution of Substructure.
+            https://arxiv.org/abs/astro-ph/0203004
         """
         if state == "cdm":
             state = "cdm_reference"
@@ -951,7 +1083,7 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         return catalogs[state]
 
     def subhalo_properties_calc(self, *args, return_weight_factors=False, **kwargs):
-        """Format the paired catalogs as the historical 27-field tuple.
+        r"""Format the paired catalogs as the historical 27-field tuple.
 
         Velocities in this format are Mpc/s; named catalogs use km/s.
 
@@ -974,10 +1106,31 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
 
         Notes
         -----
+        The retained default scatter sigma(log10(c)) = 0.128 dex is the Ishiyama et al. Eq. (7),
+        Fig. 10 value for z=0 halos of 1e9 to 1e10 solar masses; Hiroshima et al. adopt the
+        rounded value 0.13 dex. Using one value across masses and redshifts is a model
+        assumption, not a quadrature error or a new calibration. The literature threshold rt/rs
+        > 0.77 follows the Hayashi et al. disruption prescription adopted by Hiroshima et al. A
+        caller-supplied threshold takes precedence in variants that expose it (C and SI
+        currently default to 0). This is a model selection rule; an exact-boundary test does not
+        calibrate disruption physics.
+
         CDM-reference and SIDM views share accretion nodes and generation weights. Formation
         before accretion is a domain requirement; invalid histories are not integrated backward
         and carry zero survival weight. SIDM profile validity adds a separate mask to the shared
         CDM tidal-truncation selection.
+
+        References
+        ----------
+
+        .. [cite-scatter] Ishiyama et al. (2013), The Cosmogrid Simulation: Statistical Properties of Small Dark Matter Halos, Eq. (7), Fig. 10.
+            https://arxiv.org/abs/1101.2020
+
+        .. [cite-structure] Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).
+            https://arxiv.org/abs/1803.07691
+
+        .. [cite-survival] Hayashi et al. (2003), The Structural Evolution of Substructure.
+            https://arxiv.org/abs/astro-ph/0203004
         """
         catalogs = self.subhalo_catalogs_calc(*args, **kwargs)
         cdm, sidm = catalogs["cdm_reference"], catalogs["sidm"]

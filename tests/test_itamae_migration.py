@@ -219,10 +219,13 @@ def test_paired_states_keep_initial_node_identity(products):
 
 
 def test_backend_is_passed_to_tidal_solver():
-    """Use the selected cosmological/unit configuration for SI tidal mass loss.
+    r"""Use the selected cosmological/unit configuration for SI tidal mass loss.
 
     Notes
     -----
+    Planck-like background numbers are controlled test inputs. Equality or rejection here
+    checks the stated background contract, not the cosmological fit.
+
     Pass criteria: The supplied backend configuration reaches the solver and produces
     positive bound masses no larger than accretion masses.
 
@@ -231,6 +234,12 @@ def test_backend_is_passed_to_tidal_solver():
 
     Scope: This controlled calculation does not calibrate a subhalo population against
     simulations or observations.
+
+    References
+    ----------
+
+    .. [cite-planck] Planck Collaboration (2020), Planck 2018 results. VI. Cosmological parameters, Table 2.
+        https://arxiv.org/abs/1807.06209
     """
     config = BackendConfig(cosmology=NativeFlatLCDM(omega_m0=0.315, h=0.674), units=NativeUnits())
     solver = TidalStrippingSolver(1e10, z_max=1.5, n_z_interp=32, backend_config=config)
@@ -241,10 +250,13 @@ def test_backend_is_passed_to_tidal_solver():
 
 
 def test_public_state_and_cosmology_validation():
-    """Reject incompatible SI backgrounds and ambiguous population-view names.
+    r"""Reject incompatible SI backgrounds and ambiguous population-view names.
 
     Notes
     -----
+    Planck-like background numbers are controlled test inputs. Equality or rejection here
+    checks the stated background contract, not the cosmological fit.
+
     Pass criteria: An incompatible Omega_m0 and an unknown state fail; the supported cdm
     alias records cdm_reference.
 
@@ -253,6 +265,12 @@ def test_public_state_and_cosmology_validation():
 
     Scope: This controlled calculation does not calibrate a subhalo population against
     simulations or observations.
+
+    References
+    ----------
+
+    .. [cite-planck] Planck Collaboration (2020), Planck 2018 results. VI. Cosmological parameters, Table 2.
+        https://arxiv.org/abs/1807.06209
     """
     with pytest.raises(ValueError, match=r"OmegaM=0\.315"):
         HaloModel(cosmology_backend=NativeFlatLCDM(omega_m0=0.3, h=0.674))
