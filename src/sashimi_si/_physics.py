@@ -1,5 +1,7 @@
 """SIDM cross sections, calibrated profiles, host and tidal physical kernels."""
 
+from ._picard import get_picard_solver
+
 from itamae.evolution import shanks_transform, solve_evolution
 import numpy as np
 from scipy import integrate
@@ -1081,7 +1083,7 @@ class SITidalKernels(SIHaloKernels):
         )
         return ma * np.exp(eps)
 
-    def subhalo_mass_stripped(self, ma, za, z, method="pert2_shanks", **kwargs):
+    def subhalo_mass_stripped(self, ma, za, z, method="picard", **kwargs):
         """A wrapper function to calculate subhalo mass stripping.
 
         Parameters
@@ -1094,6 +1096,8 @@ class SITidalKernels(SIHaloKernels):
             final redshift.
         method : str, optional
             method to calculate the subhalo mass stripping.
+            - "picard" : shared ITAMAE Picard mass history (default).
+            - "dop853" : high-accuracy direct log-mass integration.
             - "odeint" : use odeint to solve the differential equation.
             - "pert0" : use perturbative method with zeroth-order correction.
             - "pert1" : use perturbative method with first-order correction.
@@ -1108,22 +1112,10 @@ class SITidalKernels(SIHaloKernels):
         float or np.ndarray
             the mass of the subhalo
         """
-        # match method:
-        #     case "odeint":
-        #         return self.subhalo_mass_stripped_odeint(ma,za,z,**kwargs)
-        #     # NOTE: odeint returns (len(z),len(ma)) array for array input.
-        #     case "pert0":
-        #         return self.subhalo_mass_stripped_pert0(ma,za,z)
-        #     case "pert1":
-        #         return self.subhalo_mass_stripped_pert1(ma,za,z)
-        #     case "pert2":
-        #         return self.subhalo_mass_stripped_pert2(ma,za,z)
-        #     case "pert2_shanks":
-        #         return self.subhalo_mass_stripped_pert2_shanks(ma,za,z)
-        #     case "pert3":
-        #         return self.subhalo_mass_stripped_pert3(ma,za,z)
-        #     case _:
-        #         raise ValueError(f"Invalid method: {method}")
+        if method == "picard":
+            return get_picard_solver(self).history(ma, za, z, **kwargs)
+        if method == "dop853":
+            return get_picard_solver(self).direct(ma, za, z, **kwargs)
         if method == "odeint":
             # NOTE: odeint returns (len(z),len(ma)) array for array input.
             return self.subhalo_mass_stripped_odeint(ma, za, z, **kwargs)

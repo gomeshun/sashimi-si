@@ -324,10 +324,12 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
         Na_model=3,
         ct_th=0.0,
         M0_at_redshift=False,
-        method="pert2_shanks",
+        method="picard",
         **kwargs: Any,
     ):
         """Run SIDM physical stages through the shared population executor."""
+        if method not in {"picard", "dop853", "odeint", "pert0", "pert1", "pert2", "pert2_shanks", "pert3"}:
+            raise ValueError(f"Invalid stripping method: {method}")
         self.calculation_parameters = {
             "M0": M0,
             "redshift": redshift,
@@ -478,9 +480,11 @@ class SubhaloProperties(HaloModel, SIDM_parametric_model):
                     calculation_specification=CALCULATION_SPECIFICATION,
                     variance_identifier="sashimi-si:analytic-cdm-fit:v1",
                     power_identifier="sashimi-si:cdm-linear-power:v1",
-                    solver_identifier=f"sashimi-si:gravothermal-tidal-stripping:{method}:v2",
+                    solver_identifier=f"sashimi-si:gravothermal-tidal-stripping:{method}:itamae:v3",
                     extra={
                         "state": state,
+                        "default_stripping_method": "picard",
+                        "picard_diagnostics": solver._picard_backend.diagnostics() if method == "picard" and hasattr(solver, "_picard_backend") else None,
                         "physical_parameters": self.physical_parameters,
                         "calculation_parameters": self.calculation_parameters,
                         "cosmology_parameters": {

@@ -59,6 +59,11 @@ sidm = catalogs["sidm"]
 cdm = catalogs["cdm_reference"]
 ```
 
+The tidal default is `method="picard"`, which obtains the full mass history
+from ITAMAE's common Picard backend. `method="pert2_shanks"` retains the prior
+solver and `method="dop853"` supplies a direct log-mass reference. See the
+[shared Picard contract](docs/shared-picard.md).
+
 The standard import uses the shared ITAMAE executor. The old `physics_mode`
 argument has been removed; requesting it raises `TypeError`. Compatibility
 import modules are aliases to the same classes. The historical 27-field tuple
