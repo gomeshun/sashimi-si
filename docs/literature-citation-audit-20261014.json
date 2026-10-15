@@ -1,0 +1,2944 @@
+{
+  "audit_started": "2026-10-14 UTC",
+  "audit_completed_at": "2026-10-14T15:03:15.534745+00:00",
+  "code_before_citation_edit": "120f9d27e082776287819468ed73c677f89169ca",
+  "comparison_baseline": {
+    "kind": "author upstream/main",
+    "sha": "e17d3664dac677b604fd4ff02fb2af105a6937fa"
+  },
+  "active_definitions_inventoried": 195,
+  "changed_docstrings": 95,
+  "changed_with_local_references": 91,
+  "local_test_cases_passed": 72,
+  "executable_ast_differences": [],
+  "reference_files_changed": [],
+  "method": "Source-qualified AST inventory including private/nested definitions, existing-attribution and direct-literal screening, followed by primary-paper equation/table matching. Generic numerical controls and fixed regressions are not treated as empirical calibration. Inventory counts alone do not prove scientific correctness.",
+  "limits": [
+    "The fiducial sigma0/m=147.1 cm^2/g and w=24.33 km/s are Ando et al. Model I. The gravothermal cutoff 1.1 follows their Section 2.2; it is a model boundary, not a numerical accuracy guarantee.",
+    "The profile/collapse coefficients are linked to Yang et al. PDF Eqs. (2.2)-(2.4), and integral evolution to Eq. (3.3). Derivatives use exact differentiation of the retained polynomial; separately rounded printed derivative coefficients are not substituted.",
+    "Low-level scattering functions retain supplied cross-section units and use matching velocity units; effective interpolators use internal Mpc/s. Public model constructors accept cm^2/g and km/s. The beta argument is stored but is not used in the current evolution kernels.",
+    "The adopted Planck-2018-like background does not recalibrate earlier fits. SI defaults to ct_th=0; the literature 0.77 threshold is documented as a separate selectable rule."
+  ],
+  "references": {
+    "constants": [
+      "Mohr & Taylor (2005), CODATA recommended values of the fundamental physical constants: 2002, Table XXVI.",
+      "https://physics.nist.gov/cuu/pdf/CODATA_RMP2005.pdf"
+    ],
+    "conversion": [
+      "Hu & Kravtsov (2003), Sample Variance Considerations for Cluster Surveys, Appendix C.",
+      "https://arxiv.org/abs/astro-ph/0203169"
+    ],
+    "correa": [
+      "Correa et al. (2015), The accretion history of dark matter haloes - III. A physical model for the concentration-mass relation, Section 3 and Appendix B.",
+      "https://arxiv.org/abs/1502.00391"
+    ],
+    "cross": [
+      "Yang & Yu (2022), Gravothermal evolution of dark matter halos with differential elastic scattering, PDF Eqs. (2.1), (2.7).",
+      "https://arxiv.org/abs/2205.03392"
+    ],
+    "growth": [
+      "Carroll, Press & Turner (1992), The Cosmological Constant, Section 3.5.",
+      "https://doi.org/10.1146/annurev.aa.30.090192.002435"
+    ],
+    "ludlow": [
+      "Ludlow et al. (2016), The mass-concentration-redshift relation of cold and warm dark matter haloes, Appendix C.",
+      "https://arxiv.org/abs/1601.02624"
+    ],
+    "nfw": [
+      "Navarro, Frenk & White (1997), A Universal Density Profile from Hierarchical Clustering.",
+      "https://arxiv.org/abs/astro-ph/9611107"
+    ],
+    "parkinson": [
+      "Parkinson, Cole & Helly (2008), Generating Dark Matter Halo Merger Trees, Section 3.1.",
+      "https://arxiv.org/abs/0708.1382"
+    ],
+    "planck": [
+      "Planck Collaboration (2020), Planck 2018 results. VI. Cosmological parameters, Table 2.",
+      "https://arxiv.org/abs/1807.06209"
+    ],
+    "sashimi-sidm": [
+      "Ando et al. (2025), SASHIMI-SIDM: Semi-analytical subhalo modelling for self-interacting dark matter at sub-galactic scales, Sections 2.2-2.3, Table 1.",
+      "https://arxiv.org/abs/2403.16633"
+    ],
+    "scatter": [
+      "Ishiyama et al. (2013), The Cosmogrid Simulation: Statistical Properties of Small Dark Matter Halos, Eq. (7), Fig. 10.",
+      "https://arxiv.org/abs/1101.2020"
+    ],
+    "sidm": [
+      "Yang et al. (2024; preprint 2023), A parametric model for self-interacting dark matter halos, PDF Eqs. (1.1)-(1.3), (2.2)-(2.4), (3.3).",
+      "https://arxiv.org/abs/2305.16176"
+    ],
+    "structure": [
+      "Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Section II, Eqs. (5)-(9).",
+      "https://arxiv.org/abs/1803.07691"
+    ],
+    "survival": [
+      "Hayashi et al. (2003), The Structural Evolution of Substructure.",
+      "https://arxiv.org/abs/astro-ph/0203004"
+    ],
+    "tidal": [
+      "Hiroshima, Ando & Ishiyama (2018), Modeling evolution of dark matter substructure and annihilation boost, Eqs. (23)-(24).",
+      "https://arxiv.org/abs/1803.07691"
+    ],
+    "time": [
+      "Jiang & van den Bosch (2016), Statistics of Dark Matter Substructure: I. Model and Universal Fitting Functions, Eq. (2).",
+      "https://arxiv.org/abs/1403.6827"
+    ],
+    "tracks": [
+      "Penarrubia et al. (2010), The impact of dark matter cusps and cores on the satellite galaxy population around spiral galaxies, Eq. (8), Fig. 6.",
+      "https://arxiv.org/abs/1002.3376"
+    ],
+    "virial": [
+      "Bryan & Norman (1998), Statistical Properties of X-ray Clusters: Analytic and Numerical Comparisons, Eq. (6).",
+      "https://arxiv.org/abs/astro-ph/9710107"
+    ],
+    "yang": [
+      "Yang et al. (2011), An Analytical Model for the Accretion of Dark Matter Subhalos, Eqs. (12)-(14), (21).",
+      "https://arxiv.org/abs/1104.1757"
+    ]
+  },
+  "definitions": [
+    {
+      "repo": "sashimi-si",
+      "file": "setup.py",
+      "name": "_valid_revision",
+      "kind": "FunctionDef",
+      "line": 19,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "setup.py",
+      "name": "_existing_revision",
+      "kind": "FunctionDef",
+      "line": 44,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "setup.py",
+      "name": "_git_checkout_revision",
+      "kind": "FunctionDef",
+      "line": 76,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "setup.py",
+      "name": "_resolve_revision",
+      "kind": "FunctionDef",
+      "line": 118,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "setup.py",
+      "name": "_ProvenanceBuildPy",
+      "kind": "ClassDef",
+      "line": 160,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "setup.py",
+      "name": "_ProvenanceSdist",
+      "kind": "ClassDef",
+      "line": 220,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "setup.py",
+      "name": "_ProvenanceSdist.make_release_tree",
+      "kind": "FunctionDef",
+      "line": 230,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "setup.py",
+      "name": "_ProvenanceBuildPy.run",
+      "kind": "FunctionDef",
+      "line": 172,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "setup.py",
+      "name": "_ProvenanceBuildPy.get_outputs",
+      "kind": "FunctionDef",
+      "line": 193,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/__init__.py",
+      "name": "HaloModel",
+      "kind": "ClassDef",
+      "line": 37,
+      "archived": false,
+      "outcome": "documentation_clarified_without_new_paper_values",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/__init__.py",
+      "name": "TidalStrippingSolver",
+      "kind": "ClassDef",
+      "line": 190,
+      "archived": false,
+      "outcome": "documentation_clarified_without_new_paper_values",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/__init__.py",
+      "name": "SubhaloProperties",
+      "kind": "ClassDef",
+      "line": 264,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sashimi-sidm",
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176",
+        "https://arxiv.org/abs/2403.16633"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/__init__.py",
+      "name": "SubhaloProperties.__init__",
+      "kind": "FunctionDef",
+      "line": 311,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sashimi-sidm",
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176",
+        "https://arxiv.org/abs/2403.16633"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/__init__.py",
+      "name": "SubhaloProperties.Ffunc",
+      "kind": "FunctionDef",
+      "line": 380,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "yang"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1104.1757"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/__init__.py",
+      "name": "SubhaloProperties.Gfunc",
+      "kind": "FunctionDef",
+      "line": 420,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "parkinson",
+        "yang"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/0708.1382",
+        "https://arxiv.org/abs/1104.1757"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/__init__.py",
+      "name": "SubhaloProperties.Ffunc_Yang",
+      "kind": "FunctionDef",
+      "line": 467,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "yang"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1104.1757"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/__init__.py",
+      "name": "SubhaloProperties._normalized_yang_kernel",
+      "kind": "FunctionDef",
+      "line": 516,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "yang"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1104.1757"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/__init__.py",
+      "name": "SubhaloProperties.Na_calc",
+      "kind": "FunctionDef",
+      "line": 586,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "yang"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1104.1757"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/__init__.py",
+      "name": "SubhaloProperties.subhalo_catalogs_calc",
+      "kind": "FunctionDef",
+      "line": 741,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "scatter",
+        "structure",
+        "survival"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1101.2020",
+        "https://arxiv.org/abs/1803.07691",
+        "https://arxiv.org/abs/astro-ph/0203004"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/__init__.py",
+      "name": "SubhaloProperties.subhalo_catalog_calc",
+      "kind": "FunctionDef",
+      "line": 1032,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "scatter",
+        "structure",
+        "survival"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1101.2020",
+        "https://arxiv.org/abs/1803.07691",
+        "https://arxiv.org/abs/astro-ph/0203004"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/__init__.py",
+      "name": "SubhaloProperties.subhalo_properties_calc",
+      "kind": "FunctionDef",
+      "line": 1085,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "scatter",
+        "structure",
+        "survival"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1101.2020",
+        "https://arxiv.org/abs/1803.07691",
+        "https://arxiv.org/abs/astro-ph/0203004"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/__init__.py",
+      "name": "TidalStrippingSolver.__init__",
+      "kind": "FunctionDef",
+      "line": 221,
+      "archived": false,
+      "outcome": "documentation_clarified_without_new_paper_values",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/__init__.py",
+      "name": "HaloModel.__init__",
+      "kind": "FunctionDef",
+      "line": 60,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "planck"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1807.06209"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/__init__.py",
+      "name": "HaloModel.Hubble",
+      "kind": "FunctionDef",
+      "line": 109,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/__init__.py",
+      "name": "HaloModel.rhocrit",
+      "kind": "FunctionDef",
+      "line": 132,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/__init__.py",
+      "name": "HaloModel.growthD",
+      "kind": "FunctionDef",
+      "line": 156,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "growth"
+      ],
+      "paper_urls": [
+        "https://doi.org/10.1146/annurev.aa.30.090192.002435"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_itamae_components.py",
+      "name": "SIDMAccretionSlices",
+      "kind": "ClassDef",
+      "line": 20,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_itamae_components.py",
+      "name": "SIDMInitialStructure",
+      "kind": "ClassDef",
+      "line": 146,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_itamae_components.py",
+      "name": "SIDMProfileEvolution",
+      "kind": "ClassDef",
+      "line": 217,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_itamae_components.py",
+      "name": "SIDMSurvival",
+      "kind": "ClassDef",
+      "line": 411,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "survival",
+        "structure"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1803.07691",
+        "https://arxiv.org/abs/astro-ph/0203004"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_itamae_components.py",
+      "name": "SIDMCatalogColumns",
+      "kind": "ClassDef",
+      "line": 505,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_itamae_components.py",
+      "name": "SIDMCatalogColumns.build",
+      "kind": "FunctionDef",
+      "line": 516,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_itamae_components.py",
+      "name": "SIDMSurvival.select",
+      "kind": "FunctionDef",
+      "line": 444,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "survival",
+        "structure"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1803.07691",
+        "https://arxiv.org/abs/astro-ph/0203004"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_itamae_components.py",
+      "name": "SIDMProfileEvolution.evolve",
+      "kind": "FunctionDef",
+      "line": 260,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "tracks",
+        "structure",
+        "nfw"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1002.3376",
+        "https://arxiv.org/abs/1803.07691",
+        "https://arxiv.org/abs/astro-ph/9611107"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_itamae_components.py",
+      "name": "SIDMInitialStructure.initialize",
+      "kind": "FunctionDef",
+      "line": 165,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "nfw",
+        "structure"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1803.07691",
+        "https://arxiv.org/abs/astro-ph/9611107"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_itamae_components.py",
+      "name": "SIDMAccretionSlices.build",
+      "kind": "FunctionDef",
+      "line": 69,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "nfw",
+        "structure"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1803.07691",
+        "https://arxiv.org/abs/astro-ph/9611107"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_itamae_variance.py",
+      "name": "make_variance_model",
+      "kind": "FunctionDef",
+      "line": 16,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIUnits",
+      "kind": "ClassDef",
+      "line": 15,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "constants"
+      ],
+      "paper_urls": [
+        "https://physics.nist.gov/cuu/pdf/CODATA_RMP2005.pdf"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIBackgroundKernels",
+      "kind": "ClassDef",
+      "line": 72,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "planck"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1807.06209"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIHaloKernels",
+      "kind": "ClassDef",
+      "line": 314,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIDM_cross_section",
+      "kind": "ClassDef",
+      "line": 972,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "cross",
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2205.03392",
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIDM_parametric_model",
+      "kind": "ClassDef",
+      "line": 1285,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm",
+        "sashimi-sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176",
+        "https://arxiv.org/abs/2403.16633"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SITidalKernels",
+      "kind": "ClassDef",
+      "line": 1866,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SITidalKernels.__init__",
+      "kind": "FunctionDef",
+      "line": 1890,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SITidalKernels.M0",
+      "kind": "FunctionDef",
+      "line": 1938,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SITidalKernels.M0",
+      "kind": "FunctionDef",
+      "line": 1938,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SITidalKernels.reset_interpolation",
+      "kind": "FunctionDef",
+      "line": 1954,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SITidalKernels.Mzvir",
+      "kind": "FunctionDef",
+      "line": 2004,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SITidalKernels.AMz",
+      "kind": "FunctionDef",
+      "line": 2029,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "tidal"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1803.07691"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SITidalKernels.zetaMz",
+      "kind": "FunctionDef",
+      "line": 2067,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "tidal"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1803.07691"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SITidalKernels.tdynz",
+      "kind": "FunctionDef",
+      "line": 2103,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "time",
+        "virial"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1403.6827",
+        "https://arxiv.org/abs/astro-ph/9710107"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SITidalKernels.msolve",
+      "kind": "FunctionDef",
+      "line": 2146,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SITidalKernels.subhalo_mass_stripped_odeint",
+      "kind": "FunctionDef",
+      "line": 2177,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SITidalKernels.Phi",
+      "kind": "FunctionDef",
+      "line": 2232,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SITidalKernels._eps_0",
+      "kind": "FunctionDef",
+      "line": 2254,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SITidalKernels._eps_1",
+      "kind": "FunctionDef",
+      "line": 2287,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SITidalKernels._eps_2",
+      "kind": "FunctionDef",
+      "line": 2331,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SITidalKernels._eps_3",
+      "kind": "FunctionDef",
+      "line": 2380,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SITidalKernels.subhalo_mass_stripped_pert0",
+      "kind": "FunctionDef",
+      "line": 2446,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SITidalKernels.subhalo_mass_stripped_pert1",
+      "kind": "FunctionDef",
+      "line": 2477,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SITidalKernels.subhalo_mass_stripped_pert2",
+      "kind": "FunctionDef",
+      "line": 2512,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SITidalKernels.subhalo_mass_stripped_pert2_shanks",
+      "kind": "FunctionDef",
+      "line": 2550,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SITidalKernels.subhalo_mass_stripped_pert3",
+      "kind": "FunctionDef",
+      "line": 2595,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SITidalKernels.subhalo_mass_stripped",
+      "kind": "FunctionDef",
+      "line": 2648,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIDM_parametric_model.__init__",
+      "kind": "FunctionDef",
+      "line": 1312,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm",
+        "sashimi-sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176",
+        "https://arxiv.org/abs/2403.16633"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIDM_parametric_model.t_collapse",
+      "kind": "FunctionDef",
+      "line": 1352,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "nfw",
+        "structure",
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1803.07691",
+        "https://arxiv.org/abs/2305.16176",
+        "https://arxiv.org/abs/astro-ph/9611107"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIDM_parametric_model.dVmaxSIDMdtt",
+      "kind": "FunctionDef",
+      "line": 1402,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm",
+        "sashimi-sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176",
+        "https://arxiv.org/abs/2403.16633"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIDM_parametric_model.dVmaxSIDMdtt_numexpr_optimized",
+      "kind": "FunctionDef",
+      "line": 1454,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm",
+        "sashimi-sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176",
+        "https://arxiv.org/abs/2403.16633"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIDM_parametric_model.drmaxSIDMdtt",
+      "kind": "FunctionDef",
+      "line": 1501,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm",
+        "sashimi-sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176",
+        "https://arxiv.org/abs/2403.16633"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIDM_parametric_model.drmaxSIDMdtt_numexpr_optimized",
+      "kind": "FunctionDef",
+      "line": 1547,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm",
+        "sashimi-sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176",
+        "https://arxiv.org/abs/2403.16633"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIDM_parametric_model.get_Vmax0",
+      "kind": "FunctionDef",
+      "line": 1593,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIDM_parametric_model.get_rmax0",
+      "kind": "FunctionDef",
+      "line": 1634,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIDM_parametric_model.get_rhos",
+      "kind": "FunctionDef",
+      "line": 1667,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIDM_parametric_model.get_rs",
+      "kind": "FunctionDef",
+      "line": 1707,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIDM_parametric_model.get_rc",
+      "kind": "FunctionDef",
+      "line": 1746,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIDM_parametric_model.master_function",
+      "kind": "FunctionDef",
+      "line": 1781,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "nfw",
+        "structure",
+        "sidm",
+        "sashimi-sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1803.07691",
+        "https://arxiv.org/abs/2305.16176",
+        "https://arxiv.org/abs/2403.16633",
+        "https://arxiv.org/abs/astro-ph/9611107"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIDM_cross_section.__init__",
+      "kind": "FunctionDef",
+      "line": 997,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "cross",
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2205.03392",
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIDM_cross_section.dsigmadcostheta",
+      "kind": "FunctionDef",
+      "line": 1020,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "cross",
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2205.03392",
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIDM_cross_section.sigma_total",
+      "kind": "FunctionDef",
+      "line": 1063,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "cross",
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2205.03392",
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIDM_cross_section.sigma_viscosity",
+      "kind": "FunctionDef",
+      "line": 1103,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "cross",
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2205.03392",
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIDM_cross_section.sigma_eff_m_interpolate",
+      "kind": "FunctionDef",
+      "line": 1144,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "cross",
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2205.03392",
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIDM_cross_section.sigma_eff_m_interpolate_analytical",
+      "kind": "FunctionDef",
+      "line": 1202,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "cross",
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2205.03392",
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIHaloKernels.__init__",
+      "kind": "FunctionDef",
+      "line": 325,
+      "archived": false,
+      "outcome": "documentation_clarified_without_new_paper_values",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIHaloKernels.xi",
+      "kind": "FunctionDef",
+      "line": 337,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "ludlow"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1601.02624"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIHaloKernels.sigmaMz",
+      "kind": "FunctionDef",
+      "line": 370,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "ludlow"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1601.02624"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIHaloKernels.deltac_func",
+      "kind": "FunctionDef",
+      "line": 411,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "ludlow"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1601.02624"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIHaloKernels.s_func",
+      "kind": "FunctionDef",
+      "line": 444,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIHaloKernels.fc",
+      "kind": "FunctionDef",
+      "line": 467,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "nfw"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/astro-ph/9611107"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIHaloKernels.Delc",
+      "kind": "FunctionDef",
+      "line": 498,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "virial"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/astro-ph/9710107"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIHaloKernels.conc200",
+      "kind": "FunctionDef",
+      "line": 529,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "correa"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1502.00391"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIHaloKernels.Mvir_from_M200",
+      "kind": "FunctionDef",
+      "line": 579,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "nfw"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/astro-ph/9611107"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIHaloKernels.Mvir_from_M200_fit",
+      "kind": "FunctionDef",
+      "line": 626,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "conversion"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/astro-ph/0203169"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIHaloKernels.Mzi",
+      "kind": "FunctionDef",
+      "line": 742,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "correa",
+        "ludlow"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1502.00391",
+        "https://arxiv.org/abs/1601.02624"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIHaloKernels.Mzzi",
+      "kind": "FunctionDef",
+      "line": 785,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "correa",
+        "ludlow"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1502.00391",
+        "https://arxiv.org/abs/1601.02624"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIHaloKernels.dMdz",
+      "kind": "FunctionDef",
+      "line": 833,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "correa",
+        "ludlow"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1502.00391",
+        "https://arxiv.org/abs/1601.02624"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIHaloKernels.dsdm",
+      "kind": "FunctionDef",
+      "line": 884,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "ludlow"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1601.02624"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIHaloKernels.dlogSdlogM",
+      "kind": "FunctionDef",
+      "line": 927,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "ludlow"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1601.02624"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIHaloKernels.Mvir_from_M200_fit.ffunc",
+      "kind": "FunctionDef",
+      "line": 666,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "conversion"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/astro-ph/0203169"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIHaloKernels.Mvir_from_M200_fit.xfunc",
+      "kind": "FunctionDef",
+      "line": 698,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "conversion"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/astro-ph/0203169"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIBackgroundKernels.__init__",
+      "kind": "FunctionDef",
+      "line": 93,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "planck"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1807.06209"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIBackgroundKernels.g",
+      "kind": "FunctionDef",
+      "line": 123,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIBackgroundKernels.Hubble",
+      "kind": "FunctionDef",
+      "line": 146,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIBackgroundKernels.rhocrit",
+      "kind": "FunctionDef",
+      "line": 169,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIBackgroundKernels.growthD",
+      "kind": "FunctionDef",
+      "line": 192,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "growth"
+      ],
+      "paper_urls": [
+        "https://doi.org/10.1146/annurev.aa.30.090192.002435"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIBackgroundKernels.dDdz",
+      "kind": "FunctionDef",
+      "line": 233,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "growth"
+      ],
+      "paper_urls": [
+        "https://doi.org/10.1146/annurev.aa.30.090192.002435"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIBackgroundKernels.dDdz.dOdz",
+      "kind": "FunctionDef",
+      "line": 265,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "name": "SIUnits.__init__",
+      "kind": "FunctionDef",
+      "line": 37,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "constants"
+      ],
+      "paper_urls": [
+        "https://physics.nist.gov/cuu/pdf/CODATA_RMP2005.pdf"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_picard.py",
+      "name": "physics_key",
+      "kind": "FunctionDef",
+      "line": 8,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_picard.py",
+      "name": "get_picard_solver",
+      "kind": "FunctionDef",
+      "line": 87,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_picard.py",
+      "name": "physics_key.inputs",
+      "kind": "FunctionDef",
+      "line": 35,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_build_source_identity.py",
+      "name": "resolve",
+      "kind": "FunctionDef",
+      "line": 24,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_build_source_identity.py",
+      "name": "git",
+      "kind": "FunctionDef",
+      "line": 46,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_build_source_identity.py",
+      "name": "repository",
+      "kind": "FunctionDef",
+      "line": 73,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_build_source_identity.py",
+      "name": "archive",
+      "kind": "FunctionDef",
+      "line": 114,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_build_source_identity.py",
+      "name": "test_archive_in_unrelated_repository_keeps_embedded_revision",
+      "kind": "FunctionDef",
+      "line": 141,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_build_source_identity.py",
+      "name": "test_unidentified_export_rejects_enclosing_repository",
+      "kind": "FunctionDef",
+      "line": 165,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_build_source_identity.py",
+      "name": "test_exact_source_checkout_uses_own_revision",
+      "kind": "FunctionDef",
+      "line": 191,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_build_source_identity.py",
+      "name": "test_archive_rejects_conflicting_explicit_revision",
+      "kind": "FunctionDef",
+      "line": 213,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_build_source_identity.py",
+      "name": "test_exact_checkout_rejects_conflicting_explicit_revision",
+      "kind": "FunctionDef",
+      "line": 242,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_build_source_identity.py",
+      "name": "test_malformed_explicit_revision_does_not_silently_fall_back",
+      "kind": "FunctionDef",
+      "line": 270,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_build_source_identity.py",
+      "name": "test_matching_explicit_archive_revision_is_allowed",
+      "kind": "FunctionDef",
+      "line": 298,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_cross_section_precision.py",
+      "name": "test_effective_cross_section_nodes_match_high_precision_definition",
+      "kind": "FunctionDef",
+      "line": 9,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_eps_normalized_limit.py",
+      "name": "test_normalized_yang_kernel_against_independent_definite_integral",
+      "kind": "FunctionDef",
+      "line": 11,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "yang"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1104.1757"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_eps_normalized_limit.py",
+      "name": "test_host_quadrature_refinement_includes_finite_zero_gap_nodes",
+      "kind": "FunctionDef",
+      "line": 48,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_eps_normalized_limit.py",
+      "name": "test_zero_width_normalization_support_has_no_runtime_warning",
+      "kind": "FunctionDef",
+      "line": 75,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_formation_validity.py",
+      "name": "test_population_does_not_evolve_nodes_before_formation",
+      "kind": "FunctionDef",
+      "line": 11,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_formation_validity.py",
+      "name": "test_sidm_weight_includes_the_shared_cdm_truncation_gate",
+      "kind": "FunctionDef",
+      "line": 36,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_formation_validity.py",
+      "name": "test_formed_nodes_and_both_weights_match_independent_reference",
+      "kind": "FunctionDef",
+      "line": 55,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_formation_validity.py",
+      "name": "test_single_host_quadrature_node_accepts_redshift_dependent_mass_grid",
+      "kind": "FunctionDef",
+      "line": 90,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_formation_validity.py",
+      "name": "test_small_interaction_limit_on_the_shared_executor",
+      "kind": "FunctionDef",
+      "line": 114,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_itamae_components.py",
+      "name": "test_survival_combines_shared_cdm_gate_with_sidm_profile_validity",
+      "kind": "FunctionDef",
+      "line": 6,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_itamae_migration.py",
+      "name": "products",
+      "kind": "FunctionDef",
+      "line": 21,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_itamae_migration.py",
+      "name": "test_historical_provenance_is_preserved",
+      "kind": "FunctionDef",
+      "line": 45,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_itamae_migration.py",
+      "name": "test_standard_api_aliases_have_one_calculation_path",
+      "kind": "FunctionDef",
+      "line": 71,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_itamae_migration.py",
+      "name": "test_all_27_arrays_match_independent_corrected_reference",
+      "kind": "FunctionDef",
+      "line": 93,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_itamae_migration.py",
+      "name": "test_weights_observables_units_and_roundtrip",
+      "kind": "FunctionDef",
+      "line": 124,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_itamae_migration.py",
+      "name": "test_paired_states_keep_initial_node_identity",
+      "kind": "FunctionDef",
+      "line": 190,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_itamae_migration.py",
+      "name": "test_backend_is_passed_to_tidal_solver",
+      "kind": "FunctionDef",
+      "line": 221,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "planck"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1807.06209"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_itamae_migration.py",
+      "name": "test_public_state_and_cosmology_validation",
+      "kind": "FunctionDef",
+      "line": 252,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "planck"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1807.06209"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_itamae_variance.py",
+      "name": "test_si_variance_adapter_matches_legacy_model",
+      "kind": "FunctionDef",
+      "line": 9,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "pm",
+      "kind": "FunctionDef",
+      "line": 26,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "cosmo",
+      "kind": "FunctionDef",
+      "line": 43,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "tau",
+      "kind": "FunctionDef",
+      "line": 60,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "Vmax_fit",
+      "kind": "FunctionDef",
+      "line": 81,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "rmax_fit",
+      "kind": "FunctionDef",
+      "line": 114,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "dVmax_fit",
+      "kind": "FunctionDef",
+      "line": 145,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "drmax_fit",
+      "kind": "FunctionDef",
+      "line": 183,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestParametricModelDerivatives",
+      "kind": "ClassDef",
+      "line": 214,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestParametricModelInversion",
+      "kind": "ClassDef",
+      "line": 427,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestIntegralApproach",
+      "kind": "ClassDef",
+      "line": 548,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestCrossSection",
+      "kind": "ClassDef",
+      "line": 738,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "cross",
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2205.03392",
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestCosmology",
+      "kind": "ClassDef",
+      "line": 874,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestNFWConstants",
+      "kind": "ClassDef",
+      "line": 950,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestEndToEnd",
+      "kind": "ClassDef",
+      "line": 1067,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestEndToEnd._run",
+      "kind": "FunctionDef",
+      "line": 1118,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestEndToEnd.test_catalog_is_finite_and_positive_where_subhaloes_survive",
+      "kind": "FunctionDef",
+      "line": 1144,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestEndToEnd.test_sidm_reduces_to_cdm_when_the_cross_section_vanishes",
+      "kind": "FunctionDef",
+      "line": 1166,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "cross",
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2205.03392",
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestNFWConstants._c_max",
+      "kind": "FunctionDef",
+      "line": 960,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestNFWConstants.test_rmax_over_rs",
+      "kind": "FunctionDef",
+      "line": 996,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm",
+        "nfw",
+        "structure"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1803.07691",
+        "https://arxiv.org/abs/2305.16176",
+        "https://arxiv.org/abs/astro-ph/9611107"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestNFWConstants.test_vmax_and_rhos_normalizations",
+      "kind": "FunctionDef",
+      "line": 1032,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "nfw",
+        "structure"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1803.07691",
+        "https://arxiv.org/abs/astro-ph/9611107"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestNFWConstants._c_max.stationarity",
+      "kind": "FunctionDef",
+      "line": 974,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestCosmology.test_growthD_is_normalized_to_unity_today",
+      "kind": "FunctionDef",
+      "line": 883,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestCosmology.test_dDdz_is_the_derivative_of_growthD",
+      "kind": "FunctionDef",
+      "line": 903,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestCosmology.test_dark_energy_density_parameter_is_recovered_today",
+      "kind": "FunctionDef",
+      "line": 927,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestCrossSection.test_analytic_sigma_eff_matches_brute_force_quadrature",
+      "kind": "FunctionDef",
+      "line": 759,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "cross",
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2205.03392",
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestCrossSection.test_sigma_eff_approaches_sigma0_in_the_contact_limit",
+      "kind": "FunctionDef",
+      "line": 809,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "cross",
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2205.03392",
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestCrossSection.test_subhalo_properties_shares_sigma_eff_with_its_parametric_model",
+      "kind": "FunctionDef",
+      "line": 844,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "cross",
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2205.03392",
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestIntegralApproach._synthetic_cdm_history",
+      "kind": "FunctionDef",
+      "line": 569,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestIntegralApproach._eq33_reference",
+      "kind": "FunctionDef",
+      "line": 612,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestIntegralApproach.test_master_function_matches_an_independent_eq33_reference",
+      "kind": "FunctionDef",
+      "line": 667,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestIntegralApproach.test_normalizing_at_t_f_would_give_a_different_answer",
+      "kind": "FunctionDef",
+      "line": 702,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestParametricModelInversion.test_get_Vmax0_inverts_eq24",
+      "kind": "FunctionDef",
+      "line": 446,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestParametricModelInversion.test_get_rmax0_inverts_eq24",
+      "kind": "FunctionDef",
+      "line": 480,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestParametricModelInversion.test_eq23_reduces_to_the_initial_nfw_at_tau_zero",
+      "kind": "FunctionDef",
+      "line": 514,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestParametricModelDerivatives.test_dVmax_matches_finite_difference_of_eq24",
+      "kind": "FunctionDef",
+      "line": 234,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestParametricModelDerivatives.test_drmax_matches_finite_difference_of_eq24",
+      "kind": "FunctionDef",
+      "line": 271,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestParametricModelDerivatives.test_numexpr_variants_agree_with_the_numpy_variants",
+      "kind": "FunctionDef",
+      "line": 307,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestParametricModelDerivatives.test_derivatives_are_linear_in_the_cdm_normalization",
+      "kind": "FunctionDef",
+      "line": 353,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "name": "TestParametricModelDerivatives.test_evolution_is_frozen_beyond_the_threshold",
+      "kind": "FunctionDef",
+      "line": 390,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "sidm"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/2305.16176"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_shared_picard.py",
+      "name": "test_full_history_default_matches_direct_reference_and_invalidates_state",
+      "kind": "FunctionDef",
+      "line": 10,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_shared_picard.py",
+      "name": "test_shared_picard_does_not_change_accretion_or_population_weights",
+      "kind": "FunctionDef",
+      "line": 42,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_shared_picard.py",
+      "name": "test_fallback_and_invalid_options_are_not_silent",
+      "kind": "FunctionDef",
+      "line": 86,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_shared_tidal_ode.py",
+      "name": "solver",
+      "kind": "FunctionDef",
+      "line": 11,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_shared_tidal_ode.py",
+      "name": "test_tidal_solver_preserves_direct_scipy_values",
+      "kind": "FunctionDef",
+      "line": 28,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_shared_tidal_ode.py",
+      "name": "test_zero_evolution_preserves_initial_masses",
+      "kind": "FunctionDef",
+      "line": 58,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_shared_tidal_ode.py",
+      "name": "test_failed_integration_does_not_return_mass_values",
+      "kind": "FunctionDef",
+      "line": 81,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_shared_tidal_ode.py",
+      "name": "test_sidm_multiple_and_repeated_output_times",
+      "kind": "FunctionDef",
+      "line": 105,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_shared_tidal_ode.py",
+      "name": "test_state_first_jacobian_adapter_preserves_stiff_solution",
+      "kind": "FunctionDef",
+      "line": 131,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_shared_tidal_ode.py",
+      "name": "test_state_first_jacobian_adapter_preserves_stiff_solution.rhs",
+      "kind": "FunctionDef",
+      "line": 157,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_shared_tidal_ode.py",
+      "name": "test_state_first_jacobian_adapter_preserves_stiff_solution.jacobian",
+      "kind": "FunctionDef",
+      "line": 184,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_stage_velocity_units.py",
+      "name": "test_real_stage_velocities_follow_canonical_nfw_identity",
+      "kind": "FunctionDef",
+      "line": 12,
+      "archived": false,
+      "outcome": "local_paper_references_added_or_completed",
+      "reference_keys": [
+        "nfw",
+        "structure"
+      ],
+      "paper_urls": [
+        "https://arxiv.org/abs/1803.07691",
+        "https://arxiv.org/abs/astro-ph/9611107"
+      ]
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_stage_velocity_units.py",
+      "name": "test_real_stage_velocities_follow_canonical_nfw_identity.record_initial",
+      "kind": "FunctionDef",
+      "line": 50,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_stage_velocity_units.py",
+      "name": "test_real_stage_velocities_follow_canonical_nfw_identity.record_evolved",
+      "kind": "FunctionDef",
+      "line": 76,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_total_cross_section.py",
+      "name": "test_total_matches_independent_angular_integration",
+      "kind": "FunctionDef",
+      "line": 11,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_total_cross_section.py",
+      "name": "test_zero_and_array_velocity_limits",
+      "kind": "FunctionDef",
+      "line": 44,
+      "archived": false,
+      "outcome": "no_additional_paper_value_reference_identified",
+      "reference_keys": [],
+      "paper_urls": []
+    }
+  ],
+  "source_identity_checks": [
+    {
+      "repo": "sashimi-si",
+      "file": "scripts/execute_walkthrough.py",
+      "source_before_sha256": "ebe470e8031171581e1e9ee5ab4df19b11b05cc68cd33ea7450e1b0d01bf3c98",
+      "source_after_sha256": "ebe470e8031171581e1e9ee5ab4df19b11b05cc68cd33ea7450e1b0d01bf3c98",
+      "executable_ast_sha256": "9e0e9d969aa472c777246d9dea0a56e01fd195ea8fddd34708ad063991d9e93b",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "setup.py",
+      "source_before_sha256": "95f5cbdff6a30836c0bc3465bc762f1b005a39bfa09d4668bf6ea5e72693d812",
+      "source_after_sha256": "95f5cbdff6a30836c0bc3465bc762f1b005a39bfa09d4668bf6ea5e72693d812",
+      "executable_ast_sha256": "3ed3bc30245de6a98f0cd7d48d35f3bf559b477d8670eb99280b95a708043548",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/__init__.py",
+      "source_before_sha256": "4d6f4ac261d5f3e9a398153270b5cfceb009331c1989424eb7c3b472ea9f7ce5",
+      "source_after_sha256": "5035d768bb36660d58c730dbc284e09b032db25d6eccf0ac88308dab5a0a7fb2",
+      "executable_ast_sha256": "cbaa3eca3014c91b51eef2886f63360917f1a3ca9b85528d75ea67c8f70494fc",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_itamae.py",
+      "source_before_sha256": "3c619e439a39bd8e3f659b26bddd972ee850273922525d115cb9d45c0630275d",
+      "source_after_sha256": "3c619e439a39bd8e3f659b26bddd972ee850273922525d115cb9d45c0630275d",
+      "executable_ast_sha256": "ba6a1ccbb34bc81bdbd8a0c77ac707f4205a2a9de96965c5811fa94610122f55",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_itamae_components.py",
+      "source_before_sha256": "166f025c38acef3082c302ab17e8d7bab4a97b9b0c00ed48ad7b2d8a41fa9180",
+      "source_after_sha256": "39b333a17b474bfca049b8adc1ac100bd68abde37d19a7b2720b12332db59416",
+      "executable_ast_sha256": "f7e9864eb3e438b4b88921a4734b23f4f40078b63ac465f110c6ab680d2132e3",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_itamae_migration.py",
+      "source_before_sha256": "c088f7ae27615acb009ab75f9b9863ac0c4dbaeaa83693c0c94d9ce3556c0028",
+      "source_after_sha256": "c088f7ae27615acb009ab75f9b9863ac0c4dbaeaa83693c0c94d9ce3556c0028",
+      "executable_ast_sha256": "87687120a82d50b75e4a15167844f8f0a0982efa6de0c39b9fc751d6d8ef4526",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_itamae_variance.py",
+      "source_before_sha256": "a9166ce888b9645a96fe47be9af3322170457941f90b2527548791642f3e1cab",
+      "source_after_sha256": "a9166ce888b9645a96fe47be9af3322170457941f90b2527548791642f3e1cab",
+      "executable_ast_sha256": "6866de71d4d876247663f6b4f7d6f4e5800c828604eebf8d992553b0c90d7762",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_physics.py",
+      "source_before_sha256": "59bef8c8c902adcf0ba703d075f9225f8121b4145dcfd36fad1b1b4185ae9605",
+      "source_after_sha256": "6cef1f79c78f78e983ccfab858d9508702508fb6ac038caabe736a4c094b72bd",
+      "executable_ast_sha256": "562ea4554a6ba2af82404ff1bcc875e083b5340fd651ac6292dec90eac896907",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si/_picard.py",
+      "source_before_sha256": "ffcff4d5b68ed8d9625c18ba1be457776e6331cd7ec5ebaca1e0f330041df048",
+      "source_after_sha256": "ffcff4d5b68ed8d9625c18ba1be457776e6331cd7ec5ebaca1e0f330041df048",
+      "executable_ast_sha256": "518d1d97821f34a571c8051ddac5fe5814b3f27460f7ae662f91dbd4dc85f115",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si_itamae.py",
+      "source_before_sha256": "7d9e051e710ab6f452656fa872a4585652546b83c8a1842302336303ae8df814",
+      "source_after_sha256": "7d9e051e710ab6f452656fa872a4585652546b83c8a1842302336303ae8df814",
+      "executable_ast_sha256": "58c2a74cebad3b923644b64039fc843354c46fda91548bbea9cd6c2e6f6a331d",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si_itamae_components.py",
+      "source_before_sha256": "0dcf1b3458655a1d90a85d56e1dc0ca95bc514d15b726005dfaae70693061116",
+      "source_after_sha256": "0dcf1b3458655a1d90a85d56e1dc0ca95bc514d15b726005dfaae70693061116",
+      "executable_ast_sha256": "4c797a9cfd868508f0ab79b09e04676b97394aef267d50d33876827e1e4c4500",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si_itamae_migration.py",
+      "source_before_sha256": "9d953da128536ae86d8f85283d1f6c44d03b6b343a658107170114256a6a59fa",
+      "source_after_sha256": "9d953da128536ae86d8f85283d1f6c44d03b6b343a658107170114256a6a59fa",
+      "executable_ast_sha256": "c66dbfa107f6ce971b7431d60eed0160f257578a1df86ef135e9998d8f096e35",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si_itamae_variance.py",
+      "source_before_sha256": "03490494e25dbe47a10421feedd8ce834f5c1b5d4de9e030bfc01accc8ba775a",
+      "source_after_sha256": "03490494e25dbe47a10421feedd8ce834f5c1b5d4de9e030bfc01accc8ba775a",
+      "executable_ast_sha256": "34ac2d24365020c0c0aeb8e053aeb5a89e1ca0f5d3b94b77d41126c3d3e7b495",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "src/sashimi_si_physics.py",
+      "source_before_sha256": "ae4ef8951c955c78fb662221294cbafd03b37bdac045bfc35fa1588449d176e2",
+      "source_after_sha256": "ae4ef8951c955c78fb662221294cbafd03b37bdac045bfc35fa1588449d176e2",
+      "executable_ast_sha256": "16b80427e434db67c2de1ad09b5197899b216727ff51604ad438b8e31cc1738c",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_build_source_identity.py",
+      "source_before_sha256": "8f9e590b4525f1dd7d4e962a55290e36e1fa1c2f94c90acd9cd8570d9525a840",
+      "source_after_sha256": "8f9e590b4525f1dd7d4e962a55290e36e1fa1c2f94c90acd9cd8570d9525a840",
+      "executable_ast_sha256": "e1b054a43eedc1abb27ee821712ab127549177323d6df38104aac8dc088dd9df",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_cross_section_precision.py",
+      "source_before_sha256": "a1f40877cce39fd01d379f8e5f5cf9c5bb77e9cee47b63673aeb72930b792a1f",
+      "source_after_sha256": "a1f40877cce39fd01d379f8e5f5cf9c5bb77e9cee47b63673aeb72930b792a1f",
+      "executable_ast_sha256": "1889a903da1a4c32367053729dbcacf5432458a5953cfe825ae56b1445e52e4f",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_eps_normalized_limit.py",
+      "source_before_sha256": "643dbf187efb766426c4fb2577a44e7ab418e98c023762ad1ce4506c258aea79",
+      "source_after_sha256": "36a92131ba2cf04084aa52b14655e34eac45f489788f574c5504680f97158256",
+      "executable_ast_sha256": "2af33d9770931fc9df97b7e35620fc38cc0455367a33367679d8095752a7517d",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_formation_validity.py",
+      "source_before_sha256": "fbe492821f2ed66e7c14c3c9f69e286c9c3659da98eb1f1e78814b9f13697962",
+      "source_after_sha256": "fbe492821f2ed66e7c14c3c9f69e286c9c3659da98eb1f1e78814b9f13697962",
+      "executable_ast_sha256": "6b256dd455b1c79a7500899c19a1173b0db6ab1651918595324571e9bf6e200a",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_itamae_components.py",
+      "source_before_sha256": "293b73217a2a6297bbb279b84ed6ab798e838648a49bc8a3a28ad7c3279b3dc6",
+      "source_after_sha256": "293b73217a2a6297bbb279b84ed6ab798e838648a49bc8a3a28ad7c3279b3dc6",
+      "executable_ast_sha256": "4b3a218a95feb72a5279166645ff0f871fb7d11c58bde7ef8b2a8c026caccd68",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_itamae_migration.py",
+      "source_before_sha256": "b7b008124e301521965dc47e6d03c1934e2977aeaadf15fc22f7492c27c0819a",
+      "source_after_sha256": "3d62dc57f88e5bad259b2b4d25c228c292fc0e425117f7c70bd9fae4588c9bd0",
+      "executable_ast_sha256": "145329e644f1d51af4b170589ed278586c0da352a49e8a54a40ca6d71cd538fc",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_itamae_variance.py",
+      "source_before_sha256": "25af9acf63003ba6af26134ee5a837365bb210e3aec5b9363c04868bb6fdb18d",
+      "source_after_sha256": "25af9acf63003ba6af26134ee5a837365bb210e3aec5b9363c04868bb6fdb18d",
+      "executable_ast_sha256": "416cbd896d3fd817e78d13600a10886760b3b14538ccb728a194a80a73633eaa",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_physics_equations.py",
+      "source_before_sha256": "ae2be5ebae40774dfab753d66c163feaf70e52ee3441994f177e9ea5f2dd68df",
+      "source_after_sha256": "440c99ab83876027120b74e47e5086c0d920d4f8619c46961c0a04a0eeee21ec",
+      "executable_ast_sha256": "f1077aac3d530b047b0219297741645019b31f36fd2fc14d9ee387c02cc27128",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_shared_picard.py",
+      "source_before_sha256": "98e99ea535ada50cbdc305111c4327bd41e2c1f2bfa11c391f3c72446d35b09e",
+      "source_after_sha256": "98e99ea535ada50cbdc305111c4327bd41e2c1f2bfa11c391f3c72446d35b09e",
+      "executable_ast_sha256": "864ebc839f48d045f7b0f8df3905f54d4cdae94e32f9b05f3f05fdb79ce4ab97",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_shared_tidal_ode.py",
+      "source_before_sha256": "905b77054c8f4a63f4e7f74690caa52e1df97f4e94854d0746aa726db0f8f097",
+      "source_after_sha256": "905b77054c8f4a63f4e7f74690caa52e1df97f4e94854d0746aa726db0f8f097",
+      "executable_ast_sha256": "b928c562c179466772e5e7155ac8fea0d78bead6f8092c629cd4b8b15986b6b2",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_stage_velocity_units.py",
+      "source_before_sha256": "349eddedd73e88920a22a8a05f8eee8d8c58af068b39c073b8165b524de6dddd",
+      "source_after_sha256": "96f689e5c3f6f7145ba48ffb8544410093500b9b616d4bf5a78bb5725c00d0ca",
+      "executable_ast_sha256": "d1670159801a7ecfd8f0495787a3afba86acf232a59d3ef3acd5b79501b4bcf3",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    },
+    {
+      "repo": "sashimi-si",
+      "file": "tests/test_total_cross_section.py",
+      "source_before_sha256": "1c0726171adce61c1b5664ac4695ff2e211f576c5028c1be28f989b92bf5b031",
+      "source_after_sha256": "1c0726171adce61c1b5664ac4695ff2e211f576c5028c1be28f989b92bf5b031",
+      "executable_ast_sha256": "52d7facab7f17d9c4050de432028b9022f91777034828cab546ac5fe974cacda",
+      "executable_ast_equal": true,
+      "historical_archive": false
+    }
+  ],
+  "dependency_documentation_revision": {
+    "previous_itamae": "c452c5bbbbf8276870a8ff1f61f77d8bff0d8d7c",
+    "new_itamae": "4aeb13ed4e3e3e87171fe800e08f74b95c1244a2",
+    "executable_code_unchanged": true
+  }
+}

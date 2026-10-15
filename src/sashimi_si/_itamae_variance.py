@@ -25,6 +25,12 @@ def make_variance_model(model: Any | None = None) -> CallableVarianceModel:
     -------
     itamae.variance.CallableVarianceModel
         Common variance interface backed by ``sigmaMz`` and ``dsdm``.
+
+    Notes
+    -----
+    SI uses its retained CDM linear spectrum in the EPS accretion calculation. The adapter
+    exposes sigma and d(sigma**2)/dM consistently; it does not encode the later
+    self-interaction evolution of internal halo profiles.
     """
 
     model = model or ItamaeHaloModel()

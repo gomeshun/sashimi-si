@@ -9,6 +9,19 @@ PARAMETERS = dict(M0=1e12, dz=0.2, zmax=2.0, logmamin=9.0, N_ma=12, N_herm=2, N_
 
 
 def test_population_does_not_evolve_nodes_before_formation():
+    """Exclude accretion nodes that precede halo formation without contaminating valid outputs.
+
+    Notes
+    -----
+    Pass criteria: The case includes both formed and unformed nodes; every field is finite,
+    invalid nodes have zero final weight, and their accretion core radii are zero.
+
+    Failure criteria: any mismatch with the stated value, shape or identity requirements
+    fails the test.
+
+    Scope: This controlled calculation does not calibrate a subhalo population against
+    simulations or observations.
+    """
     model = create_itamae_model()
     catalogs = model.subhalo_catalogs_calc(**PARAMETERS)
     cdm, sidm = catalogs["cdm_reference"], catalogs["sidm"]
@@ -21,12 +34,39 @@ def test_population_does_not_evolve_nodes_before_formation():
 
 
 def test_sidm_weight_includes_the_shared_cdm_truncation_gate():
+    """Apply tidal disruption to both the CDM reference and SIDM population.
+
+    Notes
+    -----
+    Pass criteria: An intentionally excessive c_t threshold makes both final weight sums
+    zero.
+
+    Failure criteria: any mismatch with the stated value, shape or identity requirements
+    fails the test.
+
+    Scope: This controlled calculation does not calibrate a subhalo population against
+    simulations or observations.
+    """
     catalogs = create_itamae_model().subhalo_catalogs_calc(**PARAMETERS, ct_th=1e6)
     assert np.sum(catalogs["cdm_reference"].weight_final) == 0
     assert np.sum(catalogs["sidm"].weight_final) == 0
 
 
 def test_formed_nodes_and_both_weights_match_independent_reference():
+    """Preserve valid SIDM evolution while correcting pre-formation nodes.
+
+    Notes
+    -----
+    Pass criteria: Of 168 nodes, 164 are valid; all formed physical fields and both full
+    weight arrays match the independent reference to rtol=5e-12; the reference's four
+    invalid core values are recognized.
+
+    Failure criteria: any mismatch with the stated value, shape or identity requirements
+    fails the test.
+
+    Scope: This controlled calculation does not calibrate a subhalo population against
+    simulations or observations.
+    """
     reference_dir = Path(__file__).parent / "formation_reference"
     provenance = json.loads((reference_dir / "B-accurate-formation.json").read_text())
     model = create_itamae_model()
@@ -48,6 +88,20 @@ def test_formed_nodes_and_both_weights_match_independent_reference():
 
 
 def test_single_host_quadrature_node_accepts_redshift_dependent_mass_grid():
+    """Keep a one-node host-history approximation compatible with epoch-dependent accretion
+    masses.
+
+    Notes
+    -----
+    Pass criteria: All three EPS prescriptions return finite nonnegative values with the
+    two-by-three input mass-grid shape.
+
+    Failure criteria: any mismatch with the stated value, shape or identity requirements
+    fails the test.
+
+    Scope: This controlled calculation does not calibrate a subhalo population against
+    simulations or observations.
+    """
     model = create_itamae_model()
     redshift = np.array([0.5, 1.0])
     mass = np.array([[1e8, 1e9, 1e10], [5e7, 5e8, 5e9]])
@@ -58,6 +112,19 @@ def test_single_host_quadrature_node_accepts_redshift_dependent_mass_grid():
 
 
 def test_small_interaction_limit_on_the_shared_executor():
+    """Recover the CDM structure as self-interaction strength tends to zero.
+
+    Notes
+    -----
+    Pass criteria: At sigma0/m=1e-8, surviving SIDM and CDM velocity, radius, scale radius
+    and density agree to 1e-3 and the core is below 1e-3 of r_s.
+
+    Failure criteria: any mismatch with the stated value, shape or identity requirements
+    fails the test.
+
+    Scope: This controlled calculation does not calibrate a subhalo population against
+    simulations or observations.
+    """
     catalogs = create_itamae_model(sigma0_m=1e-8).subhalo_catalogs_calc(**PARAMETERS)
     catalog = catalogs["sidm"]
     alive = catalog.weight_final > 0
