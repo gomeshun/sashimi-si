@@ -366,18 +366,27 @@ class SIDMProfileEvolution:
                 Vmax_CDM[..., valid],
             )
             tt_ratio[:, valid] = ((self.model.t_U - context["t_f"][valid]) / t_c)[:, -1, :]
+            integrands = self.model.param_model._history_integrands(
+                Vmax_CDM[..., valid], rmax_CDM[..., valid], t[..., valid],
+                context["t_f"][valid], t_c,
+            )
             evolved_valid = self.model.param_model.master_function(
                 Vmax_CDM[..., valid],
                 rmax_CDM[..., valid],
                 t[..., valid],
                 context["t_f"][valid],
+                collapse_time=t_c,
+                _integrands=integrands,
             )
+            prefix_length = len(context["z_ba"])
             t2 = self.model.t_U - self.model.lookback_time(context["z_ba"][..., valid])
             acc_valid = self.model.param_model.master_function(
                 context["Vmax_ba"][..., valid],
                 context["rmax_ba"][..., valid],
                 t2,
                 context["t_f"][valid],
+                collapse_time=t_c[:, :prefix_length],
+                _integrands=tuple(a[:, :prefix_length] for a in integrands),
             )
             for destination, value in zip(outputs, evolved_valid, strict=True):
                 destination[:, valid] = value

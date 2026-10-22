@@ -1842,7 +1842,50 @@ class SIDM_parametric_model(SIDM_cross_section):
         ) * rs0
         return rc
 
-    def master_function(self, Vmax_CDM, rmax_CDM, t, t_f):
+    def _history_integrands(self, Vmax_CDM, rmax_CDM, t, t_f, collapse_time):
+        """Evaluate the pointwise SIDM rates shared by nested time histories.
+
+        Parameters
+        ----------
+        Vmax_CDM, rmax_CDM : numpy.ndarray
+            CDM histories, shape (n_concentration, n_time, n_mass), in internal
+            Mpc/s and Mpc respectively.
+        t : numpy.ndarray
+            Cosmic time in seconds, shape (n_time, n_mass).
+        t_f : numpy.ndarray
+            Formation time in seconds, broadcastable over the mass tracks.
+        collapse_time : numpy.ndarray
+            Positive collapse time in seconds with the history shape. Infinity
+            denotes zero scattering. It must belong to these same histories.
+
+        Returns
+        -------
+        tuple of numpy.ndarray
+            Elapsed time divided by collapse time (dimensionless), the Vmax
+            integrand (Mpc/s**2), and the rmax integrand (Mpc/s), all with the
+            history shape. Prefix views can be reused only for the same tracks,
+            time samples, formation times, and physical parameters.
+
+        Notes
+        -----
+        These are the existing pointwise rates of the running-CDM integral
+        prescription. No quadrature is performed here: full and prefix histories
+        still require separate Simpson integrals with their original endpoints.
+        The arrays are local to one population slice, not a persistent cache.
+
+        References
+        ----------
+        Yang et al. (2024), Eqs. (2.4) and (3.3).
+        https://arxiv.org/abs/2305.16176
+        Ando et al. (2025), Eqs. (2.12)-(2.15).
+        https://arxiv.org/abs/2403.16633
+        """
+        scaled_time = (t - t_f) / collapse_time
+        velocity = self.dVmaxSIDMdtt_numexpr_optimized(scaled_time, Vmax_CDM) / collapse_time
+        radius = self.drmaxSIDMdtt_numexpr_optimized(scaled_time, rmax_CDM) / collapse_time
+        return scaled_time, velocity, radius
+
+    def master_function(self, Vmax_CDM, rmax_CDM, t, t_f, *, collapse_time=None, _integrands=None):
         r"""Evolve SIDM structure with the adopted formation-time integral prescription.
 
         Parameters
@@ -1857,6 +1900,15 @@ class SIDM_parametric_model(SIDM_cross_section):
             Formation cosmic time in seconds, broadcastable over the mass tracks; this is the
             lower integration endpoint and the origin of elapsed time, not generally accretion.
 
+        collapse_time : numpy.ndarray, optional
+            Precomputed collapse time in seconds, matching the CDM history shape.
+            Values must be positive; infinity denotes zero scattering. The caller
+            must use the same histories and physical parameters.
+        _integrands : tuple of numpy.ndarray, optional
+            Internal per-call reuse of ``_history_integrands`` results for these
+            exact histories or their prefix. Requires ``collapse_time``. Every
+            array must match the CDM history shape; no persistent cache is used.
+
         Returns
         -------
         VmaxSIDM_z0 : numpy.ndarray
@@ -1869,6 +1921,12 @@ class SIDM_parametric_model(SIDM_cross_section):
             Final SIDM rsSIDM in Mpc, shape (n_concentration, n_mass).
         rcSIDM_z0 : numpy.ndarray
             Final SIDM rcSIDM in Mpc, shape (n_concentration, n_mass).
+
+        Raises
+        ------
+        ValueError
+            If a supplied collapse time has the wrong shape, is nonpositive or
+            NaN, or if reused integrands lack matching collapse times or shapes.
 
         Notes
         -----
@@ -1912,17 +1970,43 @@ class SIDM_parametric_model(SIDM_cross_section):
         # NOTE: In the equation just below Eq. (3.3) of Yang et al. (2023), dVmax_{Model}/dtt and
         # drmax_{Model}/dtt are normalized by Vmax_{CDM}(t) and rmax_{CDM}(t) evaluated at the running
         # time t of the integral, not by their values at the formation-time lower endpoint t_f.
-        t_c = self.t_collapse(self.sigma_eff_m(Vmax_CDM), rmax_CDM, Vmax_CDM)
-        integrand = self.dVmaxSIDMdtt_numexpr_optimized((t - t_f) / t_c, Vmax_CDM) / t_c
-        VmaxSIDM_z0 = Vmax_CDM[:, -1] + integrate.simpson(
-            integrand, x=t * np.ones((len(Vmax_CDM), 1, 1)), axis=1
-        )
-        integrand = self.drmaxSIDMdtt_numexpr_optimized((t - t_f) / t_c, rmax_CDM) / t_c
-        rmaxSIDM_z0 = rmax_CDM[:, -1] + integrate.simpson(
-            integrand, x=t * np.ones((len(rmax_CDM), 1, 1)), axis=1
-        )
+        if _integrands is not None and collapse_time is None:
+            raise ValueError("Reused integrands require the matching collapse_time.")
+        if collapse_time is None:
+            t_c = self.t_collapse(self.sigma_eff_m(Vmax_CDM), rmax_CDM, Vmax_CDM)
+        else:
+            t_c = np.asarray(collapse_time)
+            if t_c.shape != Vmax_CDM.shape or np.any(np.isnan(t_c)) or np.any(t_c <= 0):
+                raise ValueError("collapse_time must match the history and be positive (infinity denotes zero scattering).")
+        if collapse_time is not None:
+            if _integrands is None:
+                _integrands = self._history_integrands(Vmax_CDM, rmax_CDM, t, t_f, t_c)
+            if len(_integrands) != 3 or any(np.shape(a) != Vmax_CDM.shape for a in _integrands):
+                raise ValueError("Reused integrands must match the CDM history shape.")
+            scaled_time, velocity_integrand, radius_integrand = _integrands
+            # Preserve Simpson's arithmetic and endpoint corrections separately
+            # for the full history and any prefix; only pointwise rates are reused.
+            # Keep the legacy grid shape and memory order: a singleton broadcast
+            # can change NumPy's reduction order inside Simpson for F-order t.
+            time_grid = t * np.ones((len(Vmax_CDM), 1, 1))
+            VmaxSIDM_z0 = Vmax_CDM[:, -1] + integrate.simpson(
+                velocity_integrand, x=time_grid, axis=1
+            )
+            rmaxSIDM_z0 = rmax_CDM[:, -1] + integrate.simpson(
+                radius_integrand, x=time_grid, axis=1
+            )
+            tt = np.minimum(scaled_time[:, -1], self.tt_th)
+        else:
+            integrand = self.dVmaxSIDMdtt_numexpr_optimized((t - t_f) / t_c, Vmax_CDM) / t_c
+            VmaxSIDM_z0 = Vmax_CDM[:, -1] + integrate.simpson(
+                integrand, x=t * np.ones((len(Vmax_CDM), 1, 1)), axis=1
+            )
+            integrand = self.drmaxSIDMdtt_numexpr_optimized((t - t_f) / t_c, rmax_CDM) / t_c
+            rmaxSIDM_z0 = rmax_CDM[:, -1] + integrate.simpson(
+                integrand, x=t * np.ones((len(rmax_CDM), 1, 1)), axis=1
+            )
 
-        tt = np.minimum(((t - t_f) / t_c)[:, -1], self.tt_th)
+            tt = np.minimum(((t - t_f) / t_c)[:, -1], self.tt_th)
         Vmax0_CDM_fict = self.get_Vmax0(VmaxSIDM_z0, tt)
         rmax0_CDM_fict = self.get_rmax0(rmaxSIDM_z0, tt)
         rs0_CDM_fict = rmax0_CDM_fict / 2.1626
