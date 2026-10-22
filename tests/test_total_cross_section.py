@@ -9,19 +9,52 @@ from sashimi_si import SIDM_cross_section
 
 @pytest.mark.parametrize("ratio", [0.0, 0.01, 0.1, 1.0, 3.0, 10.0, 100.0])
 def test_total_matches_independent_angular_integration(ratio):
+    """Integrate the differential scattering law to the total cross section.
+
+    Parameters
+    ----------
+    ratio : float
+        Relative speed divided by the scattering velocity scale w.
+
+    Notes
+    -----
+    Pass criteria: For velocity/scale ratios 0..100, angular quadrature meets its error
+    target and agrees with sigma_total to rtol=5e-12.
+
+    Failure criteria: any mismatch with the stated value, shape or identity requirements
+    fails the test.
+
+    Scope: This controlled calculation does not calibrate a subhalo population against
+    simulations or observations.
+    """
     model = SIDM_cross_section()
     sigma0, w = 3.7, 25.0
     integral, error = quad(
         lambda mu: model.dsigmadcostheta(sigma0, w, ratio * w, mu),
-        -1.0, 1.0, epsabs=1e-13, epsrel=1e-12, limit=500,
+        -1.0,
+        1.0,
+        epsabs=1e-13,
+        epsrel=1e-12,
+        limit=500,
     )
     assert error < 2e-12 * max(integral, 1.0)
-    assert model.sigma_total(sigma0, w, ratio * w) == pytest.approx(
-        integral, rel=5e-12, abs=0.0
-    )
+    assert model.sigma_total(sigma0, w, ratio * w) == pytest.approx(integral, rel=5e-12, abs=0.0)
 
 
 def test_zero_and_array_velocity_limits():
+    """Recover analytic total-scattering limits for vectorized velocity inputs.
+
+    Notes
+    -----
+    Pass criteria: The output keeps shape, equals sigma0 at zero velocity and sigma0/2 at
+    v=w, and follows the high-velocity inverse-square limit to 2e-10.
+
+    Failure criteria: any mismatch with the stated value, shape or identity requirements
+    fails the test.
+
+    Scope: This controlled calculation does not calibrate a subhalo population against
+    simulations or observations.
+    """
     model = SIDM_cross_section()
     sigma0, w = 4.0, 12.0
     velocity = np.array([0.0, w, 1e5 * w])

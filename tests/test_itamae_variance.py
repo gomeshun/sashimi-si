@@ -7,7 +7,19 @@ from sashimi_si_itamae_variance import make_variance_model
 
 
 def test_si_variance_adapter_matches_legacy_model() -> None:
-    """The common variance interface should preserve the initial CDM population."""
+    """Preserve the CDM initial density variance that seeds the SIDM population.
+
+    Notes
+    -----
+    Pass criteria: At three mass/redshift pairs, sigma and dS/dM are unchanged and variance
+    equals sigma squared to rtol=2e-15.
+
+    Failure criteria: any mismatch with the stated value, shape or identity requirements
+    fails the test.
+
+    Scope: This controlled calculation does not calibrate a subhalo population against
+    simulations or observations.
+    """
 
     legacy = halo_model()
     variance = make_variance_model(legacy)

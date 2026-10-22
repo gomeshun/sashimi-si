@@ -4,6 +4,19 @@ from sashimi_si_itamae_components import SIDMSurvival
 
 
 def test_survival_combines_shared_cdm_gate_with_sidm_profile_validity():
+    """Combine tidal disruption with physically admissible SIDM structure.
+
+    Notes
+    -----
+    Pass criteria: The toy c_t array gives CDM mask [False,True,True,True]; negative SIDM
+    core, radius or velocity reduces it to [False,True,False,False].
+
+    Failure criteria: any mismatch with the stated value, shape or identity requirements
+    fails the test.
+
+    Scope: This controlled calculation does not calibrate a subhalo population against
+    simulations or observations.
+    """
     evolved = {
         name: np.ones(4)
         for name in (

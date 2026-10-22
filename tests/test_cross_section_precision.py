@@ -7,6 +7,20 @@ from sashimi_si import SIDM_cross_section
 
 
 def test_effective_cross_section_nodes_match_high_precision_definition():
+    """Resolve the effective SIDM cross section where the analytic expression suffers
+    cancellation.
+
+    Notes
+    -----
+    Pass criteria: Tabulated interpolation nodes match the saved high-precision definition
+    to rtol=5e-13 with no absolute floor.
+
+    Failure criteria: any mismatch with the stated value, shape or identity requirements
+    fails the test.
+
+    Scope: This controlled calculation does not calibrate a subhalo population against
+    simulations or observations.
+    """
     reference = json.loads(
         (
             Path(__file__).parent / "references/effective-cross-section-high-precision.json"
